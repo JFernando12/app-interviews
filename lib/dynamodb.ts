@@ -13,24 +13,38 @@ const client = new DynamoDBClient({
 
 const docClient = DynamoDBDocumentClient.from(client);
 
-const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || 'questions';
+const QUESTIONS_TABLE_NAME =
+  process.env.DYNAMODB_QUESTIONS_TABLE_NAME || 'questions';
+const INTERVIEWS_TABLE_NAME =
+  process.env.DYNAMODB_INTERVIEWS_TABLE_NAME || 'interviews';
 
 export interface Question {
   id: string;
   question: string;
-  answer: string;
   context: string;
+  answer: string;
+  type: string;
+  programming_language: string;
+  interview_id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Interview {
+  id: string;
+  company: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export class QuestionsService {
-  
   // Create a new question
-  async createQuestion(questionData: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>): Promise<Question> {
+  async createQuestion(
+    questionData: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<Question> {
     const id = uuidv4();
     const now = new Date().toISOString();
-    
+
     const question: Question = {
       id,
       ...questionData,
@@ -39,7 +53,7 @@ export class QuestionsService {
     };
 
     const command = new PutCommand({
-      TableName: TABLE_NAME,
+      TableName: QUESTIONS_TABLE_NAME,
       Item: question,
     });
 
@@ -50,7 +64,7 @@ export class QuestionsService {
   // Get all questions
   async getAllQuestions(): Promise<Question[]> {
     const command = new ScanCommand({
-      TableName: TABLE_NAME,
+      TableName: QUESTIONS_TABLE_NAME,
     });
 
     const response = await docClient.send(command);
@@ -60,7 +74,7 @@ export class QuestionsService {
   // Get a specific question by ID
   async getQuestionById(id: string): Promise<Question | null> {
     const command = new GetCommand({
-      TableName: TABLE_NAME,
+      TableName: QUESTIONS_TABLE_NAME,
       Key: { id },
     });
 
@@ -69,22 +83,25 @@ export class QuestionsService {
   }
 
   // Update a question
-  async updateQuestion(id: string, updates: Partial<Omit<Question, 'id' | 'createdAt'>>): Promise<Question | null> {
+  async updateQuestion(
+    id: string,
+    updates: Partial<Omit<Question, 'id' | 'createdAt'>>
+  ): Promise<Question | null> {
     const updatedAt = new Date().toISOString();
-    
+
     // Build update expression dynamically
     const updateExpressions: string[] = [];
     const expressionAttributeNames: { [key: string]: string } = {};
     const expressionAttributeValues: { [key: string]: any } = {};
-    
-    Object.entries({...updates, updatedAt}).forEach(([key, value], index) => {
+
+    Object.entries({ ...updates, updatedAt }).forEach(([key, value], index) => {
       updateExpressions.push(`#${key} = :val${index}`);
       expressionAttributeNames[`#${key}`] = key;
       expressionAttributeValues[`:val${index}`] = value;
     });
 
     const command = new UpdateCommand({
-      TableName: TABLE_NAME,
+      TableName: QUESTIONS_TABLE_NAME,
       Key: { id },
       UpdateExpression: `SET ${updateExpressions.join(', ')}`,
       ExpressionAttributeNames: expressionAttributeNames,
@@ -99,7 +116,7 @@ export class QuestionsService {
   // Delete a question
   async deleteQuestion(id: string): Promise<boolean> {
     const command = new DeleteCommand({
-      TableName: TABLE_NAME,
+      TableName: QUESTIONS_TABLE_NAME,
       Key: { id },
     });
 
@@ -109,3 +126,93 @@ export class QuestionsService {
 }
 
 export const questionsService = new QuestionsService();
+
+export class InterviewsService {
+  // Create a new interview
+  async createInterview(
+    interviewData: Omit<Interview, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<Interview> {
+    const id = uuidv4();
+    const now = new Date().toISOString();
+
+    const interview: Interview = {
+      id,
+      ...interviewData,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const command = new PutCommand({
+      TableName: INTERVIEWS_TABLE_NAME,
+      Item: interview,
+    });
+
+    await docClient.send(command);
+    return interview;
+  }
+
+  // Get all interviews
+  async getAllInterviews(): Promise<Interview[]> {
+    const command = new ScanCommand({
+      TableName: INTERVIEWS_TABLE_NAME,
+    });
+
+    const response = await docClient.send(command);
+    return (response.Items as Interview[]) || [];
+  }
+
+  // Get a specific interview by ID
+  async getInterviewById(id: string): Promise<Interview | null> {
+    const command = new GetCommand({
+      TableName: INTERVIEWS_TABLE_NAME,
+      Key: { id },
+    });
+
+    const response = await docClient.send(command);
+    return (response.Item as Interview) || null;
+  }
+
+  // Update an interview
+  async updateInterview(
+    id: string,
+    updates: Partial<Omit<Interview, 'id' | 'createdAt'>>
+  ): Promise<Interview | null> {
+    const updatedAt = new Date().toISOString();
+
+    // Build update expression dynamically
+    const updateExpressions: string[] = [];
+    const expressionAttributeNames: { [key: string]: string } = {};
+    const expressionAttributeValues: { [key: string]: any } = {};
+
+    Object.entries({ ...updates, updatedAt }).forEach(([key, value], index) => {
+      updateExpressions.push(`#${key} = :val${index}`);
+      expressionAttributeNames[`#${key}`] = key;
+      expressionAttributeValues[`:val${index}`] = value;
+    });
+
+    const command = new UpdateCommand({
+      TableName: INTERVIEWS_TABLE_NAME,
+      Key: { id },
+      UpdateExpression: `SET ${updateExpressions.join(', ')}`,
+      ExpressionAttributeNames: expressionAttributeNames,
+      ExpressionAttributeValues: expressionAttributeValues,
+      ReturnValues: 'ALL_NEW',
+    });
+
+    const response = await docClient.send(command);
+    return (response.Attributes as Interview) || null;
+  }
+
+  // Delete an interview
+  async deleteInterview(id: string): Promise<boolean> {
+    const command = new DeleteCommand({
+      TableName: INTERVIEWS_TABLE_NAME,
+      Key: { id },
+    });
+
+    await docClient.send(command);
+    return true;
+  }
+}
+
+export const interviewsService = new InterviewsService();

@@ -19,6 +19,9 @@ export default function QuestionForm({
     question: '',
     answer: '',
     context: '',
+    type: '',
+    programming_language: '',
+    interview_id: '',
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -32,12 +35,18 @@ export default function QuestionForm({
         question: initialData.question,
         answer: initialData.answer,
         context: initialData.context,
+        type: initialData.type || '',
+        programming_language: initialData.programming_language || '',
+        interview_id: initialData.interview_id || '',
       });
     } else {
       setFormData({
         question: '',
         answer: '',
         context: '',
+        type: '',
+        programming_language: '',
+        interview_id: '',
       });
     }
     setErrors({});
@@ -45,7 +54,9 @@ export default function QuestionForm({
 
   // Handle input changes
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -86,6 +97,18 @@ export default function QuestionForm({
       newErrors.context = 'Context must be at least 5 characters long';
     }
 
+    if (!formData.type.trim()) {
+      newErrors.type = 'Question type is required';
+    }
+
+    if (!formData.programming_language.trim()) {
+      newErrors.programming_language = 'Programming language is required';
+    }
+
+    if (!formData.interview_id.trim()) {
+      newErrors.interview_id = 'Interview ID is required';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -107,6 +130,9 @@ export default function QuestionForm({
           question: '',
           answer: '',
           context: '',
+          type: '',
+          programming_language: '',
+          interview_id: '',
         });
       }
     } catch (error) {
@@ -128,10 +154,13 @@ export default function QuestionForm({
   };
 
   const getCharacterLimit = (fieldName: keyof typeof formData) => {
-    const limits = {
+    const limits: Record<keyof typeof formData, number> = {
       question: 500,
       answer: 1000,
       context: 300,
+      type: 50,
+      programming_language: 50,
+      interview_id: 36,
     };
     return limits[fieldName];
   };
@@ -246,6 +275,125 @@ export default function QuestionForm({
             <div className="flex items-center gap-2 text-red-600 text-sm">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               {errors.context}
+            </div>
+          )}
+        </div>
+
+        {/* Type Field */}
+        <div className="space-y-2">
+          <label
+            htmlFor="type"
+            className="block text-sm font-semibold text-on-card"
+          >
+            Question Type *
+          </label>
+          <select
+            id="type"
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            onFocus={() => handleFocus('type')}
+            onBlur={handleBlur}
+            className={`form-field ${
+              errors.type
+                ? 'border-red-300 focus:border-red-500'
+                : 'focus:border-indigo-500'
+            } ${focusedField === 'type' ? 'ring-2 ring-indigo-200' : ''}`}
+          >
+            <option value="">Select question type...</option>
+            <option value="behavioral">Behavioral</option>
+            <option value="technical">Technical</option>
+            <option value="system-design">System Design</option>
+            <option value="leadership">Leadership</option>
+            <option value="coding">Coding</option>
+            <option value="other">Other</option>
+          </select>
+          {errors.type && (
+            <div className="flex items-center gap-2 text-red-600 text-sm">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              {errors.type}
+            </div>
+          )}
+        </div>
+
+        {/* Programming Language Field */}
+        <div className="space-y-2">
+          <label
+            htmlFor="programming_language"
+            className="block text-sm font-semibold text-on-card"
+          >
+            Programming Language *
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              id="programming_language"
+              name="programming_language"
+              value={formData.programming_language}
+              onChange={handleChange}
+              onFocus={() => handleFocus('programming_language')}
+              onBlur={handleBlur}
+              placeholder="e.g., JavaScript, Python, Java, etc."
+              className={`form-field ${
+                errors.programming_language
+                  ? 'border-red-300 focus:border-red-500'
+                  : 'focus:border-indigo-500'
+              } ${
+                focusedField === 'programming_language'
+                  ? 'ring-2 ring-indigo-200'
+                  : ''
+              }`}
+              maxLength={getCharacterLimit('programming_language')}
+            />
+            <div className="absolute bottom-3 right-3 text-xs text-gray-400">
+              {getCharacterCount('programming_language')}/
+              {getCharacterLimit('programming_language')}
+            </div>
+          </div>
+          {errors.programming_language && (
+            <div className="flex items-center gap-2 text-red-600 text-sm">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              {errors.programming_language}
+            </div>
+          )}
+        </div>
+
+        {/* Interview ID Field */}
+        <div className="space-y-2">
+          <label
+            htmlFor="interview_id"
+            className="block text-sm font-semibold text-on-card"
+          >
+            Interview ID *
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              id="interview_id"
+              name="interview_id"
+              value={formData.interview_id}
+              onChange={handleChange}
+              onFocus={() => handleFocus('interview_id')}
+              onBlur={handleBlur}
+              placeholder="Interview ID (UUID)"
+              className={`form-field ${
+                errors.interview_id
+                  ? 'border-red-300 focus:border-red-500'
+                  : 'focus:border-indigo-500'
+              } ${
+                focusedField === 'interview_id' ? 'ring-2 ring-indigo-200' : ''
+              }`}
+              maxLength={getCharacterLimit('interview_id')}
+            />
+            <div className="absolute bottom-3 right-3 text-xs text-gray-400">
+              {getCharacterCount('interview_id')}/
+              {getCharacterLimit('interview_id')}
+            </div>
+          </div>
+          {errors.interview_id && (
+            <div className="flex items-center gap-2 text-red-600 text-sm">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              {errors.interview_id}
             </div>
           )}
         </div>

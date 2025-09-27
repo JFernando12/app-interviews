@@ -47,12 +47,29 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { question, answer, context } = body;
+    const {
+      question,
+      answer,
+      context,
+      type,
+      programming_language,
+      interview_id,
+    } = body;
 
     // Validate required fields
-    if (!question || !answer || !context) {
+    if (
+      !question ||
+      !answer ||
+      !context ||
+      !type ||
+      !programming_language ||
+      !interview_id
+    ) {
       return NextResponse.json(
-        { error: 'Question, answer, and context are required' },
+        {
+          error:
+            'Question, answer, context, type, programming_language, and interview_id are required',
+        },
         { status: 400 }
       );
     }
@@ -61,6 +78,9 @@ export async function POST(request: NextRequest) {
       question,
       answer,
       context,
+      type,
+      programming_language,
+      interview_id,
     });
 
     return NextResponse.json(newQuestion, { status: 201 });

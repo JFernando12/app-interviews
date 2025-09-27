@@ -1,15 +1,217 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Interview } from '@/lib/dynamodb';
+import { Plus, AlertCircle, CheckCircle } from 'lucide-react';
+import InterviewForm from '@/components/InterviewForm';
+import InterviewList from '@/components/InterviewList';
+import Modal from '@/components/Modal';
+
 export default function InterviewsPage() {
+  const [interviews, setInterviews] = useState<Interview[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingInterview, setEditingInterview] = useState<Interview | null>(
+    null
+  );
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+
+  // Fetch interviews
+  const fetchInterviews = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/interviews');
+      if (!response.ok) {
+        throw new Error('Failed to fetch interviews');
+      }
+      const data = await response.json();
+      setInterviews(data);
+    } catch (error) {
+      console.error('Error fetching interviews:', error);
+      showNotification('error', 'Failed to load interviews');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Show notification
+  const showNotification = (type: 'success' | 'error', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000);
+  };
+
+  // Handle form submission (create or update)
+  const handleSubmit = async (
+    formData: Omit<Interview, 'id' | 'createdAt' | 'updatedAt'>
+  ) => {
+    try {
+      if (editingInterview) {
+        // Update existing interview
+        const response = await fetch(`/api/interviews/${editingInterview.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update interview');
+        }
+
+        const updatedInterview = await response.json();
+        setInterviews((prev) =>
+          prev.map((interview) =>
+            interview.id === editingInterview.id ? updatedInterview : interview
+          )
+        );
+        showNotification('success', 'Interview updated successfully');
+      } else {
+        // Create new interview
+        const response = await fetch('/api/interviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to create interview');
+        }
+
+        const newInterview = await response.json();
+        setInterviews((prev) => [newInterview, ...prev]);
+        showNotification('success', 'Interview created successfully');
+      }
+
+      closeForm();
+    } catch (error) {
+      console.error('Error submitting interview:', error);
+      showNotification(
+        'error',
+        editingInterview
+          ? 'Failed to update interview'
+          : 'Failed to create interview'
+      );
+    }
+  };
+
+  // Handle delete
+  const handleDelete = async (id: string) => {
+    if (
+      !confirm(
+        'Are you sure you want to delete this interview? This action cannot be undone.'
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/interviews/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete interview');
+      }
+
+      setInterviews((prev) => prev.filter((interview) => interview.id !== id));
+      showNotification('success', 'Interview deleted successfully');
+    } catch (error) {
+      console.error('Error deleting interview:', error);
+      showNotification('error', 'Failed to delete interview');
+    }
+  };
+
+  // Handle edit
+  const handleEdit = (interview: Interview) => {
+    setEditingInterview(interview);
+    setIsFormOpen(true);
+  };
+
+  // Open create form
+  const openCreateForm = () => {
+    setEditingInterview(null);
+    setIsFormOpen(true);
+  };
+
+  // Close form
+  const closeForm = () => {
+    setIsFormOpen(false);
+    setEditingInterview(null);
+  };
+
+  // Load interviews on component mount
+  useEffect(() => {
+    fetchInterviews();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-50 pt-10">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            Interviews
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage your interview sessions and track candidates here.
-          </p>
+        {/* Header */}
+        <div className="mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Interviews
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Manage your interview sessions and track companies here.
+                </p>
+              </div>
+              <button
+                onClick={openCreateForm}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+              >
+                <div className="flex items-center">
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Interview
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
+
+        {/* Notification */}
+        {notification && (
+          <div
+            className={`mb-6 p-4 rounded-lg flex items-center ${
+              notification.type === 'success'
+                ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800'
+                : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'
+            }`}
+          >
+            {notification.type === 'success' ? (
+              <CheckCircle className="h-5 w-5 mr-3" />
+            ) : (
+              <AlertCircle className="h-5 w-5 mr-3" />
+            )}
+            {notification.message}
+          </div>
+        )}
+
+        {/* Interview List */}
+        <InterviewList
+          interviews={interviews}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          isLoading={isLoading}
+        />
+
+        {/* Form Modal */}
+        <Modal
+          isOpen={isFormOpen}
+          onClose={closeForm}
+          title={editingInterview ? 'Edit Interview' : 'Create New Interview'}
+        >
+          <InterviewForm
+            initialData={editingInterview || undefined}
+            onSubmit={handleSubmit}
+            onCancel={closeForm}
+          />
+        </Modal>
       </div>
     </div>
   );

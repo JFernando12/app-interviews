@@ -33,12 +33,26 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const { question, answer, context } = body;
+    const {
+      question,
+      answer,
+      context,
+      type,
+      programming_language,
+      interview_id,
+    } = body;
 
     // Validate that at least one field is provided
-    if (!question && !answer && !context) {
+    if (
+      !question &&
+      !answer &&
+      !context &&
+      !type &&
+      !programming_language &&
+      !interview_id
+    ) {
       return NextResponse.json(
-        { error: 'At least one field (question, answer, or context) is required' },
+        { error: 'At least one field is required for update' },
         { status: 400 }
       );
     }
@@ -47,6 +61,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (question) updates.question = question;
     if (answer) updates.answer = answer;
     if (context) updates.context = context;
+    if (type) updates.type = type;
+    if (programming_language)
+      updates.programming_language = programming_language;
+    if (interview_id) updates.interview_id = interview_id;
 
     const updatedQuestion = await questionsService.updateQuestion(id, updates);
 
