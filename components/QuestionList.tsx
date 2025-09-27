@@ -33,25 +33,6 @@ export default function QuestionList({
   const [sortBy, setSortBy] = useState<
     'newest' | 'oldest' | 'question' | 'category'
   >('newest');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-
-  // Get unique categories from questions
-  const categories = [
-    'all',
-    ...Array.from(
-      new Set(
-        questions.map((q) => {
-          const context = q.context?.toLowerCase() || '';
-          const question = q.question.toLowerCase();
-          if (context.includes('technical') || question.includes('technical'))
-            return 'technical';
-          if (context.includes('behavioral') || question.includes('behavioral'))
-            return 'behavioral';
-          return 'general';
-        })
-      )
-    ),
-  ];
 
   // Filter and sort questions
   const processedQuestions = questions
@@ -144,107 +125,6 @@ export default function QuestionList({
 
   return (
     <div className="space-y-6">
-      {/* Enhanced Filters and Search Bar */}
-      <div className="space-y-4">
-        {/* Search Bar */}
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Search className="w-5 h-5 text-gray-400" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search questions, answers, or context..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-12 py-4 text-base border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all bg-white shadow-sm"
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
-        </div>
-
-        {/* Filters and Sort */}
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <div className="flex flex-wrap gap-3">
-            {/* Category Filter */}
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">
-                Category:
-              </span>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 bg-white"
-              >
-                <option value="all">All Questions</option>
-                <option value="technical">Technical</option>
-                <option value="behavioral">Behavioral</option>
-                <option value="general">General</option>
-              </select>
-            </div>
-
-            {/* Sort Filter */}
-            <div className="flex items-center gap-2">
-              <SortAsc className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">
-                Sort by:
-              </span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 bg-white"
-              >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="question">A-Z (Question)</option>
-                <option value="category">Category</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Results Count */}
-          <div className="text-sm text-gray-600 font-medium">
-            {processedQuestions.length} of {questions.length} questions
-          </div>
-        </div>
-      </div>
-
-      {/* Search/Filter Results Summary */}
-      {(searchTerm || selectedCategory !== 'all') && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span className="text-blue-800 font-medium">
-                {processedQuestions.length === 0
-                  ? 'No questions found'
-                  : `Found ${processedQuestions.length} question${
-                      processedQuestions.length !== 1 ? 's' : ''
-                    }`}
-                {searchTerm && ` matching "${searchTerm}"`}
-                {selectedCategory !== 'all' &&
-                  ` in ${selectedCategory} category`}
-              </span>
-            </div>
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCategory('all');
-              }}
-              className="text-blue-600 hover:text-blue-800 font-medium text-sm px-3 py-1 rounded-md hover:bg-blue-100 transition-colors"
-            >
-              Clear filters
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Questions List */}
       <div className="space-y-4">
         {processedQuestions.length === 0 ? (

@@ -269,91 +269,6 @@ export default function QuestionTypePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-30">
-        <div className="container">
-          {/* Breadcrumb */}
-          <div className="flex items-center space-x-2 text-sm text-gray-500 pt-4 pb-2">
-            <span 
-              onClick={() => router.push('/questions')}
-              className="hover:text-gray-700 cursor-pointer"
-            >
-              Question Categories
-            </span>
-            <span>›</span>
-            <span className="text-gray-900 font-medium">{currentTypeInfo.name}</span>
-          </div>
-
-          {/* Main Header */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between pb-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <button
-                  onClick={() => router.push('/questions')}
-                  className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-                  title="Back to categories (Ctrl+B)"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-1" />
-                  Back
-                </button>
-                <div className={currentTypeInfo.color}>
-                  {currentTypeInfo.icon}
-                </div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {currentTypeInfo.name}
-                </h1>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 mt-2 lg:mt-0">
-              {/* Quick Stats */}
-              <div className="hidden lg:flex items-center text-sm text-gray-600">
-                <span>{filteredQuestions.length} questions</span>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={exportQuestions}
-                  className="btn btn-secondary btn-sm"
-                  disabled={filteredQuestions.length === 0}
-                  title="Export questions (Ctrl+E)"
-                >
-                  Export
-                </button>
-                <button
-                  onClick={openNewQuestionModal}
-                  className="btn btn-primary btn-sm"
-                  title="Add new question (Ctrl+N)"
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add Question
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Filter Info */}
-          <div className="flex items-center justify-between pb-4">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Filter className="w-4 h-4" />
-              <span>
-                {type === 'all' ? 'All questions' : `Filtered: ${filteredQuestions.length} of ${allQuestions.length} questions`}
-              </span>
-            </div>
-            
-            {type !== 'all' && (
-              <button
-                onClick={() => router.push('/questions/all')}
-                className="text-sm text-indigo-600 hover:text-indigo-700 transition-colors"
-              >
-                View all questions
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Main Content Area */}
       <div className="container py-6">
         <div className="max-w-7xl mx-auto">
@@ -380,13 +295,12 @@ export default function QuestionTypePage() {
                 No {currentTypeInfo.name} Found
               </h3>
               <p className="text-gray-600 max-w-md mx-auto mb-6">
-                {type === 'all' 
+                {type === 'all'
                   ? "You haven't created any questions yet. Start building your question bank now!"
-                  : `You don't have any ${currentTypeInfo.name.toLowerCase()} yet. Create your first question in this category!`
-                }
+                  : `You don't have any ${currentTypeInfo.name.toLowerCase()} yet. Create your first question in this category!`}
               </p>
               <div className="flex gap-3 justify-center">
-                <button 
+                <button
                   onClick={openNewQuestionModal}
                   className="btn btn-primary btn-sm"
                 >
@@ -394,7 +308,7 @@ export default function QuestionTypePage() {
                   Create First Question
                 </button>
                 {type !== 'all' && (
-                  <button 
+                  <button
                     onClick={() => router.push('/questions/all')}
                     className="btn btn-secondary btn-sm"
                   >
