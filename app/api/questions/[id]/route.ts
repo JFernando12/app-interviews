@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { questionsService } from '@/lib/dynamodb';
+import { auth } from '@/auth';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -8,6 +9,11 @@ interface RouteParams {
 // GET /api/questions/[id] - Get a specific question
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
     const question = await questionsService.getQuestionById(id);
 
@@ -16,6 +22,11 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         { error: 'Question not found' },
         { status: 404 }
       );
+    }
+
+    // Check if the question belongs to the user
+    if (question.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     return NextResponse.json(question);
@@ -31,7 +42,26 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PUT /api/questions/[id] - Update a specific question
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
+
+    // First check if question exists and belongs to user
+    const existingQuestion = await questionsService.getQuestionById(id);
+    if (!existingQuestion) {
+      return NextResponse.json(
+        { error: 'Question not found' },
+        { status: 404 }
+      );
+    }
+
+    if (existingQuestion.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const body = await request.json();
     const {
       question,
@@ -88,7 +118,26 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE /api/questions/[id] - Delete a specific question
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
+
+    // First check if question exists and belongs to user
+    const existingQuestion = await questionsService.getQuestionById(id);
+    if (!existingQuestion) {
+      return NextResponse.json(
+        { error: 'Question not found' },
+        { status: 404 }
+      );
+    }
+
+    if (existingQuestion.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     await questionsService.deleteQuestion(id);
 
     return NextResponse.json({ message: 'Question deleted successfully' });

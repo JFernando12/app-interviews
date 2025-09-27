@@ -26,6 +26,7 @@ export interface Question {
   type: string;
   programming_language: string;
   interview_id: string;
+  userId: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -33,6 +34,7 @@ export interface Question {
 export interface Interview {
   id: string;
   company: string;
+  userId: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -61,14 +63,28 @@ export class QuestionsService {
     return question;
   }
 
-  // Get all questions
-  async getAllQuestions(): Promise<Question[]> {
-    const command = new ScanCommand({
-      TableName: QUESTIONS_TABLE_NAME,
-    });
+  // Get all questions for a user
+  async getAllQuestions(userId?: string): Promise<Question[]> {
+    if (userId) {
+      const command = new ScanCommand({
+        TableName: QUESTIONS_TABLE_NAME,
+        FilterExpression: 'userId = :userId',
+        ExpressionAttributeValues: {
+          ':userId': userId,
+        },
+      });
 
-    const response = await docClient.send(command);
-    return (response.Items as Question[]) || [];
+      const response = await docClient.send(command);
+      return (response.Items as Question[]) || [];
+    } else {
+      // Fallback for backward compatibility
+      const command = new ScanCommand({
+        TableName: QUESTIONS_TABLE_NAME,
+      });
+
+      const response = await docClient.send(command);
+      return (response.Items as Question[]) || [];
+    }
   }
 
   // Get a specific question by ID
@@ -151,14 +167,28 @@ export class InterviewsService {
     return interview;
   }
 
-  // Get all interviews
-  async getAllInterviews(): Promise<Interview[]> {
-    const command = new ScanCommand({
-      TableName: INTERVIEWS_TABLE_NAME,
-    });
+  // Get all interviews for a user
+  async getAllInterviews(userId?: string): Promise<Interview[]> {
+    if (userId) {
+      const command = new ScanCommand({
+        TableName: INTERVIEWS_TABLE_NAME,
+        FilterExpression: 'userId = :userId',
+        ExpressionAttributeValues: {
+          ':userId': userId,
+        },
+      });
 
-    const response = await docClient.send(command);
-    return (response.Items as Interview[]) || [];
+      const response = await docClient.send(command);
+      return (response.Items as Interview[]) || [];
+    } else {
+      // Fallback for backward compatibility
+      const command = new ScanCommand({
+        TableName: INTERVIEWS_TABLE_NAME,
+      });
+
+      const response = await docClient.send(command);
+      return (response.Items as Interview[]) || [];
+    }
   }
 
   // Get a specific interview by ID

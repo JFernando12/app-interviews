@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { interviewsService } from '@/lib/dynamodb';
+import { auth } from '@/auth';
 
 // GET /api/interviews - Get all interviews
 export async function GET() {
   try {
-    const interviews = await interviewsService.getAllInterviews();
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const interviews = await interviewsService.getAllInterviews(
+      session.user.id
+    );
     return NextResponse.json(interviews);
   } catch (error) {
     console.error('Error fetching interviews:', error);
@@ -18,6 +26,11 @@ export async function GET() {
 // POST /api/interviews - Create a new interview
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { company } = body;
 
@@ -31,6 +44,7 @@ export async function POST(request: NextRequest) {
 
     const newInterview = await interviewsService.createInterview({
       company,
+      userId: session.user.id,
     });
 
     return NextResponse.json(newInterview, { status: 201 });

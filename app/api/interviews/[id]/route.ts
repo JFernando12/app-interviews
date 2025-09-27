@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { interviewsService } from '@/lib/dynamodb';
+import { auth } from '@/auth';
 
 // GET /api/interviews/[id] - Get a specific interview
 export async function GET(
@@ -7,16 +8,26 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
     const interview = await interviewsService.getInterviewById(id);
-    
+
     if (!interview) {
       return NextResponse.json(
         { error: 'Interview not found' },
         { status: 404 }
       );
     }
-    
+
+    // Check if the interview belongs to the user
+    if (interview.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     return NextResponse.json(interview);
   } catch (error) {
     console.error('Error fetching interview:', error);

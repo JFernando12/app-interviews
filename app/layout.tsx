@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata, Viewport } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import './globals.css';
 import TopBar from '@/components/TopBar';
+import SessionProvider from '@/components/SessionProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -19,16 +20,21 @@ export const metadata: Metadata = {
     'Organize and manage your interview questions with an elegant, modern interface',
   keywords: 'interview, questions, management, hiring, recruitment',
   authors: [{ name: 'Interview App' }],
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#007aff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
-  ],
   icons: {
     icon: '/favicon.ico',
     apple: '/favicon.ico',
   },
   manifest: '/manifest.json',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#007aff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+  ],
 };
 
 export default function RootLayout({
@@ -48,8 +54,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TopBar />
-        <main>{children}</main>
+        <SessionProvider>
+          <TopBar />
+          <main>{children}</main>
+        </SessionProvider>
       </body>
     </html>
   );
