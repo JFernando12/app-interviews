@@ -3,10 +3,16 @@
 import { useState, useEffect } from 'react';
 import { Interview } from '@/lib/dynamodb';
 import { AlertCircle, Save, X } from 'lucide-react';
+import QuestionUploader, { QuestionData } from '@/components/QuestionUploader';
+
+interface InterviewFormData {
+  company: string;
+  questions: QuestionData[];
+}
 
 interface InterviewFormProps {
   initialData?: Interview;
-  onSubmit: (data: Omit<Interview, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onSubmit: (data: InterviewFormData) => void;
   onCancel?: () => void;
 }
 
@@ -18,6 +24,7 @@ export default function InterviewForm({
   const [formData, setFormData] = useState({
     company: '',
   });
+  const [questions, setQuestions] = useState<QuestionData[]>([]);
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,7 +80,7 @@ export default function InterviewForm({
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -82,6 +89,7 @@ export default function InterviewForm({
     try {
       onSubmit({
         company: formData.company.trim(),
+        questions: questions,
       });
     } catch (error) {
       console.error('Form submission error:', error);
@@ -97,7 +105,9 @@ export default function InterviewForm({
           {initialData ? 'Edit Interview' : 'Create New Interview'}
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
-          {initialData ? 'Update interview details' : 'Add a new interview to track'}
+          {initialData
+            ? 'Update interview details'
+            : 'Add a new interview to track'}
         </p>
       </div>
 
@@ -145,6 +155,17 @@ export default function InterviewForm({
           )}
         </div>
 
+        {/* Question Upload Section - Only show for new interviews */}
+        {!initialData && (
+          <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+            <QuestionUploader
+              onQuestionsChange={setQuestions}
+              defaultType="technical"
+              defaultProgrammingLanguage="JavaScript"
+            />
+          </div>
+        )}
+
         {/* Form Actions */}
         <div className="flex gap-3 pt-6 border-t border-gray-200 dark:border-gray-600">
           <button
@@ -154,7 +175,11 @@ export default function InterviewForm({
           >
             <div className="flex items-center justify-center">
               <Save className="h-4 w-4 mr-2" />
-              {isSubmitting ? 'Saving...' : initialData ? 'Update Interview' : 'Create Interview'}
+              {isSubmitting
+                ? 'Saving...'
+                : initialData
+                ? 'Update Interview'
+                : 'Create Interview'}
             </div>
           </button>
           {onCancel && (

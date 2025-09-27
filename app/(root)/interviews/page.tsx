@@ -7,6 +7,17 @@ import InterviewForm from '@/components/InterviewForm';
 import InterviewList from '@/components/InterviewList';
 import Modal from '@/components/Modal';
 
+interface InterviewFormData {
+  company: string;
+  questions: Array<{
+    context: string;
+    question: string;
+    answer: string;
+    type?: string;
+    programming_language?: string;
+  }>;
+}
+
 export default function InterviewsPage() {
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,16 +55,14 @@ export default function InterviewsPage() {
   };
 
   // Handle form submission (create or update)
-  const handleSubmit = async (
-    formData: Omit<Interview, 'id' | 'createdAt' | 'updatedAt'>
-  ) => {
+  const handleSubmit = async (formData: InterviewFormData) => {
     try {
       if (editingInterview) {
-        // Update existing interview
+        // Update existing interview (questions are not updated via this flow)
         const response = await fetch(`/api/interviews/${editingInterview.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({ company: formData.company }),
         });
 
         if (!response.ok) {
@@ -72,7 +81,7 @@ export default function InterviewsPage() {
         const response = await fetch('/api/interviews', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({ company: formData.company }),
         });
 
         if (!response.ok) {
@@ -80,8 +89,47 @@ export default function InterviewsPage() {
         }
 
         const newInterview = await response.json();
+
+        // If there are questions, create them
+        let questionsCreated = 0;
+        if (formData.questions && formData.questions.length > 0) {
+          try {
+            const questionsResponse = await fetch('/api/questions/bulk', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                interview_id: newInterview.id,
+                questions: formData.questions.map((q) => ({
+                  question: q.question,
+                  answer: q.answer,
+                  context: q.context,
+                  type: q.type || 'technical',
+                  programming_language: q.programming_language || 'JavaScript',
+                })),
+              }),
+            });
+
+            if (questionsResponse.ok) {
+              const questionsResult = await questionsResponse.json();
+              questionsCreated = questionsResult.created || 0;
+            } else {
+              console.error('Failed to create questions');
+            }
+          } catch (error) {
+            console.error('Error creating questions:', error);
+          }
+        }
+
         setInterviews((prev) => [newInterview, ...prev]);
-        showNotification('success', 'Interview created successfully');
+
+        if (questionsCreated > 0) {
+          showNotification(
+            'success',
+            `Interview created successfully with ${questionsCreated} questions`
+          );
+        } else {
+          showNotification('success', 'Interview created successfully');
+        }
       }
 
       closeForm();
