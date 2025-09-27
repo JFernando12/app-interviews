@@ -1,17 +1,39 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Question } from '@/lib/dynamodb';
-import QuestionForm from '@/components/QuestionForm';
-import QuestionList from '@/components/QuestionList';
+import {
+  HelpCircle,
+  Code,
+  Users,
+  Target,
+  Zap,
+  ArrowRight,
+  ChevronRight,
+  Sparkles,
+  Rocket,
+  Brain,
+} from 'lucide-react';
+
+interface QuestionType {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  count: number;
+}
 
 export default function QuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  // Fetch all questions
+  // Fetch all questions to calculate type counts
   const fetchQuestions = async () => {
     try {
       setLoading(true);
@@ -28,111 +50,277 @@ export default function QuestionsPage() {
     }
   };
 
-  // Create or update a question
-  const saveQuestion = async (questionData: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>) => {
-    try {
-      const url = editingQuestion 
-        ? `/api/questions/${editingQuestion.id}` 
-        : '/api/questions';
-      
-      const method = editingQuestion ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(questionData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to ${editingQuestion ? 'update' : 'create'} question`);
-      }
-
-      await fetchQuestions();
-      setEditingQuestion(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    }
-  };
-
-  // Delete a question
-  const deleteQuestion = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this question?')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/questions/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete question');
-      }
-
-      await fetchQuestions();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    }
-  };
-
-  // Edit a question
-  const editQuestion = (question: Question) => {
-    setEditingQuestion(question);
-  };
-
-  // Cancel editing
-  const cancelEdit = () => {
-    setEditingQuestion(null);
-  };
-
   useEffect(() => {
     fetchQuestions();
   }, []);
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Questions Management</h1>
-      
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-          <button 
-            onClick={() => setError(null)}
-            className="float-right text-red-700 hover:text-red-900"
-          >
-            ×
+  // Calculate question counts by type
+  const getQuestionCount = (type: string): number => {
+    if (type === 'all') return questions.length;
+
+    return questions.filter((q) => {
+      const context = q.context?.toLowerCase() || '';
+      const question = q.question?.toLowerCase() || '';
+
+      switch (type) {
+        case 'behavioral':
+          return (
+            context.includes('behavioral') || question.includes('behavioral')
+          );
+        case 'technical':
+          return (
+            context.includes('technical') ||
+            question.includes('technical') ||
+            context.includes('coding') ||
+            question.includes('coding')
+          );
+        case 'system-design':
+          return (
+            context.includes('system') ||
+            context.includes('design') ||
+            question.includes('system') ||
+            question.includes('design')
+          );
+        case 'leadership':
+          return (
+            context.includes('leadership') ||
+            context.includes('management') ||
+            question.includes('leadership') ||
+            question.includes('management')
+          );
+        default:
+          return false;
+      }
+    }).length;
+  };
+
+  // Define question types
+  const questionTypes: QuestionType[] = [
+    {
+      id: 'behavioral',
+      name: 'Behavioral Questions',
+      description:
+        'Assess soft skills, past experiences, and cultural fit through STAR methodology',
+      icon: <Users className="w-10 h-10" />,
+      color: 'text-blue-600',
+      bgColor: 'bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-100',
+      borderColor: 'border-blue-200 group-hover:border-blue-300',
+      count: getQuestionCount('behavioral'),
+    },
+    {
+      id: 'technical',
+      name: 'Technical Questions',
+      description:
+        'Evaluate coding skills, algorithms, and technical problem-solving abilities',
+      icon: <Code className="w-10 h-10" />,
+      color: 'text-purple-600',
+      bgColor: 'bg-gradient-to-br from-purple-50 via-purple-100 to-violet-100',
+      borderColor: 'border-purple-200 group-hover:border-purple-300',
+      count: getQuestionCount('technical'),
+    },
+    {
+      id: 'system-design',
+      name: 'System Design',
+      description:
+        'Test architecture knowledge, scalability thinking, and system trade-offs',
+      icon: <Target className="w-10 h-10" />,
+      color: 'text-green-600',
+      bgColor: 'bg-gradient-to-br from-green-50 via-green-100 to-emerald-100',
+      borderColor: 'border-green-200 group-hover:border-green-300',
+      count: getQuestionCount('system-design'),
+    },
+    {
+      id: 'leadership',
+      name: 'Leadership & Management',
+      description:
+        'Explore management philosophy, team building, and strategic decision-making',
+      icon: <Zap className="w-10 h-10" />,
+      color: 'text-orange-600',
+      bgColor: 'bg-gradient-to-br from-orange-50 via-orange-100 to-amber-100',
+      borderColor: 'border-orange-200 group-hover:border-orange-300',
+      count: getQuestionCount('leadership'),
+    },
+    {
+      id: 'all',
+      name: 'All Questions',
+      description:
+        'Browse your complete question collection across all categories',
+      icon: <HelpCircle className="w-10 h-10" />,
+      color: 'text-gray-600',
+      bgColor: 'bg-gradient-to-br from-gray-50 via-gray-100 to-slate-100',
+      borderColor: 'border-gray-200 group-hover:border-gray-300',
+      count: getQuestionCount('all'),
+    },
+  ];
+
+  const handleTypeSelect = (typeId: string) => {
+    router.push(`/questions/${typeId}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading-spinner w-12 h-12 border-indigo-200 border-t-indigo-600 mx-auto mb-6"></div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            Loading question types...
+          </h3>
+          <p className="text-gray-600">
+            Please wait while we prepare your question categories
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 mb-4">
+            <HelpCircle className="w-16 h-16 mx-auto" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            Error Loading Questions
+          </h3>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button onClick={fetchQuestions} className="btn btn-primary">
+            Try Again
           </button>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Question Form */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">
-            {editingQuestion ? 'Edit Question' : 'Add New Question'}
-          </h2>
-          <QuestionForm
-            initialData={editingQuestion || undefined}
-            onSubmit={saveQuestion}
-            onCancel={editingQuestion ? cancelEdit : undefined}
-          />
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Section */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="container">
+          {/* Breadcrumb */}
+          <div className="flex items-center space-x-2 text-sm text-gray-500 pt-4 pb-2">
+            <span className="hover:text-gray-700 cursor-pointer transition-colors">
+              Dashboard
+            </span>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-gray-900 font-medium">
+              Interview Questions
+            </span>
+          </div>
+
+          {/* Main Header */}
+          <div className="pb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">
+              Question Categories
+            </h1>
+            <p className="text-gray-600 max-w-2xl">
+              Choose the type of interview questions you'd like to explore.
+            </p>
+          </div>
+
+          {/* Summary Stats */}
+          <div className="grid grid-cols-3 gap-6 pb-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-900">
+                {questions.length}
+              </div>
+              <div className="text-sm text-gray-600">Total Questions</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-900">
+                {
+                  questionTypes.filter(
+                    (type) => type.count > 0 && type.id !== 'all'
+                  ).length
+                }
+              </div>
+              <div className="text-sm text-gray-600">Active Categories</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-900">
+                {Math.round(
+                  questions.length /
+                    Math.max(
+                      questionTypes.filter(
+                        (type) => type.count > 0 && type.id !== 'all'
+                      ).length,
+                      1
+                    )
+                )}
+              </div>
+              <div className="text-sm text-gray-600">Avg per Category</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Question Types Grid */}
+      <div className="container py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {questionTypes.map((type) => (
+            <div
+              key={type.id}
+              onClick={() => handleTypeSelect(type.id)}
+              className={`
+                relative p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer
+                hover:shadow-lg hover:scale-[1.02] group
+                ${type.bgColor} ${type.borderColor}
+              `}
+            >
+              {/* Question Count Badge */}
+              <div className="absolute top-4 right-4">
+                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-white/90 text-gray-700 shadow-sm">
+                  {type.count}
+                </span>
+              </div>
+
+              {/* Icon */}
+              <div className={`${type.color} mb-4`}>{type.icon}</div>
+
+              {/* Content */}
+              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-gray-800">
+                {type.name}
+              </h3>
+              <p className="text-gray-700 mb-4 text-sm leading-relaxed">
+                {type.description}
+              </p>
+
+              {/* Call to Action */}
+              <div className="flex items-center justify-between">
+                <span className={`text-sm font-medium ${type.color}`}>
+                  {type.count > 0 ? 'Browse Questions' : 'No Questions Yet'}
+                </span>
+                <div
+                  className={`${type.color} transform transition-transform group-hover:translate-x-1`}
+                >
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Question List */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Questions List</h2>
-          {loading ? (
-            <div className="text-center py-4">Loading...</div>
-          ) : (
-            <QuestionList
-              questions={questions}
-              onEdit={editQuestion}
-              onDelete={deleteQuestion}
-            />
-          )}
-        </div>
+        {/* Empty State */}
+        {questions.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-6">
+              <HelpCircle className="w-16 h-16 mx-auto" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              No Questions Found
+            </h3>
+            <p className="text-gray-600 max-w-md mx-auto mb-6">
+              Get started by adding some interview questions for different
+              categories.
+            </p>
+            <button
+              onClick={() => router.push('/questions/all')}
+              className="btn btn-primary"
+            >
+              Add Your First Question
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

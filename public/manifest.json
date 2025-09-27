@@ -1,0 +1,20 @@
+{
+  "name": "Interview Questions Manager",
+  "short_name": "Questions",
+  "description": "Organize and manage your interview questions with an elegant, modern interface",
+  "start_url": "/questions",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#007aff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["productivity", "business"],
+  "lang": "en-US"
+}
