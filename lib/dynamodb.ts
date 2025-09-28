@@ -36,8 +36,8 @@ export interface Question {
 export interface Interview {
   id: string;
   company: string;
-  programming_language?: string; // Optional, derived from question if not provided
   type?: QuestionType; // Optional, derived from question if not provided
+  programming_language?: string; // Optional, derived from question if not provided
   state: InterviewState; // Required field for tracking interview progress
   user_id: string;
   video_path?: string; // Optional, S3 path to uploaded video

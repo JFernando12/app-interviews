@@ -6,10 +6,11 @@ import { Plus, AlertCircle, CheckCircle } from 'lucide-react';
 import InterviewForm from '@/components/InterviewForm';
 import InterviewList from '@/components/InterviewList';
 import Modal from '@/components/Modal';
-import { InterviewState } from '@/types/enums';
 
 interface InterviewFormData {
   company: string;
+  type?: string;
+  programming_language?: string;
   questions: Array<{
     context: string;
     question: string;
@@ -83,7 +84,11 @@ export default function InterviewsPage() {
         const response = await fetch('/api/interviews', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ company: formData.company }),
+          body: JSON.stringify({
+            company: formData.company,
+            type: formData.type,
+            programming_language: formData.questions,
+          }),
         });
 
         if (!response.ok) {
@@ -105,8 +110,8 @@ export default function InterviewsPage() {
                   question: q.question,
                   answer: q.answer,
                   context: q.context,
-                  type: q.type || 'technical',
-                  programming_language: q.programming_language || 'JavaScript',
+                  type: q.type,
+                  programming_language: q.programming_language,
                 })),
               }),
             });

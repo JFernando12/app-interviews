@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { company, programming_language, type, question_id } = body;
+    const { company, programming_language, type } = body;
 
     // Validate required fields
     if (!company) {
@@ -46,21 +46,6 @@ export async function POST(request: NextRequest) {
     // If question_id is provided, get question details to inherit language and type
     let derivedLanguage = programming_language;
     let derivedType = type;
-
-    if (question_id && (!programming_language || !type)) {
-      try {
-        const question = await questionsService.getQuestionById(question_id);
-        if (question) {
-          // Use question's language and type if not provided in the request
-          derivedLanguage =
-            programming_language || question.programming_language;
-          derivedType = type || question.type;
-        }
-      } catch (error) {
-        console.error('Error fetching question for inheritance:', error);
-        // Continue without question data if there's an error
-      }
-    }
 
     const newInterview = await interviewsService.createInterview({
       company,
