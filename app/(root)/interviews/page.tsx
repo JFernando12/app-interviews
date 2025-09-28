@@ -6,6 +6,7 @@ import { Plus, AlertCircle, CheckCircle } from 'lucide-react';
 import InterviewForm from '@/components/InterviewForm';
 import InterviewList from '@/components/InterviewList';
 import Modal from '@/components/Modal';
+import { InterviewState } from '@/types/enums';
 
 interface InterviewFormData {
   company: string;
@@ -16,6 +17,7 @@ interface InterviewFormData {
     type?: string;
     programming_language?: string;
   }>;
+  videoFile?: File; // Add video file property
 }
 
 export default function InterviewsPage() {
@@ -120,9 +122,77 @@ export default function InterviewsPage() {
           }
         }
 
+        // If there's a video file, upload it and send to queue
+        let videoProcessed = false;
+        if (formData.videoFile) {
+          try {
+            // Step 1: Get presigned URL
+            const presignedResponse = await fetch(
+              '/api/interviews/upload-video',
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  interview_id: newInterview.id,
+                  file_name: formData.videoFile.name,
+                  content_type: formData.videoFile.type,
+                }),
+              }
+            );
+
+            if (presignedResponse.ok) {
+              const { upload_url, video_path } = await presignedResponse.json();
+
+              // Step 2: Upload to S3
+              const uploadResponse = await fetch(upload_url, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': formData.videoFile.type,
+                },
+                body: formData.videoFile,
+              });
+
+              if (uploadResponse.ok) {
+                // Step 3: Send to processing queue
+                const processResponse = await fetch(
+                  '/api/interviews/process-video',
+                  {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      interview_id: newInterview.id,
+                      video_path: video_path,
+                    }),
+                  }
+                );
+
+                if (processResponse.ok) {
+                  videoProcessed = true;
+                } else {
+                  console.error('Failed to process video');
+                }
+              } else {
+                console.error('Failed to upload video to S3');
+              }
+            } else {
+              console.error('Failed to get presigned URL');
+            }
+          } catch (error) {
+            console.error('Error processing video:', error);
+          }
+        }
+
         setInterviews((prev) => [newInterview, ...prev]);
 
-        if (questionsCreated > 0) {
+        // Show appropriate success message
+        if (videoProcessed) {
+          showNotification(
+            'success',
+            questionsCreated > 0
+              ? `Interview created successfully with ${questionsCreated} questions and video processing started`
+              : 'Interview created successfully and video processing started'
+          );
+        } else if (questionsCreated > 0) {
           showNotification(
             'success',
             `Interview created successfully with ${questionsCreated} questions`
@@ -171,12 +241,6 @@ export default function InterviewsPage() {
     }
   };
 
-  // Handle edit
-  const handleEdit = (interview: Interview) => {
-    setEditingInterview(interview);
-    setIsFormOpen(true);
-  };
-
   // Open create form
   const openCreateForm = () => {
     setEditingInterview(null);
@@ -187,6 +251,12 @@ export default function InterviewsPage() {
   const closeForm = () => {
     setIsFormOpen(false);
     setEditingInterview(null);
+  };
+
+  // Handle edit
+  const handleEdit = (interview: Interview) => {
+    setEditingInterview(interview);
+    setIsFormOpen(true);
   };
 
   // Load interviews on component mount
@@ -258,6 +328,7 @@ export default function InterviewsPage() {
             initialData={editingInterview || undefined}
             onSubmit={handleSubmit}
             onCancel={closeForm}
+            mode={editingInterview ? 'edit' : 'create'}
           />
         </Modal>
       </div>

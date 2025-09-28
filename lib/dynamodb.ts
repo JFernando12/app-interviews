@@ -1,7 +1,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, DeleteCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { v4 as uuidv4 } from 'uuid';
-import { QuestionType } from '@/types/enums';
+import { QuestionType, InterviewState } from '@/types/enums';
 
 // Configure DynamoDB client
 const client = new DynamoDBClient({
@@ -36,7 +36,11 @@ export interface Question {
 export interface Interview {
   id: string;
   company: string;
+  programming_language?: string; // Optional, derived from question if not provided
+  type?: QuestionType; // Optional, derived from question if not provided
+  state: InterviewState; // Required field for tracking interview progress
   user_id: string;
+  video_path?: string; // Optional, S3 path to uploaded video
   createdAt: string;
   updatedAt: string;
 }

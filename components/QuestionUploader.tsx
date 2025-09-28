@@ -1,7 +1,15 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, Plus, Trash2, FileText, AlertCircle, CheckCircle } from 'lucide-react';
+import {
+  Upload,
+  Plus,
+  Trash2,
+  FileText,
+  AlertCircle,
+  CheckCircle,
+  Video,
+} from 'lucide-react';
 import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 
 export interface QuestionData {
@@ -14,16 +22,20 @@ export interface QuestionData {
 
 interface QuestionUploaderProps {
   onQuestionsChange: (questions: QuestionData[]) => void;
+  onVideoUpload?: (file: File) => void; // New callback for video upload
   defaultType?: QuestionType;
   defaultProgrammingLanguage?: string;
 }
 
 export default function QuestionUploader({
   onQuestionsChange,
+  onVideoUpload,
   defaultType = QuestionType.TECHNICAL,
   defaultProgrammingLanguage = '',
 }: QuestionUploaderProps) {
-  const [activeTab, setActiveTab] = useState<'manual' | 'file'>('manual');
+  const [activeTab, setActiveTab] = useState<'manual' | 'file' | 'video'>(
+    'manual'
+  );
   const [questions, setQuestions] = useState<QuestionData[]>([
     {
       context: '',
@@ -35,7 +47,10 @@ export default function QuestionUploader({
   ]);
   const [fileError, setFileError] = useState<string>('');
   const [fileSuccess, setFileSuccess] = useState<string>('');
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoError, setVideoError] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   // Update parent component when questions change
   const updateQuestions = (newQuestions: QuestionData[]) => {
@@ -177,6 +192,60 @@ export default function QuestionUploader({
     setFileSuccess('');
   };
 
+  // Handle video upload
+  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setVideoError('');
+
+    // Validate video file type
+    const allowedTypes = [
+      'video/mp4',
+      'video/mpeg',
+      'video/quicktime',
+      'video/x-msvideo',
+      'video/webm',
+      'video/x-matroska',
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      setVideoError(
+        'Please select a valid video file (MP4, MOV, AVI, WebM, MPEG, MKV)'
+      );
+      return;
+    }
+
+    // Validate file size (500MB limit)
+    const maxSize = 500 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setVideoError('File size must be less than 500MB');
+      return;
+    }
+
+    setVideoFile(file);
+    if (onVideoUpload) {
+      onVideoUpload(file);
+    }
+  };
+
+  // Clear video input
+  const clearVideo = () => {
+    if (videoInputRef.current) {
+      videoInputRef.current.value = '';
+    }
+    setVideoFile(null);
+    setVideoError('');
+  };
+
+  // Format file size
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -184,10 +253,8 @@ export default function QuestionUploader({
           Add Questions (Optional)
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          You can add questions manually or upload a JSON file with the format:
-          <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded ml-1">
-            [{'{'}"context":"...", "question":"...", "answer":"..."{'}'}]
-          </code>
+          You can add questions manually, upload a JSON file, or upload an
+          interview video for automatic processing.
         </p>
       </div>
 
@@ -195,6 +262,7 @@ export default function QuestionUploader({
       <div className="border-b border-gray-200 dark:border-gray-600">
         <nav className="-mb-px flex space-x-8">
           <button
+            type="button"
             onClick={() => setActiveTab('manual')}
             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'manual'
@@ -206,6 +274,7 @@ export default function QuestionUploader({
             Manual Entry
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('file')}
             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'file'
@@ -215,6 +284,18 @@ export default function QuestionUploader({
           >
             <Upload className="h-4 w-4 inline mr-2" />
             JSON File Upload
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('video')}
+            className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'video'
+                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            }`}
+          >
+            <Video className="h-4 w-4 inline mr-2" />
+            Video Upload
           </button>
         </nav>
       </div>
@@ -399,6 +480,97 @@ export default function QuestionUploader({
               <p className="text-sm text-green-800 dark:text-green-200">
                 {fileSuccess}
               </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'video' && (
+        <div className="space-y-4">
+          <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
+            <Video className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Upload an interview video for automatic processing
+              </p>
+              <input
+                ref={videoInputRef}
+                type="file"
+                accept="video/*"
+                onChange={handleVideoUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => videoInputRef.current?.click()}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                disabled={!!videoFile}
+              >
+                Choose Video File
+              </button>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Supported formats: MP4, MOV, AVI, WebM, MPEG (Max 500MB)
+              </p>
+            </div>
+          </div>
+
+          {videoFile && (
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Video className="h-5 w-5 text-purple-600 dark:text-purple-400 mr-3" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {videoFile.name}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {formatFileSize(videoFile.size)}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={clearVideo}
+                  className="text-gray-400 hover:text-red-500 transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {videoError && (
+            <div className="flex items-center p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <AlertCircle className="h-5 w-5 text-red-500 mr-3" />
+              <div>
+                <p className="text-sm text-red-800 dark:text-red-200">
+                  {videoError}
+                </p>
+                <button
+                  type="button"
+                  onClick={clearVideo}
+                  className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 mt-1"
+                >
+                  Clear and try again
+                </button>
+              </div>
+            </div>
+          )}
+
+          {videoFile && (
+            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
+              <div className="flex items-center">
+                <CheckCircle className="h-5 w-5 text-purple-600 dark:text-purple-400 mr-3" />
+                <div>
+                  <p className="text-sm font-medium text-purple-800 dark:text-purple-200">
+                    Video Ready for Upload
+                  </p>
+                  <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                    The video will be processed automatically after creating the
+                    interview to extract questions and answers.
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </div>

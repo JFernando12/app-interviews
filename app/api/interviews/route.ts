@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { interviewsService } from '@/lib/dynamodb';
+import { interviewsService, questionsService } from '@/lib/dynamodb';
 import { auth } from '@/auth';
+import { InterviewState, QuestionType } from '@/types/enums';
 
 // GET /api/interviews - Get all interviews
 export async function GET() {
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { company } = body;
+    const { company, programming_language, type, question_id } = body;
 
     // Validate required fields
     if (!company) {
@@ -42,8 +43,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // If question_id is provided, get question details to inherit language and type
+    let derivedLanguage = programming_language;
+    let derivedType = type;
+
+    if (question_id && (!programming_language || !type)) {
+      try {
+        const question = await questionsService.getQuestionById(question_id);
+        if (question) {
+          // Use question's language and type if not provided in the request
+          derivedLanguage =
+            programming_language || question.programming_language;
+          derivedType = type || question.type;
+        }
+      } catch (error) {
+        console.error('Error fetching question for inheritance:', error);
+        // Continue without question data if there's an error
+      }
+    }
+
     const newInterview = await interviewsService.createInterview({
       company,
+      programming_language: derivedLanguage,
+      type: derivedType,
+      state: InterviewState.PENDING, // Default state for new interviews
       user_id: session.user.id,
     });
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { interviewsService } from '@/lib/dynamodb';
 import { auth } from '@/auth';
+import { InterviewState, QuestionType } from '@/types/enums';
 
 // GET /api/interviews/[id] - Get a specific interview
 export async function GET(
@@ -44,9 +45,14 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
     const body = await request.json();
-    const { company } = body;
+    const { company, programming_language, type, state, video_path } = body;
 
     // Validate required fields
     if (!company) {
@@ -56,9 +62,51 @@ export async function PUT(
       );
     }
 
-    const updatedInterview = await interviewsService.updateInterview(id, {
-      company,
-    });
+    // Verify that the interview exists and belongs to the user
+    const interview = await interviewsService.getInterviewById(id);
+
+    if (!interview) {
+      return NextResponse.json(
+        { error: 'Interview not found' },
+        { status: 404 }
+      );
+    }
+
+    if (interview.user_id !== session.user.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized access to interview' },
+        { status: 403 }
+      );
+    }
+
+    // Validate state enum if provided
+    if (state && !Object.values(InterviewState).includes(state)) {
+      return NextResponse.json(
+        { error: 'Invalid state value' },
+        { status: 400 }
+      );
+    }
+
+    // Validate type enum if provided
+    if (type && !Object.values(QuestionType).includes(type)) {
+      return NextResponse.json(
+        { error: 'Invalid type value' },
+        { status: 400 }
+      );
+    }
+
+    // Build update object with only provided fields
+    const updateData: any = { company };
+    if (programming_language !== undefined)
+      updateData.programming_language = programming_language;
+    if (type !== undefined) updateData.type = type;
+    if (state !== undefined) updateData.state = state;
+    if (video_path !== undefined) updateData.video_path = video_path;
+
+    const updatedInterview = await interviewsService.updateInterview(
+      id,
+      updateData
+    );
 
     if (!updatedInterview) {
       return NextResponse.json(
@@ -83,9 +131,32 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
+
+    // Verify that the interview exists and belongs to the user
+    const interview = await interviewsService.getInterviewById(id);
+
+    if (!interview) {
+      return NextResponse.json(
+        { error: 'Interview not found' },
+        { status: 404 }
+      );
+    }
+
+    if (interview.user_id !== session.user.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized access to interview' },
+        { status: 403 }
+      );
+    }
+
     await interviewsService.deleteInterview(id);
-    
+
     return NextResponse.json(
       { message: 'Interview deleted successfully' },
       { status: 200 }

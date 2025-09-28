@@ -10,6 +10,13 @@ export enum QuestionType {
   OTHER = 'other',
 }
 
+// Enum for interview states
+export enum InterviewState {
+  PENDING = 'pending',
+  PROCESSING = 'processing',
+  COMPLETED = 'completed',
+}
+
 // Display names for UI
 export const QUESTION_TYPE_DISPLAY: Record<QuestionType, string> = {
   [QuestionType.BEHAVIORAL]: 'Behavioral',
@@ -18,6 +25,13 @@ export const QUESTION_TYPE_DISPLAY: Record<QuestionType, string> = {
   [QuestionType.LEADERSHIP]: 'Leadership',
   [QuestionType.CODING]: 'Coding',
   [QuestionType.OTHER]: 'Other',
+};
+
+// Display names for interview states
+export const INTERVIEW_STATE_DISPLAY: Record<InterviewState, string> = {
+  [InterviewState.PENDING]: 'Pending',
+  [InterviewState.PROCESSING]: 'Processing',
+  [InterviewState.COMPLETED]: 'Completed',
 };
 
 // Descriptions for each type

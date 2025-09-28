@@ -1,7 +1,25 @@
 'use client';
 
 import { Interview } from '@/lib/dynamodb';
-import { Building2, Calendar, Edit, Trash2, Eye } from 'lucide-react';
+import {
+  Building2,
+  Calendar,
+  Edit,
+  Trash2,
+  Eye,
+  Code,
+  Tag,
+  Clock,
+  Video,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
+import {
+  QUESTION_TYPE_DISPLAY,
+  INTERVIEW_STATE_DISPLAY,
+  InterviewState,
+  QuestionType,
+} from '@/types/enums';
 
 interface InterviewListProps {
   interviews: Interview[];
@@ -86,10 +104,62 @@ export default function InterviewList({
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {interview.company}
                 </h3>
-                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  Created {formatDate(interview.createdAt)}
+
+                {/* State badge */}
+                <div className="flex items-center gap-2 mt-1">
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      interview.state === InterviewState.COMPLETED
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                        : interview.state === InterviewState.PROCESSING
+                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                    }`}
+                  >
+                    {interview.state === InterviewState.COMPLETED && (
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                    )}
+                    {interview.state === InterviewState.PROCESSING && (
+                      <Clock className="h-3 w-3 mr-1" />
+                    )}
+                    {interview.state === InterviewState.PENDING && (
+                      <AlertCircle className="h-3 w-3 mr-1" />
+                    )}
+                    {INTERVIEW_STATE_DISPLAY[interview.state]}
+                  </span>
+
+                  {/* Video indicator */}
+                  {interview.video_path && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                      <Video className="h-3 w-3 mr-1" />
+                      Video
+                    </span>
+                  )}
                 </div>
+
+                {/* Programming language and type */}
+                <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  <div className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    Created {formatDate(interview.createdAt)}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-500 mt-1">
+                  {interview.programming_language && (
+                    <div className="flex items-center">
+                      <Code className="h-3 w-3 mr-1" />
+                      {interview.programming_language}
+                    </div>
+                  )}
+                  {interview.type && (
+                    <div className="flex items-center">
+                      <Tag className="h-3 w-3 mr-1" />
+                      {QUESTION_TYPE_DISPLAY[interview.type]}
+                    </div>
+                  )}
+                </div>
+
                 {interview.updatedAt !== interview.createdAt && (
                   <div className="flex items-center text-xs text-gray-500 dark:text-gray-500 mt-1">
                     <Edit className="h-3 w-3 mr-1" />
@@ -98,7 +168,7 @@ export default function InterviewList({
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               {onView && (
                 <button
