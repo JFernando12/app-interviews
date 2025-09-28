@@ -5,12 +5,16 @@ import { Question } from '@/lib/dynamodb';
 import { AlertCircle, Save, X } from 'lucide-react';
 
 interface QuestionFormProps {
+  global: boolean;
   initialData?: Question;
-  onSubmit: (data: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onSubmit: (
+    data: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>
+  ) => Promise<void>;
   onCancel?: () => void;
 }
 
 export default function QuestionForm({
+  global,
   initialData,
   onSubmit,
   onCancel,
@@ -119,8 +123,7 @@ export default function QuestionForm({
     try {
       const submissionData = {
         ...formData,
-        global: true, // Set as global question since it's created through the questions page
-        interview_id: undefined, // Remove interview_id for global questions
+        global: global,
         user_id: undefined, // Let the API handle the user_id
       };
       await onSubmit(submissionData);

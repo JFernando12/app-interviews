@@ -103,9 +103,9 @@ export async function POST(request: NextRequest) {
       questionData = {
         question,
         answer,
-        context: context || '',
-        type: type || '',
-        programming_language: programming_language || '',
+        context,
+        type,
+        programming_language,
         global: true,
       };
     } else {
@@ -115,19 +115,12 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
 
-      if (!interview_id) {
-        return NextResponse.json(
-          { error: 'interview_id is required for user-specific questions' },
-          { status: 400 }
-        );
-      }
-
       questionData = {
         question,
         answer,
-        context: context || '',
-        type: type || '',
-        programming_language: programming_language || '',
+        context: context,
+        type: type,
+        programming_language: programming_language,
         interview_id,
         user_id: session.user.id,
         global: false,

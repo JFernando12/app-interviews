@@ -227,8 +227,7 @@ export default function QuestionsPage() {
       }
 
       await fetchQuestions();
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   // Edit a question
@@ -467,6 +466,7 @@ export default function QuestionsPage() {
           size="lg"
         >
           <QuestionForm
+            global={false}
             initialData={editingQuestion || undefined}
             onSubmit={saveQuestion}
             onCancel={cancelEdit}
