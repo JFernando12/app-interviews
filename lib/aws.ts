@@ -60,14 +60,12 @@ export class AWSService {
         interview_id: uploadData.interview_id,
         uploaded_at: new Date().toISOString(),
       },
-      // Add CORS-related headers
-      CacheControl: 'no-cache',
     });
 
-    const upload_url = await getSignedUrl(s3Client, command, { 
+    const upload_url = await getSignedUrl(s3Client, command, {
       expiresIn,
-      // Ensure the presigned URL includes necessary headers
-      signableHeaders: new Set(['content-type', 'cache-control'])
+      // Only sign essential headers to avoid Content-Type mismatch issues
+      signableHeaders: new Set(['host']),
     });
 
     return {
