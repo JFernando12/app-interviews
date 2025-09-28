@@ -5,8 +5,11 @@ import { Interview } from '@/lib/dynamodb';
 import {
   QuestionType,
   InterviewState,
+  ProgrammingLanguage,
   QUESTION_TYPE_DISPLAY,
   INTERVIEW_STATE_DISPLAY,
+  PROGRAMMING_LANGUAGE_DISPLAY,
+  ProgrammingLanguageUtils,
 } from '@/types/enums';
 import { AlertCircle, Save, X, Video, Loader } from 'lucide-react';
 import QuestionUploader, { QuestionData } from '@/components/QuestionUploader';
@@ -14,7 +17,7 @@ import VideoUploader from '@/components/VideoUploader';
 
 interface InterviewFormData {
   company: string;
-  programming_language?: string;
+  programming_language?: string; // Keep as string for database compatibility
   type?: QuestionType;
   state?: InterviewState;
   questions: QuestionData[];
@@ -39,7 +42,7 @@ export default function InterviewForm({
 }: InterviewFormProps) {
   const [formData, setFormData] = useState({
     company: '',
-    programming_language: '',
+    programming_language: '' as ProgrammingLanguage | '',
     type: '' as QuestionType | '',
     state: InterviewState.PENDING,
     public: false,
@@ -57,9 +60,15 @@ export default function InterviewForm({
   // Update form data when initialData changes
   useEffect(() => {
     if (initialData) {
+      const normalizedLanguage = initialData.programming_language
+        ? ProgrammingLanguageUtils.normalizeExistingLanguage(
+            initialData.programming_language
+          )
+        : '';
+
       setFormData({
         company: initialData.company,
-        programming_language: initialData.programming_language || '',
+        programming_language: normalizedLanguage,
         type: initialData.type || '',
         state: initialData.state || InterviewState.PENDING,
         public: (initialData as any).public || false,
@@ -159,7 +168,8 @@ export default function InterviewForm({
 
       // Add optional fields if provided
       if (formData.programming_language) {
-        submissionData.programming_language = formData.programming_language;
+        submissionData.programming_language =
+          formData.programming_language as string;
       }
       if (formData.type) {
         submissionData.type = formData.type as QuestionType;
@@ -248,18 +258,23 @@ export default function InterviewForm({
           >
             Programming Language
           </label>
-          <input
-            type="text"
+          <select
             id="programming_language"
             name="programming_language"
             value={formData.programming_language}
             onChange={handleChange}
             onFocus={() => setFocusedField('programming_language')}
             onBlur={() => setFocusedField(null)}
-            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
-            placeholder="e.g., JavaScript, Python, Java..."
+            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
             disabled={isSubmitting}
-          />
+          >
+            <option value="">Select language...</option>
+            {Object.values(ProgrammingLanguage).map((language) => (
+              <option key={language} value={language}>
+                {PROGRAMMING_LANGUAGE_DISPLAY[language]}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Question Type Field */}
