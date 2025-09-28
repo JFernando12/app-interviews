@@ -22,6 +22,8 @@ export default function QuestionForm({
     type: '',
     programming_language: '',
     interview_id: '',
+    userId: '',
+    global: false,
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -38,6 +40,8 @@ export default function QuestionForm({
         type: initialData.type || '',
         programming_language: initialData.programming_language || '',
         interview_id: initialData.interview_id || '',
+        userId: initialData.userId || '',
+        global: initialData.global || false,
       });
     } else {
       setFormData({
@@ -47,6 +51,8 @@ export default function QuestionForm({
         type: '',
         programming_language: '',
         interview_id: '',
+        userId: '',
+        global: false,
       });
     }
     setErrors({});
@@ -105,10 +111,6 @@ export default function QuestionForm({
       newErrors.programming_language = 'Programming language is required';
     }
 
-    if (!formData.interview_id.trim()) {
-      newErrors.interview_id = 'Interview ID is required';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -123,7 +125,13 @@ export default function QuestionForm({
 
     setIsSubmitting(true);
     try {
-      await onSubmit(formData);
+      const submissionData = {
+        ...formData,
+        global: true, // Set as global question since it's created through the questions page
+        interview_id: undefined, // Remove interview_id for global questions
+        userId: undefined, // Let the API handle the userId
+      };
+      await onSubmit(submissionData);
       if (!initialData) {
         // Reset form if creating new question
         setFormData({
@@ -133,6 +141,8 @@ export default function QuestionForm({
           type: '',
           programming_language: '',
           interview_id: '',
+          userId: '',
+          global: false,
         });
       }
     } catch (error) {
@@ -150,29 +160,46 @@ export default function QuestionForm({
   };
 
   const getCharacterCount = (fieldName: keyof typeof formData) => {
-    return formData[fieldName].length;
+    const value = formData[fieldName];
+    return typeof value === 'string' ? value.length : 0;
   };
 
   const getCharacterLimit = (fieldName: keyof typeof formData) => {
-    const limits: Record<keyof typeof formData, number> = {
+    const limits: Record<string, number> = {
       question: 500,
       answer: 1000,
       context: 300,
       type: 50,
       programming_language: 50,
       interview_id: 36,
+      userId: 36,
     };
-    return limits[fieldName];
+    return limits[fieldName] || 0;
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-8">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div className="mb-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          {initialData ? 'Edit Question' : 'Create New Question'}
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">
+          {initialData
+            ? 'Update question details and answers'
+            : 'Add a new question to your collection'}
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* Question Field */}
-        <div className="space-y-2">
+        <div>
           <label
             htmlFor="question"
-            className="block text-sm font-semibold text-on-card"
+            className={`block text-sm font-medium mb-2 transition-colors ${
+              focusedField === 'question'
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-700 dark:text-gray-300'
+            }`}
           >
             Interview Question *
           </label>
@@ -185,31 +212,41 @@ export default function QuestionForm({
               onFocus={() => handleFocus('question')}
               onBlur={handleBlur}
               placeholder="Enter the interview question..."
-              className={`textarea-field resize-none ${
+              className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 resize-none ${
                 errors.question
-                  ? 'border-red-300 focus:border-red-500'
-                  : 'focus:border-indigo-500'
-              } ${focusedField === 'question' ? 'ring-2 ring-indigo-200' : ''}`}
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800'
+              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
               rows={3}
               maxLength={getCharacterLimit('question')}
+              disabled={isSubmitting}
             />
-            <div className="absolute bottom-3 right-3 text-xs text-gray-400">
+            <div className="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500">
               {getCharacterCount('question')}/{getCharacterLimit('question')}
             </div>
+            {errors.question && (
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <AlertCircle className="h-5 w-5 text-red-500" />
+              </div>
+            )}
           </div>
           {errors.question && (
-            <div className="flex items-center gap-2 text-red-600 text-sm">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
               {errors.question}
-            </div>
+            </p>
           )}
         </div>
 
         {/* Answer Field */}
-        <div className="space-y-2">
+        <div>
           <label
             htmlFor="answer"
-            className="block text-sm font-semibold text-on-card"
+            className={`block text-sm font-medium mb-2 transition-colors ${
+              focusedField === 'answer'
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-700 dark:text-gray-300'
+            }`}
           >
             Expected Answer / Key Points *
           </label>
@@ -222,31 +259,41 @@ export default function QuestionForm({
               onFocus={() => handleFocus('answer')}
               onBlur={handleBlur}
               placeholder="Describe the ideal answer or key points to look for..."
-              className={`textarea-field ${
+              className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
                 errors.answer
-                  ? 'border-red-300 focus:border-red-500'
-                  : 'focus:border-indigo-500'
-              } ${focusedField === 'answer' ? 'ring-2 ring-indigo-200' : ''}`}
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800'
+              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
               rows={5}
               maxLength={getCharacterLimit('answer')}
+              disabled={isSubmitting}
             />
-            <div className="absolute bottom-3 right-3 text-xs text-gray-400">
+            <div className="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500">
               {getCharacterCount('answer')}/{getCharacterLimit('answer')}
             </div>
+            {errors.answer && (
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <AlertCircle className="h-5 w-5 text-red-500" />
+              </div>
+            )}
           </div>
           {errors.answer && (
-            <div className="flex items-center gap-2 text-red-600 text-sm">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
               {errors.answer}
-            </div>
+            </p>
           )}
         </div>
 
         {/* Context Field */}
-        <div className="space-y-2">
+        <div>
           <label
             htmlFor="context"
-            className="block text-sm font-semibold text-on-card"
+            className={`block text-sm font-medium mb-2 transition-colors ${
+              focusedField === 'context'
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-700 dark:text-gray-300'
+            }`}
           >
             Context / Notes *
           </label>
@@ -259,68 +306,90 @@ export default function QuestionForm({
               onFocus={() => handleFocus('context')}
               onBlur={handleBlur}
               placeholder="Add context, role type, difficulty level, or additional notes..."
-              className={`textarea-field resize-none ${
+              className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 resize-none ${
                 errors.context
-                  ? 'border-red-300 focus:border-red-500'
-                  : 'focus:border-indigo-500'
-              } ${focusedField === 'context' ? 'ring-2 ring-indigo-200' : ''}`}
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800'
+              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
               rows={3}
               maxLength={getCharacterLimit('context')}
+              disabled={isSubmitting}
             />
-            <div className="absolute bottom-3 right-3 text-xs text-gray-400">
+            <div className="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500">
               {getCharacterCount('context')}/{getCharacterLimit('context')}
             </div>
+            {errors.context && (
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <AlertCircle className="h-5 w-5 text-red-500" />
+              </div>
+            )}
           </div>
           {errors.context && (
-            <div className="flex items-center gap-2 text-red-600 text-sm">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
               {errors.context}
-            </div>
+            </p>
           )}
         </div>
 
         {/* Type Field */}
-        <div className="space-y-2">
+        <div>
           <label
             htmlFor="type"
-            className="block text-sm font-semibold text-on-card"
+            className={`block text-sm font-medium mb-2 transition-colors ${
+              focusedField === 'type'
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-700 dark:text-gray-300'
+            }`}
           >
             Question Type *
           </label>
-          <select
-            id="type"
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
-            onFocus={() => handleFocus('type')}
-            onBlur={handleBlur}
-            className={`form-field ${
-              errors.type
-                ? 'border-red-300 focus:border-red-500'
-                : 'focus:border-indigo-500'
-            } ${focusedField === 'type' ? 'ring-2 ring-indigo-200' : ''}`}
-          >
-            <option value="">Select question type...</option>
-            <option value="behavioral">Behavioral</option>
-            <option value="technical">Technical</option>
-            <option value="system-design">System Design</option>
-            <option value="leadership">Leadership</option>
-            <option value="coding">Coding</option>
-            <option value="other">Other</option>
-          </select>
+          <div className="relative">
+            <select
+              id="type"
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              onFocus={() => handleFocus('type')}
+              onBlur={handleBlur}
+              className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
+                errors.type
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800'
+              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+              disabled={isSubmitting}
+            >
+              <option value="">Select question type...</option>
+              <option value="behavioral">Behavioral</option>
+              <option value="technical">Technical</option>
+              <option value="system-design">System Design</option>
+              <option value="leadership">Leadership</option>
+              <option value="coding">Coding</option>
+              <option value="other">Other</option>
+            </select>
+            {errors.type && (
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <AlertCircle className="h-5 w-5 text-red-500" />
+              </div>
+            )}
+          </div>
           {errors.type && (
-            <div className="flex items-center gap-2 text-red-600 text-sm">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
               {errors.type}
-            </div>
+            </p>
           )}
         </div>
 
         {/* Programming Language Field */}
-        <div className="space-y-2">
+        <div>
           <label
             htmlFor="programming_language"
-            className="block text-sm font-semibold text-on-card"
+            className={`block text-sm font-medium mb-2 transition-colors ${
+              focusedField === 'programming_language'
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-700 dark:text-gray-300'
+            }`}
           >
             Programming Language *
           </label>
@@ -334,98 +403,57 @@ export default function QuestionForm({
               onFocus={() => handleFocus('programming_language')}
               onBlur={handleBlur}
               placeholder="e.g., JavaScript, Python, Java, etc."
-              className={`form-field ${
+              className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
                 errors.programming_language
-                  ? 'border-red-300 focus:border-red-500'
-                  : 'focus:border-indigo-500'
-              } ${
-                focusedField === 'programming_language'
-                  ? 'ring-2 ring-indigo-200'
-                  : ''
-              }`}
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800'
+              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
               maxLength={getCharacterLimit('programming_language')}
+              disabled={isSubmitting}
             />
-            <div className="absolute bottom-3 right-3 text-xs text-gray-400">
-              {getCharacterCount('programming_language')}/
-              {getCharacterLimit('programming_language')}
-            </div>
+            {errors.programming_language && (
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <AlertCircle className="h-5 w-5 text-red-500" />
+              </div>
+            )}
           </div>
           {errors.programming_language && (
-            <div className="flex items-center gap-2 text-red-600 text-sm">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
               {errors.programming_language}
-            </div>
-          )}
-        </div>
-
-        {/* Interview ID Field */}
-        <div className="space-y-2">
-          <label
-            htmlFor="interview_id"
-            className="block text-sm font-semibold text-on-card"
-          >
-            Interview ID *
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              id="interview_id"
-              name="interview_id"
-              value={formData.interview_id}
-              onChange={handleChange}
-              onFocus={() => handleFocus('interview_id')}
-              onBlur={handleBlur}
-              placeholder="Interview ID (UUID)"
-              className={`form-field ${
-                errors.interview_id
-                  ? 'border-red-300 focus:border-red-500'
-                  : 'focus:border-indigo-500'
-              } ${
-                focusedField === 'interview_id' ? 'ring-2 ring-indigo-200' : ''
-              }`}
-              maxLength={getCharacterLimit('interview_id')}
-            />
-            <div className="absolute bottom-3 right-3 text-xs text-gray-400">
-              {getCharacterCount('interview_id')}/
-              {getCharacterLimit('interview_id')}
-            </div>
-          </div>
-          {errors.interview_id && (
-            <div className="flex items-center gap-2 text-red-600 text-sm">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              {errors.interview_id}
-            </div>
+            </p>
           )}
         </div>
 
         {/* Form Actions */}
-        <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
-          <button
-            type="button"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-            className="btn btn-secondary"
-          >
-            <X className="w-4 h-4" />
-            Cancel
-          </button>
-
+        <div className="flex gap-3 pt-6 border-t border-gray-200 dark:border-gray-600">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="btn btn-primary"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
           >
-            {isSubmitting ? (
-              <div className="loading-spinner w-4 h-4 border-white/30 border-t-white" />
-            ) : (
-              <Save className="w-4 h-4" />
-            )}
-            {isSubmitting
-              ? 'Saving...'
-              : initialData
-              ? 'Update Question'
-              : 'Create Question'}
+            <div className="flex items-center justify-center">
+              <Save className="h-4 w-4 mr-2" />
+              {isSubmitting
+                ? 'Saving...'
+                : initialData
+                ? 'Update Question'
+                : 'Create Question'}
+            </div>
           </button>
+          {onCancel && (
+            <button
+              type="button"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+              className="px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+            >
+              <div className="flex items-center justify-center">
+                <X className="h-4 w-4 mr-2" />
+                Cancel
+              </div>
+            </button>
+          )}
         </div>
       </form>
     </div>
