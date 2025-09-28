@@ -440,43 +440,39 @@ export default function QuestionsPage() {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            {loading ? (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="mt-4 text-gray-600 dark:text-gray-400">
-                  Loading your questions...
-                </p>
-              </div>
-            ) : filteredQuestions.length > 0 ? (
+            {filteredQuestions.length > 0 || loading ? (
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <div className="p-6">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h2 className="font-semibold text-gray-900 dark:text-white">
-                      {filteredQuestions.length} Question
-                      {filteredQuestions.length !== 1 ? 's' : ''}
+                  {!loading && (
+                    <div className="mb-4 flex items-center justify-between">
+                      <h2 className="font-semibold text-gray-900 dark:text-white">
+                        {filteredQuestions.length} Question
+                        {filteredQuestions.length !== 1 ? 's' : ''}
+                        {filterType !== 'all' && (
+                          <span className="text-sm font-normal text-gray-600 dark:text-gray-400 ml-2">
+                            in{' '}
+                            {
+                              typesWithCounts.find((t) => t.id === filterType)
+                                ?.name
+                            }
+                          </span>
+                        )}
+                      </h2>
                       {filterType !== 'all' && (
-                        <span className="text-sm font-normal text-gray-600 dark:text-gray-400 ml-2">
-                          in{' '}
-                          {
-                            typesWithCounts.find((t) => t.id === filterType)
-                              ?.name
-                          }
-                        </span>
+                        <button
+                          onClick={() => setFilterType('all')}
+                          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1"
+                        >
+                          Clear filter
+                        </button>
                       )}
-                    </h2>
-                    {filterType !== 'all' && (
-                      <button
-                        onClick={() => setFilterType('all')}
-                        className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1"
-                      >
-                        Clear filter
-                      </button>
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <QuestionList
                     questions={filteredQuestions}
                     onEdit={editQuestion}
                     onDelete={deleteQuestion}
+                    isLoading={loading}
                   />
                 </div>
               </div>

@@ -1,423 +1,215 @@
 'use client';
 
-import { useState } from 'react';
 import { Question } from '@/lib/dynamodb';
 import {
   HelpCircle,
-  Search,
-  X,
-  ChevronDown,
-  Edit3,
+  Edit,
   Trash2,
-  Filter,
-  SortAsc,
-  SortDesc,
   Calendar,
-  Tag,
+  Code,
+  Users,
+  Target,
+  Zap,
+  MessageSquare,
 } from 'lucide-react';
 
 interface QuestionListProps {
   questions: Question[];
   onEdit: (question: Question) => void;
   onDelete: (id: string) => void;
+  isLoading?: boolean;
 }
 
 export default function QuestionList({
   questions,
   onEdit,
   onDelete,
+  isLoading = false,
 }: QuestionListProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [expandedCard, setExpandedCard] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<
-    'newest' | 'oldest' | 'question' | 'category'
-  >('newest');
-
-  // Filter and sort questions
-  const processedQuestions = questions
-    .filter((question) => {
-      const matchesSearch =
-        question.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        question.answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        question.context.toLowerCase().includes(searchTerm.toLowerCase());
-
-      if (!matchesSearch) return false;
-
-      if (selectedCategory === 'all') return true;
-
-      const context = question.context?.toLowerCase() || '';
-      const questionText = question.question.toLowerCase();
-
-      if (selectedCategory === 'technical') {
-        return (
-          context.includes('technical') || questionText.includes('technical')
-        );
-      }
-      if (selectedCategory === 'behavioral') {
-        return (
-          context.includes('behavioral') || questionText.includes('behavioral')
-        );
-      }
-      if (selectedCategory === 'general') {
-        return (
-          !context.includes('technical') &&
-          !context.includes('behavioral') &&
-          !questionText.includes('technical') &&
-          !questionText.includes('behavioral')
-        );
-      }
-
-      return true;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'newest':
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-        case 'oldest':
-          return (
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          );
-        case 'question':
-          return a.question.localeCompare(b.question);
-        case 'category':
-          const getCat = (q: Question) => {
-            const ctx = q.context?.toLowerCase() || '';
-            const qText = q.question.toLowerCase();
-            if (ctx.includes('technical') || qText.includes('technical'))
-              return 'technical';
-            if (ctx.includes('behavioral') || qText.includes('behavioral'))
-              return 'behavioral';
-            return 'general';
-          };
-          return getCat(a).localeCompare(getCat(b));
-        default:
-          return 0;
-      }
-    });
-
-  if (questions.length === 0) {
-    return (
-      <div className="text-center py-24">
-        <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-8">
-          <HelpCircle className="w-12 h-12 text-indigo-600" />
-        </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-4">
-          No questions yet
-        </h3>
-        <p className="text-gray-600 mb-8 max-w-md mx-auto text-lg">
-          Create your first interview question to get started. Build a
-          comprehensive question bank to improve your interviews.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <div className="flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-xl text-sm font-medium border border-blue-200">
-            💡 Start with behavioral questions
-          </div>
-          <div className="flex items-center px-4 py-2 bg-purple-50 text-purple-700 rounded-xl text-sm font-medium border border-purple-200">
-            🚀 Add technical challenges
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      {/* Questions List */}
-      <div className="space-y-4">
-        {processedQuestions.length === 0 ? (
-          <div className="text-center py-16 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-            <div className="w-16 h-16 bg-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Search className="w-8 h-8 text-gray-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              No matches found
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Try adjusting your search terms or filters to find what you're
-              looking for
-            </p>
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCategory('all');
-              }}
-              className="btn btn-secondary"
-            >
-              Show all questions
-            </button>
-          </div>
-        ) : (
-          processedQuestions.map((question, index) => (
-            <QuestionCard
-              key={question.id}
-              question={question}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              isExpanded={expandedCard === question.id}
-              onToggleExpand={() =>
-                setExpandedCard(
-                  expandedCard === question.id ? null : question.id
-                )
-              }
-              searchTerm={searchTerm}
-              index={index}
-            />
-          ))
-        )}
-      </div>
-    </div>
-  );
-}
-
-interface QuestionCardProps {
-  question: Question;
-  onEdit: (question: Question) => void;
-  onDelete: (id: string) => void;
-  isExpanded: boolean;
-  onToggleExpand: () => void;
-  searchTerm: string;
-  index: number;
-}
-
-function QuestionCard({
-  question,
-  onEdit,
-  onDelete,
-  isExpanded,
-  onToggleExpand,
-  searchTerm,
-  index,
-}: QuestionCardProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-    });
-  };
-
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
     });
   };
 
-  const highlightText = (text: string, searchTerm: string) => {
-    if (!searchTerm.trim()) return text;
+  const getQuestionTypeInfo = (question: Question) => {
+    const context = question.context?.toLowerCase() || '';
+    const questionText = question.question.toLowerCase();
 
-    const regex = new RegExp(
-      `(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`,
-      'gi'
-    );
-    const parts = text.split(regex);
-
-    return parts.map((part, i) =>
-      regex.test(part) ? (
-        <mark
-          key={i}
-          className="bg-yellow-200 text-yellow-900 px-1 rounded font-medium"
-        >
-          {part}
-        </mark>
-      ) : (
-        part
-      )
-    );
-  };
-
-  const handleDelete = async () => {
+    if (context.includes('behavioral') || questionText.includes('behavioral')) {
+      return {
+        name: 'Behavioral',
+        icon: Users,
+        color:
+          'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+      };
+    }
     if (
-      !confirm(
-        'Are you sure you want to delete this question? This action cannot be undone.'
-      )
+      context.includes('system') ||
+      context.includes('design') ||
+      questionText.includes('system') ||
+      questionText.includes('design')
     ) {
-      return;
+      return {
+        name: 'System Design',
+        icon: Target,
+        color:
+          'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400',
+      };
     }
-
-    setIsDeleting(true);
-    try {
-      await onDelete(question.id);
-    } catch (error) {
-      console.error('Error deleting question:', error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  // Get category indicator color and info
-  const getCategoryInfo = (text: string, questionText: string) => {
-    const lowerText = (text + ' ' + questionText).toLowerCase();
     if (
-      lowerText.includes('technical') ||
-      lowerText.includes('code') ||
-      lowerText.includes('algorithm')
+      context.includes('leadership') ||
+      context.includes('management') ||
+      questionText.includes('leadership') ||
+      questionText.includes('management')
+    ) {
+      return {
+        name: 'Leadership',
+        icon: Zap,
+        color:
+          'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400',
+      };
+    }
+    if (
+      context.includes('technical') ||
+      questionText.includes('technical') ||
+      context.includes('coding') ||
+      questionText.includes('coding')
     ) {
       return {
         name: 'Technical',
-        color: 'bg-blue-100 text-blue-700 border-blue-200',
-        icon: '⚡',
+        icon: Code,
+        color:
+          'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
       };
     }
-    if (
-      lowerText.includes('behavioral') ||
-      lowerText.includes('team') ||
-      lowerText.includes('leadership')
-    ) {
-      return {
-        name: 'Behavioral',
-        color: 'bg-purple-100 text-purple-700 border-purple-200',
-        icon: '💭',
-      };
-    }
+
     return {
       name: 'General',
-      color: 'bg-gray-100 text-gray-700 border-gray-200',
-      icon: '💬',
+      icon: MessageSquare,
+      color: 'bg-gray-100 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400',
     };
   };
 
-  const categoryInfo = getCategoryInfo(question.context, question.question);
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-pulse"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-lg"></div>
+                <div className="space-y-2 flex-1">
+                  <div className="w-3/4 h-5 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                  <div className="w-1/2 h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                  <div className="flex space-x-2">
+                    <div className="w-16 h-3 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+                    <div className="w-20 h-3 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+                    <div className="w-14 h-3 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <div className="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                <div className="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded"></div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+        <HelpCircle className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+          No questions yet
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400">
+          Create your first question to get started.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div
-      className={`bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-md group ${
-        isDeleting ? 'opacity-50 pointer-events-none' : ''
-      }`}
-      style={{
-        animationDelay: `${index * 50}ms`,
-      }}
-    >
-      {/* Card Header */}
-      <div className="p-6 pb-4">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <span
-              className={`inline-flex items-center px-3 py-1 text-xs font-medium rounded-full border ${categoryInfo.color}`}
-            >
-              <span className="mr-1">{categoryInfo.icon}</span>
-              {categoryInfo.name}
-            </span>
-            <div className="flex items-center text-sm text-gray-500">
-              <Calendar className="w-4 h-4 mr-1" />
-              {formatDate(question.createdAt)}
-            </div>
-          </div>
+    <div className="space-y-4">
+      {questions.map((question) => {
+        const typeInfo = getQuestionTypeInfo(question);
+        const IconComponent = typeInfo.icon;
 
-          <button
-            onClick={onToggleExpand}
-            className="p-2 rounded-lg hover:bg-gray-50 transition-colors opacity-70 group-hover:opacity-100"
-            aria-label={isExpanded ? 'Collapse' : 'Expand'}
+        return (
+          <div
+            key={question.id}
+            className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 group"
           >
-            <ChevronDown
-              className={`w-5 h-5 transition-transform duration-200 text-gray-500 ${
-                isExpanded ? 'rotate-180' : ''
-              }`}
-            />
-          </button>
-        </div>
-
-        {/* Question */}
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 leading-relaxed mb-2">
-            {highlightText(question.question, searchTerm)}
-          </h3>
-          {!isExpanded && (
-            <p className="text-gray-600 text-sm line-clamp-2">
-              {question.answer.length > 100
-                ? `${question.answer.substring(0, 100)}...`
-                : question.answer}
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Expandable Content */}
-      {isExpanded && (
-        <div className="px-6 pb-4">
-          <div className="space-y-6 border-t border-gray-100 pt-6">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                <span className="text-sm font-semibold text-emerald-700">
-                  Expected Answer
-                </span>
+            <div className="flex items-start justify-between">
+              <div className="flex items-start space-x-4 flex-1">
+                <div
+                  className={`w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform ${typeInfo.color}`}
+                >
+                  <IconComponent className="h-6 w-6" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                    {question.question}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
+                    {question.answer}
+                  </p>
+                  <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-500">
+                    <div className="flex items-center">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      {formatDate(question.createdAt)}
+                    </div>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${typeInfo.color}`}
+                    >
+                      {typeInfo.name}
+                    </span>
+                    {question.programming_language && (
+                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-xs">
+                        {question.programming_language}
+                      </span>
+                    )}
+                    {question.type && question.type !== 'general' && (
+                      <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-full text-xs">
+                        {question.type}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="ml-4 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
-                <p className="text-gray-800 leading-relaxed">
-                  {highlightText(question.answer, searchTerm)}
-                </p>
+
+              <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <button
+                  onClick={() => onEdit(question)}
+                  className="p-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
+                  title="Edit question"
+                >
+                  <Edit className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => onDelete(question.id)}
+                  className="p-2 text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
+                  title="Delete question"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
             </div>
-
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-                <span className="text-sm font-semibold text-amber-700">
-                  Context & Notes
-                </span>
-              </div>
-              <div className="ml-4 p-4 bg-amber-50 rounded-lg border border-amber-100">
-                <p className="text-gray-800 leading-relaxed">
-                  {highlightText(question.context, searchTerm)}
-                </p>
-              </div>
-            </div>
           </div>
-        </div>
-      )}
-
-      {/* Card Footer */}
-      <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-xl">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {!isExpanded ? (
-              <button
-                onClick={onToggleExpand}
-                className="text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
-              >
-                View full details
-              </button>
-            ) : (
-              <button
-                onClick={onToggleExpand}
-                className="text-sm text-gray-500 hover:text-gray-700 font-medium transition-colors"
-              >
-                Collapse
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => onEdit(question)}
-              disabled={isDeleting}
-              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition-colors"
-            >
-              <Edit3 className="w-4 h-4" />
-              Edit
-            </button>
-
-            <button
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              {isDeleting ? (
-                <div className="loading-spinner w-4 h-4 border-red-200 border-t-red-600" />
-              ) : (
-                <Trash2 className="w-4 h-4" />
-              )}
-              {isDeleting ? 'Deleting...' : 'Delete'}
-            </button>
-          </div>
-        </div>
-      </div>
+        );
+      })}
     </div>
   );
 }
