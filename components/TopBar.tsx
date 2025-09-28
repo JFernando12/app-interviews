@@ -3,7 +3,15 @@
 import { usePathname } from 'next/navigation';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { Home, Users, HelpCircle, LogIn, LogOut, User } from 'lucide-react';
+import {
+  Home,
+  Users,
+  HelpCircle,
+  LogIn,
+  LogOut,
+  User,
+  Settings,
+} from 'lucide-react';
 
 const TopBar = () => {
   const pathname = usePathname();
@@ -71,25 +79,38 @@ const TopBar = () => {
               <div className="w-8 h-8 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
             ) : session ? (
               <div className="flex items-center space-x-3">
-                {session.user?.image ? (
-                  <img
-                    src={session.user.image}
-                    alt={session.user.name || 'User'}
-                    className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-700"
-                  />
-                ) : (
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
+                <Link
+                  href="/profile"
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                  title="View Profile"
+                >
+                  {session.user?.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || 'User'}
+                      className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-700"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                      {session.user?.name}
+                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {session.user?.description || session.user?.email}
+                    </span>
                   </div>
-                )}
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {session.user?.name}
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {session.user?.email}
-                  </span>
-                </div>
+                </Link>
+                <Link
+                  href="/profile"
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800/50 transition-all duration-200"
+                  title="Profile Settings"
+                >
+                  <Settings className="w-4 h-4" />
+                </Link>
                 <button
                   onClick={() => signOut()}
                   className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-all duration-200"
@@ -186,7 +207,10 @@ const TopBar = () => {
           <div className="border-t border-gray-200/50 dark:border-gray-800/50 pt-3 mt-3">
             {session ? (
               <div className="space-y-3">
-                <div className="flex items-center px-4 py-2">
+                <Link
+                  href="/profile"
+                  className="flex items-center px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-all duration-200"
+                >
                   {session.user?.image ? (
                     <img
                       src={session.user.image}
@@ -203,10 +227,11 @@ const TopBar = () => {
                       {session.user?.name}
                     </span>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {session.user?.email}
+                      {session.user?.description || session.user?.email}
                     </span>
                   </div>
-                </div>
+                  <Settings className="w-4 h-4 text-gray-400 ml-auto" />
+                </Link>
                 <button
                   onClick={() => signOut()}
                   className="w-full flex items-center justify-center px-4 py-3 rounded-xl text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-all duration-200"
