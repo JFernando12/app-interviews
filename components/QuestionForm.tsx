@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { Question } from '@/lib/dynamodb';
-import { QuestionType, QuestionTypeUtils } from '@/types/enums';
+import {
+  QuestionType,
+  QuestionTypeUtils,
+  ProgrammingLanguage,
+  PROGRAMMING_LANGUAGE_DISPLAY,
+} from '@/types/enums';
 import { AlertCircle, Save, X } from 'lucide-react';
 
 interface QuestionFormProps {
@@ -401,49 +406,11 @@ export default function QuestionForm({
               disabled={isSubmitting}
             >
               <option value="">Select language/framework...</option>
-              <optgroup label="Programming Languages">
-                <option value="JavaScript">JavaScript</option>
-                <option value="Python">Python</option>
-                <option value="Java">Java</option>
-                <option value="TypeScript">TypeScript</option>
-                <option value="C#">C#</option>
-                <option value="C++">C++</option>
-                <option value="C">C</option>
-                <option value="Go">Go</option>
-                <option value="Rust">Rust</option>
-                <option value="PHP">PHP</option>
-                <option value="Ruby">Ruby</option>
-                <option value="Swift">Swift</option>
-                <option value="Kotlin">Kotlin</option>
-                <option value="Scala">Scala</option>
-                <option value="R">R</option>
-                <option value="Dart">Dart</option>
-                <option value="SQL">SQL</option>
-              </optgroup>
-              <optgroup label="Frameworks & Libraries">
-                <option value="React">React</option>
-                <option value="Vue.js">Vue.js</option>
-                <option value="Angular">Angular</option>
-                <option value="Next.js">Next.js</option>
-                <option value="Node.js">Node.js</option>
-                <option value="Express">Express</option>
-                <option value="Django">Django</option>
-                <option value="Flask">Flask</option>
-                <option value="Spring Boot">Spring Boot</option>
-                <option value="Laravel">Laravel</option>
-                <option value="Ruby on Rails">Ruby on Rails</option>
-                <option value="ASP.NET">ASP.NET</option>
-                <option value="Flutter">Flutter</option>
-                <option value="React Native">React Native</option>
-              </optgroup>
-              <optgroup label="Other">
-                <option value="General">General</option>
-                <option value="System Design">System Design</option>
-                <option value="DevOps">DevOps</option>
-                <option value="Cloud">Cloud</option>
-                <option value="Database">Database</option>
-                <option value="Other">Other</option>
-              </optgroup>
+              {Object.values(ProgrammingLanguage).map((language) => (
+                <option key={language} value={language}>
+                  {PROGRAMMING_LANGUAGE_DISPLAY[language]}
+                </option>
+              ))}
             </select>
             {errors.programming_language && (
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">

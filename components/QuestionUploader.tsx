@@ -10,7 +10,12 @@ import {
   CheckCircle,
   Video,
 } from 'lucide-react';
-import { QuestionType, QuestionTypeUtils } from '@/types/enums';
+import {
+  QuestionType,
+  QuestionTypeUtils,
+  ProgrammingLanguage,
+  PROGRAMMING_LANGUAGE_DISPLAY,
+} from '@/types/enums';
 
 export interface QuestionData {
   context: string;
@@ -369,8 +374,7 @@ export default function QuestionUploader({
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Programming Language
                 </label>
-                <input
-                  type="text"
+                <select
                   value={question.programming_language || ''}
                   onChange={(e) =>
                     handleQuestionChange(
@@ -380,8 +384,14 @@ export default function QuestionUploader({
                     )
                   }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                  placeholder="e.g., JavaScript, Python, Java, etc."
-                />
+                >
+                  <option value="">Select language...</option>
+                  {Object.values(ProgrammingLanguage).map((language) => (
+                    <option key={language} value={language}>
+                      {PROGRAMMING_LANGUAGE_DISPLAY[language]}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
