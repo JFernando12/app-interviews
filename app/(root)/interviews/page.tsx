@@ -67,7 +67,13 @@ export default function InterviewsPage() {
         const response = await fetch(`/api/interviews/${editingInterview.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ company: formData.company }),
+          body: JSON.stringify({
+            company: formData.company,
+            programming_language: formData.programming_language,
+            type: formData.type,
+            public: formData.public,
+            anonymous: formData.anonymous,
+          }),
         });
 
         if (!response.ok) {
@@ -89,7 +95,7 @@ export default function InterviewsPage() {
           body: JSON.stringify({
             company: formData.company,
             type: formData.type,
-            programming_language: formData.questions,
+            programming_language: formData.programming_language,
             public: formData.public,
             anonymous: formData.anonymous,
           }),
