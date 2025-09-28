@@ -20,6 +20,8 @@ import {
   X,
   Edit3,
   Trash2,
+  AlertCircle,
+  CheckCircle,
 } from 'lucide-react';
 
 interface QuestionTypeInfo {
@@ -45,6 +47,10 @@ export default function TypePage() {
     'newest'
   );
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   // Define question type configurations
   const questionTypeConfig: Record<string, QuestionTypeInfo> = {
@@ -97,18 +103,29 @@ export default function TypePage() {
 
   const currentType = questionTypeConfig[type] || questionTypeConfig.all;
 
+  // Show notification
+  const showNotification = (type: 'success' | 'error', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000);
+  };
+
   // Fetch questions
   const fetchQuestions = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await fetch('/api/questions?global=true');
       if (!response.ok) {
         throw new Error('Failed to fetch questions');
       }
       const data = await response.json();
       setQuestions(data);
+      showNotification('success', 'Questions loaded successfully');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage =
+        err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
+      showNotification('error', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -222,8 +239,11 @@ export default function TypePage() {
 
       // Remove from local state
       setQuestions((prev) => prev.filter((q) => q.id !== id));
+      showNotification('success', 'Question deleted successfully');
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to delete question');
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to delete question';
+      showNotification('error', errorMessage);
     }
   };
 
@@ -233,17 +253,19 @@ export default function TypePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-10">
-        <div className="container py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="loading-spinner w-12 h-12 border-indigo-200 border-t-indigo-600 mx-auto mb-6"></div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Loading {currentType.name.toLowerCase()}...
-              </h3>
-              <p className="text-gray-600">
-                Please wait while we fetch your questions
-              </p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Loading {currentType.name.toLowerCase()}...
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Please wait while we fetch your questions
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -253,20 +275,25 @@ export default function TypePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-10">
-        <div className="container py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="text-red-600 mb-4">
-                <HelpCircle className="w-16 h-16 mx-auto" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-red-600 dark:text-red-400 mb-4">
+                  <HelpCircle className="w-16 h-16 mx-auto" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Error Loading Questions
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
+                <button
+                  onClick={fetchQuestions}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                >
+                  Try Again
+                </button>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Error Loading Questions
-              </h3>
-              <p className="text-gray-600 mb-4">{error}</p>
-              <button onClick={fetchQuestions} className="btn btn-primary">
-                Try Again
-              </button>
             </div>
           </div>
         </div>
@@ -275,38 +302,40 @@ export default function TypePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-10">
-      <div className="container py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
         <div className="mb-8">
           {/* Back Navigation */}
           <button
             onClick={() => router.push('/home')}
-            className="flex items-center text-gray-600 hover:text-gray-800 mb-6 transition-colors"
+            className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 mb-6 transition-colors"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Question Types
           </button>
 
           {/* Type Header */}
-          <div
-            className={`rounded-xl p-8 text-white ${currentType.bgColor} shadow-lg`}
-          >
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-start justify-between">
               <div className="flex items-center">
-                <div className="mr-4">{currentType.icon}</div>
+                <div className={`${currentType.color} mr-4`}>
+                  {currentType.icon}
+                </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-2">
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                     {currentType.name}
                   </h1>
-                  <p className="text-white/90 text-lg max-w-2xl">
+                  <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl">
                     {currentType.description}
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-white/90 text-sm">Total Questions</div>
-                <div className="text-4xl font-bold">
+                <div className="text-gray-500 dark:text-gray-400 text-sm mb-1">
+                  Total Questions
+                </div>
+                <div className="text-4xl font-bold text-gray-900 dark:text-white">
                   {filteredQuestions.length}
                 </div>
               </div>
@@ -314,24 +343,42 @@ export default function TypePage() {
           </div>
         </div>
 
+        {/* Notification */}
+        {notification && (
+          <div
+            className={`mb-6 p-4 rounded-lg flex items-center ${
+              notification.type === 'success'
+                ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800'
+                : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'
+            }`}
+          >
+            {notification.type === 'success' ? (
+              <CheckCircle className="h-5 w-5 mr-3" />
+            ) : (
+              <AlertCircle className="h-5 w-5 mr-3" />
+            )}
+            {notification.message}
+          </div>
+        )}
+
         {/* Search and Filter Controls */}
-        <div className="mb-8 bg-white rounded-xl shadow-sm p-6">
+        <div className="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <div className="flex-1">
               <div className="relative">
-                <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   placeholder="Search questions, answers, or context..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -346,64 +393,66 @@ export default function TypePage() {
                 onChange={(e) =>
                   setSortBy(e.target.value as 'newest' | 'oldest' | 'question')
                 }
-                className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="appearance-none bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white"
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
                 <option value="question">Alphabetical</option>
               </select>
-              <ChevronDown className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <ChevronDown className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" />
             </div>
           </div>
         </div>
 
         {/* Questions List */}
         {filteredQuestions.length === 0 ? (
-          <div className="text-center py-16">
-            <div className={`${currentType.color} mb-4`}>
-              {currentType.icon}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-16">
+            <div className="text-center">
+              <div className={`${currentType.color} mb-4`}>
+                {currentType.icon}
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                {searchTerm
+                  ? 'No matching questions found'
+                  : `No ${currentType.name.toLowerCase()} yet`}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                {searchTerm
+                  ? 'Try adjusting your search terms or clear the search to see all questions.'
+                  : `Start building your ${currentType.name.toLowerCase()} collection by adding your first question.`}
+              </p>
+              {!searchTerm && (
+                <button
+                  onClick={() => router.push('/questions')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                >
+                  Add Your First Question
+                </button>
+              )}
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {searchTerm
-                ? 'No matching questions found'
-                : `No ${currentType.name.toLowerCase()} yet`}
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              {searchTerm
-                ? 'Try adjusting your search terms or clear the search to see all questions.'
-                : `Start building your ${currentType.name.toLowerCase()} collection by adding your first question.`}
-            </p>
-            {!searchTerm && (
-              <button
-                onClick={() => router.push('/questions')}
-                className="btn btn-primary"
-              >
-                Add Your First Question
-              </button>
-            )}
           </div>
         ) : (
           <div className="space-y-4">
             {filteredQuestions.map((question) => (
               <div
                 key={question.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow"
               >
                 <div className="p-6">
                   {/* Question Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 leading-relaxed">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 leading-relaxed">
                         {question.question}
                       </h3>
                       {question.context && (
-                        <div className="flex items-center text-sm text-gray-600 mb-2">
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-2">
                           <Tag className="w-4 h-4 mr-1" />
                           {question.context}
                         </div>
                       )}
                       {question.createdAt && (
-                        <div className="flex items-center text-sm text-gray-500">
+                        <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                           <Calendar className="w-4 h-4 mr-1" />
                           {new Date(question.createdAt).toLocaleDateString()}
                         </div>
@@ -412,14 +461,14 @@ export default function TypePage() {
                     <div className="flex items-center space-x-2 ml-4">
                       <button
                         onClick={() => handleEdit(question)}
-                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        className="p-2 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                         title="Edit question"
                       >
                         <Edit3 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(question.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                         title="Delete question"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -428,13 +477,13 @@ export default function TypePage() {
                   </div>
 
                   {/* Answer Preview/Full */}
-                  <div className="border-t border-gray-100 pt-4">
+                  <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
                     <div
                       className={`prose prose-sm max-w-none ${
                         expandedCard === question.id ? '' : 'line-clamp-3'
                       }`}
                     >
-                      <p className="text-gray-700 whitespace-pre-wrap">
+                      <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                         {question.answer}
                       </p>
                     </div>
@@ -442,7 +491,7 @@ export default function TypePage() {
                     {question.answer.length > 200 && (
                       <button
                         onClick={() => toggleCardExpansion(question.id)}
-                        className="mt-3 text-indigo-600 hover:text-indigo-700 text-sm font-medium flex items-center"
+                        className="mt-3 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium flex items-center"
                       >
                         {expandedCard === question.id ? (
                           <>
