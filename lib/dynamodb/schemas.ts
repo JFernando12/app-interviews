@@ -1,7 +1,7 @@
 // Schema para perfiles de usuario extendidos
 export interface UserProfile {
-  userId: string; // Referencia al user.id de NextAuth (se guarda como 'id' en DynamoDB)
-  
+  user_id: string; // Referencia al user.id de NextAuth (se guarda como 'id' en DynamoDB)
+
   // Suscripciones y planes
   subscription: {
     plan: 'free' | 'pro' | 'enterprise';
@@ -12,7 +12,7 @@ export interface UserProfile {
     stripePriceId?: string;
     features: string[]; // ['unlimited_interviews', 'ai_feedback', 'team_management', etc.]
   };
-  
+
   // Información del perfil profesional
   profile: {
     description: string; // "Backend Developer", etc.
@@ -28,7 +28,7 @@ export interface UserProfile {
     avatar?: string; // URL de avatar personalizado
     bio?: string; // Biografía más larga
   };
-  
+
   // Configuraciones de la aplicación
   settings: {
     theme: 'light' | 'dark' | 'system';
@@ -39,7 +39,7 @@ export interface UserProfile {
     analyticsOptIn: boolean;
     marketingEmails: boolean;
   };
-  
+
   // Preferencias para entrevistas
   interviewPreferences: {
     preferredTechnologies: string[]; // Tecnologías que prefiere para entrevistas
@@ -58,7 +58,7 @@ export interface UserProfile {
       sunday: { start: string; end: string } | null;
     };
   };
-  
+
   // Estadísticas y métricas del usuario
   stats: {
     totalInterviews: number;
@@ -70,7 +70,7 @@ export interface UserProfile {
     streakDays: number; // Días consecutivos activo
     lastActive: string; // ISO date
   };
-  
+
   // Configuraciones de privacidad
   privacy: {
     showEmail: boolean;
@@ -80,7 +80,7 @@ export interface UserProfile {
     allowDirectMessages: boolean;
     profileVisibility: 'public' | 'registered_users' | 'private';
   };
-  
+
   // Metadata del sistema
   createdAt: string;
   updatedAt: string;

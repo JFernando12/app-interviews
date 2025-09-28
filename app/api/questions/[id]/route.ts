@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Check if the question belongs to the user
-    if (question.userId !== session.user.id) {
+    if (question.user_id !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -67,7 +67,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
 
-      if (existingQuestion.userId !== session.user.id) {
+      if (existingQuestion.user_id !== session.user.id) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
     }
@@ -147,7 +147,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
 
-      if (existingQuestion.userId !== session.user.id) {
+      if (existingQuestion.user_id !== session.user.id) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
     }

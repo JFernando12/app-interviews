@@ -30,14 +30,14 @@ export class UserProfileService {
   /**
    * Obtener perfil completo del usuario
    */
-  static async getProfile(userId: string): Promise<UserProfile | null> {
+  static async getProfile(user_id: string): Promise<UserProfile | null> {
     try {
       const { Item } = await client.get({
         TableName: TABLE_NAME,
-        Key: { id: userId }
+        Key: { id: user_id },
       });
-      
-      return Item as UserProfile || null;
+
+      return (Item as UserProfile) || null;
     } catch (error) {
       console.error('Error getting user profile:', error);
       return null;
@@ -48,14 +48,14 @@ export class UserProfileService {
    * Crear perfil por defecto para un nuevo usuario
    */
   static async createDefaultProfile(
-    userId: string, 
+    user_id: string,
     userEmail: string,
     userName?: string
   ): Promise<UserProfile> {
     const now = new Date().toISOString();
-    
+
     const profile: UserProfile = {
-      userId,
+      user_id,
       ...DEFAULT_USER_PROFILE,
       profile: {
         ...DEFAULT_USER_PROFILE.profile,
@@ -70,19 +70,19 @@ export class UserProfileService {
     try {
       await client.put({
         TableName: TABLE_NAME,
-        Item: { id: userId, ...profile },
+        Item: { id: user_id, ...profile },
         // Solo crear si no existe
-        ConditionExpression: 'attribute_not_exists(id)'
+        ConditionExpression: 'attribute_not_exists(id)',
       });
 
-      return { id: userId, ...profile } as UserProfile;
+      return { id: user_id, ...profile } as UserProfile;
     } catch (error) {
       if ((error as any).name === 'ConditionalCheckFailedException') {
         // El perfil ya existe, lo obtenemos
-        const existingProfile = await this.getProfile(userId);
+        const existingProfile = await this.getProfile(user_id);
         if (existingProfile) return existingProfile;
       }
-      
+
       console.error('Error creating default profile:', error);
       throw error;
     }
@@ -92,14 +92,17 @@ export class UserProfileService {
    * Actualizar perfil completo
    */
   static async updateProfile(
-    userId: string, 
+    user_id: string,
     updates: UserProfileUpdate
   ): Promise<UserProfile | null> {
     try {
       const now = new Date().toISOString();
-      
+
       // Construir la expresión de actualización dinámicamente
-      const updateExpressionParts = ['updatedAt = :now', 'version = version + :inc'];
+      const updateExpressionParts = [
+        'updatedAt = :now',
+        'version = version + :inc',
+      ];
       const expressionAttributeNames: Record<string, string> = {};
       const expressionAttributeValues: Record<string, any> = {
         ':now': now,
@@ -108,10 +111,10 @@ export class UserProfileService {
 
       // Procesar cada actualización
       Object.entries(updates).forEach(([key, value], index) => {
-        if (key !== 'userId' && key !== 'createdAt' && key !== 'version') {
+        if (key !== 'user_id' && key !== 'createdAt' && key !== 'version') {
           const attrName = `#attr${index}`;
           const attrValue = `:val${index}`;
-          
+
           updateExpressionParts.push(`${attrName} = ${attrValue}`);
           expressionAttributeNames[attrName] = key;
           expressionAttributeValues[attrValue] = value;
@@ -120,11 +123,11 @@ export class UserProfileService {
 
       const { Attributes } = await client.update({
         TableName: TABLE_NAME,
-        Key: { id: userId },
+        Key: { id: user_id },
         UpdateExpression: `SET ${updateExpressionParts.join(', ')}`,
         ExpressionAttributeNames: expressionAttributeNames,
         ExpressionAttributeValues: expressionAttributeValues,
-        ReturnValues: 'ALL_NEW'
+        ReturnValues: 'ALL_NEW',
       });
 
       return Attributes as UserProfile;
@@ -138,20 +141,22 @@ export class UserProfileService {
    * Actualizar solo la sección de suscripción
    */
   static async updateSubscription(
-    userId: string,
+    user_id: string,
     subscriptionUpdates: Partial<UserProfile['subscription']>
   ): Promise<boolean> {
     try {
       const now = new Date().toISOString();
-      
+
       // Si cambia el plan, actualizar las features automáticamente
       if (subscriptionUpdates.plan) {
-        subscriptionUpdates.features = [...PLAN_FEATURES[subscriptionUpdates.plan]];
+        subscriptionUpdates.features = [
+          ...PLAN_FEATURES[subscriptionUpdates.plan],
+        ];
       }
 
       await client.update({
         TableName: TABLE_NAME,
-        Key: { id: userId },
+        Key: { id: user_id },
         UpdateExpression: `SET 
           updatedAt = :now,
           version = version + :inc,
@@ -160,7 +165,7 @@ export class UserProfileService {
           ':now': now,
           ':inc': 1,
           ':emptyObj': {},
-        }
+        },
       });
 
       // Luego actualizar los campos específicos de subscription
@@ -176,12 +181,15 @@ export class UserProfileService {
       if (updateExpressions.length > 0) {
         await client.update({
           TableName: TABLE_NAME,
-          Key: { id: userId },
+          Key: { id: user_id },
           UpdateExpression: `SET ${updateExpressions.join(', ')}`,
-          ExpressionAttributeNames: Object.keys(subscriptionUpdates).reduce((acc, key) => ({
-            ...acc,
-            [`#${key}`]: key
-          }), {}),
+          ExpressionAttributeNames: Object.keys(subscriptionUpdates).reduce(
+            (acc, key) => ({
+              ...acc,
+              [`#${key}`]: key,
+            }),
+            {}
+          ),
           ExpressionAttributeValues: attributeValues,
         });
       }
@@ -197,7 +205,7 @@ export class UserProfileService {
    * Actualizar estadísticas del usuario
    */
   static async updateStats(
-    userId: string,
+    user_id: string,
     statsUpdates: Partial<UserProfile['stats']>
   ): Promise<boolean> {
     try {
@@ -205,7 +213,7 @@ export class UserProfileService {
 
       await client.update({
         TableName: TABLE_NAME,
-        Key: { id: userId },
+        Key: { id: user_id },
         UpdateExpression: `SET 
           updatedAt = :now,
           version = version + :inc,
@@ -214,7 +222,7 @@ export class UserProfileService {
           ':now': now,
           ':inc': 1,
           ':emptyStats': DEFAULT_USER_PROFILE.stats,
-        }
+        },
       });
 
       // Luego actualizar los campos específicos de stats
@@ -230,12 +238,15 @@ export class UserProfileService {
       if (updateExpressions.length > 0) {
         await client.update({
           TableName: TABLE_NAME,
-          Key: { id: userId },
+          Key: { id: user_id },
           UpdateExpression: `SET ${updateExpressions.join(', ')}`,
-          ExpressionAttributeNames: Object.keys(statsUpdates).reduce((acc, key) => ({
-            ...acc,
-            [`#${key}`]: key
-          }), {}),
+          ExpressionAttributeNames: Object.keys(statsUpdates).reduce(
+            (acc, key) => ({
+              ...acc,
+              [`#${key}`]: key,
+            }),
+            {}
+          ),
           ExpressionAttributeValues: attributeValues,
         });
       }
@@ -251,7 +262,7 @@ export class UserProfileService {
    * Incrementar contador específico en stats
    */
   static async incrementStat(
-    userId: string,
+    user_id: string,
     statName: keyof UserProfile['stats'],
     increment: number = 1
   ): Promise<boolean> {
@@ -260,20 +271,20 @@ export class UserProfileService {
 
       await client.update({
         TableName: TABLE_NAME,
-        Key: { id: userId },
+        Key: { id: user_id },
         UpdateExpression: `SET 
           updatedAt = :now,
           version = version + :inc,
           stats.#statName = if_not_exists(stats.#statName, :zero) + :increment`,
         ExpressionAttributeNames: {
-          '#statName': statName
+          '#statName': statName,
         },
         ExpressionAttributeValues: {
           ':now': now,
           ':inc': 1,
           ':increment': increment,
           ':zero': 0,
-        }
+        },
       });
 
       return true;
@@ -292,12 +303,12 @@ export class UserProfileService {
         TableName: TABLE_NAME,
         FilterExpression: 'privacy.profileVisibility = :visibility',
         ExpressionAttributeValues: {
-          ':visibility': 'public'
+          ':visibility': 'public',
         },
-        Limit: limit
+        Limit: limit,
       });
 
-      return Items as UserProfile[] || [];
+      return (Items as UserProfile[]) || [];
     } catch (error) {
       console.error('Error getting public profiles:', error);
       return [];
@@ -316,12 +327,12 @@ export class UserProfileService {
         TableName: TABLE_NAME,
         FilterExpression: 'contains(profile.skills, :skill)',
         ExpressionAttributeValues: {
-          ':skill': skills[0] // Para simplificar, buscamos solo la primera skill
+          ':skill': skills[0], // Para simplificar, buscamos solo la primera skill
         },
-        Limit: limit
+        Limit: limit,
       });
 
-      return Items as UserProfile[] || [];
+      return (Items as UserProfile[]) || [];
     } catch (error) {
       console.error('Error searching profiles by skills:', error);
       return [];
@@ -331,27 +342,27 @@ export class UserProfileService {
   /**
    * Eliminar perfil (soft delete - marcar como inactivo)
    */
-  static async deactivateProfile(userId: string): Promise<boolean> {
+  static async deactivateProfile(user_id: string): Promise<boolean> {
     try {
       const now = new Date().toISOString();
 
       await client.update({
         TableName: TABLE_NAME,
-        Key: { id: userId },
+        Key: { id: user_id },
         UpdateExpression: `SET 
           updatedAt = :now,
           version = version + :inc,
           subscription.#status = :status,
           privacy.profileVisibility = :visibility`,
         ExpressionAttributeNames: {
-          '#status': 'status'
+          '#status': 'status',
         },
         ExpressionAttributeValues: {
           ':now': now,
           ':inc': 1,
           ':status': 'canceled',
           ':visibility': 'private',
-        }
+        },
       });
 
       return true;
@@ -364,9 +375,9 @@ export class UserProfileService {
   /**
    * Verificar si el usuario tiene una feature específica
    */
-  static async hasFeature(userId: string, feature: string): Promise<boolean> {
+  static async hasFeature(user_id: string, feature: string): Promise<boolean> {
     try {
-      const profile = await this.getProfile(userId);
+      const profile = await this.getProfile(user_id);
       return profile?.subscription.features.includes(feature) || false;
     } catch (error) {
       console.error('Error checking feature:', error);
@@ -385,11 +396,11 @@ export class UserProfileService {
         TableName: TABLE_NAME,
         FilterExpression: 'subscription.plan = :plan',
         ExpressionAttributeValues: {
-          ':plan': plan
-        }
+          ':plan': plan,
+        },
       });
 
-      return Items as UserProfile[] || [];
+      return (Items as UserProfile[]) || [];
     } catch (error) {
       console.error('Error getting users by plan:', error);
       return [];

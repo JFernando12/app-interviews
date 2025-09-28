@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     const newInterview = await interviewsService.createInterview({
       company,
-      userId: session.user.id,
+      user_id: session.user.id,
     });
 
     return NextResponse.json(newInterview, { status: 201 });

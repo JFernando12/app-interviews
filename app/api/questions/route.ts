@@ -87,11 +87,10 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!question || !answer || !context || !type || !programming_language) {
+    if (!question || !answer) {
       return NextResponse.json(
         {
-          error:
-            'Question, answer, context, type, and programming_language are required',
+          error: 'Question and answer are required',
         },
         { status: 400 }
       );
@@ -104,9 +103,9 @@ export async function POST(request: NextRequest) {
       questionData = {
         question,
         answer,
-        context,
-        type,
-        programming_language,
+        context: context || '',
+        type: type || '',
+        programming_language: programming_language || '',
         global: true,
       };
     } else {
@@ -126,11 +125,11 @@ export async function POST(request: NextRequest) {
       questionData = {
         question,
         answer,
-        context,
-        type,
-        programming_language,
+        context: context || '',
+        type: type || '',
+        programming_language: programming_language || '',
         interview_id,
-        userId: session.user.id,
+        user_id: session.user.id,
         global: false,
       };
     }

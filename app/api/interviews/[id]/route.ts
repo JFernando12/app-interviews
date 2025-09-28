@@ -24,7 +24,7 @@ export async function GET(
     }
 
     // Check if the interview belongs to the user
-    if (interview.userId !== session.user.id) {
+    if (interview.user_id !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

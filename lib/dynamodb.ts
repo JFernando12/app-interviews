@@ -26,7 +26,7 @@ export interface Question {
   type: string;
   programming_language: string;
   interview_id?: string; // Optional for global questions
-  userId?: string; // Optional for global questions
+  user_id?: string; // Optional for global questions
   global: boolean; // True for global questions, false for user-specific
   createdAt: string;
   updatedAt: string;
@@ -35,7 +35,7 @@ export interface Question {
 export interface Interview {
   id: string;
   company: string;
-  userId: string;
+  user_id: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -65,17 +65,17 @@ export class QuestionsService {
   }
 
   // Get all questions for a user
-  async getAllQuestions(userId?: string): Promise<Question[]> {
-    if (userId) {
+  async getAllQuestions(user_id?: string): Promise<Question[]> {
+    if (user_id) {
       // Get user-specific questions
       const command = new ScanCommand({
         TableName: QUESTIONS_TABLE_NAME,
-        FilterExpression: 'userId = :userId AND #global = :global',
+        FilterExpression: 'user_id = :user_id AND #global = :global',
         ExpressionAttributeNames: {
           '#global': 'global',
         },
         ExpressionAttributeValues: {
-          ':userId': userId,
+          ':user_id': user_id,
           ':global': false,
         },
       });
@@ -191,13 +191,13 @@ export class InterviewsService {
   }
 
   // Get all interviews for a user
-  async getAllInterviews(userId?: string): Promise<Interview[]> {
-    if (userId) {
+  async getAllInterviews(user_id?: string): Promise<Interview[]> {
+    if (user_id) {
       const command = new ScanCommand({
         TableName: INTERVIEWS_TABLE_NAME,
-        FilterExpression: 'userId = :userId',
+        FilterExpression: 'user_id = :user_id',
         ExpressionAttributeValues: {
-          ':userId': userId,
+          ':user_id': user_id,
         },
       });
 

@@ -22,7 +22,7 @@ export default function QuestionForm({
     type: '',
     programming_language: '',
     interview_id: '',
-    userId: '',
+    user_id: '',
     global: false,
   });
 
@@ -40,7 +40,7 @@ export default function QuestionForm({
         type: initialData.type || '',
         programming_language: initialData.programming_language || '',
         interview_id: initialData.interview_id || '',
-        userId: initialData.userId || '',
+        user_id: initialData.user_id || '',
         global: initialData.global || false,
       });
     } else {
@@ -51,7 +51,7 @@ export default function QuestionForm({
         type: '',
         programming_language: '',
         interview_id: '',
-        userId: '',
+        user_id: '',
         global: false,
       });
     }
@@ -121,7 +121,7 @@ export default function QuestionForm({
         ...formData,
         global: true, // Set as global question since it's created through the questions page
         interview_id: undefined, // Remove interview_id for global questions
-        userId: undefined, // Let the API handle the userId
+        user_id: undefined, // Let the API handle the user_id
       };
       await onSubmit(submissionData);
       if (!initialData) {
@@ -133,7 +133,7 @@ export default function QuestionForm({
           type: '',
           programming_language: '',
           interview_id: '',
-          userId: '',
+          user_id: '',
           global: false,
         });
       }
@@ -164,7 +164,7 @@ export default function QuestionForm({
       type: 50,
       programming_language: 50,
       interview_id: 36,
-      userId: 36,
+      user_id: 36,
     };
     return limits[fieldName] || 0;
   };

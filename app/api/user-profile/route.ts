@@ -61,7 +61,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Prevenir modificación de campos protegidos
-    delete updates.userId;
+    delete updates.user_id;
     delete updates.createdAt;
     delete updates.version;
 

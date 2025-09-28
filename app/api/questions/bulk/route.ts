@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
           type: questionData.type,
           programming_language: questionData.programming_language,
           interview_id: interview_id,
-          userId: session.user.id,
+          user_id: session.user.id,
           global: false, // Bulk questions are always user-specific
         });
         createdQuestions.push(newQuestion);
