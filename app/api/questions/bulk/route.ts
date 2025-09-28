@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { questionsService } from '@/lib/dynamodb';
+import { auth } from '@/auth';
 
 // POST /api/questions/bulk - Create multiple questions
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { questions, interview_id } = body;
 
@@ -25,18 +31,30 @@ export async function POST(request: NextRequest) {
     // Validate each question
     const validationErrors: string[] = [];
     questions.forEach((question, index) => {
-      const { question: questionText, answer, context, type, programming_language } = question;
-      
+      const {
+        question: questionText,
+        answer,
+        context,
+        type,
+        programming_language,
+      } = question;
+
       if (!questionText || !answer || !context) {
-        validationErrors.push(`Question ${index + 1}: Missing required fields (question, answer, context)`);
+        validationErrors.push(
+          `Question ${
+            index + 1
+          }: Missing required fields (question, answer, context)`
+        );
       }
-      
+
       if (!type) {
         validationErrors.push(`Question ${index + 1}: Type is required`);
       }
-      
+
       if (!programming_language) {
-        validationErrors.push(`Question ${index + 1}: Programming language is required`);
+        validationErrors.push(
+          `Question ${index + 1}: Programming language is required`
+        );
       }
     });
 
@@ -61,11 +79,17 @@ export async function POST(request: NextRequest) {
           type: questionData.type,
           programming_language: questionData.programming_language,
           interview_id: interview_id,
+          userId: session.user.id,
+          global: false, // Bulk questions are always user-specific
         });
         createdQuestions.push(newQuestion);
       } catch (error) {
         console.error(`Error creating question ${i + 1}:`, error);
-        errors.push(`Failed to create question ${i + 1}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        errors.push(
+          `Failed to create question ${i + 1}: ${
+            error instanceof Error ? error.message : 'Unknown error'
+          }`
+        );
       }
     }
 
@@ -81,8 +105,8 @@ export async function POST(request: NextRequest) {
       response.errors = errors;
     }
 
-    return NextResponse.json(response, { 
-      status: errors.length === questions.length ? 500 : 201 
+    return NextResponse.json(response, {
+      status: errors.length === questions.length ? 500 : 201,
     });
   } catch (error) {
     console.error('Error creating bulk questions:', error);

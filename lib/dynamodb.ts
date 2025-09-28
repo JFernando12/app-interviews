@@ -25,8 +25,9 @@ export interface Question {
   answer: string;
   type: string;
   programming_language: string;
-  interview_id: string;
-  userId: string;
+  interview_id?: string; // Optional for global questions
+  userId?: string; // Optional for global questions
+  global: boolean; // True for global questions, false for user-specific
   createdAt: string;
   updatedAt: string;
 }
@@ -66,18 +67,23 @@ export class QuestionsService {
   // Get all questions for a user
   async getAllQuestions(userId?: string): Promise<Question[]> {
     if (userId) {
+      // Get user-specific questions
       const command = new ScanCommand({
         TableName: QUESTIONS_TABLE_NAME,
-        FilterExpression: 'userId = :userId',
+        FilterExpression: 'userId = :userId AND #global = :global',
+        ExpressionAttributeNames: {
+          '#global': 'global',
+        },
         ExpressionAttributeValues: {
           ':userId': userId,
+          ':global': false,
         },
       });
 
       const response = await docClient.send(command);
       return (response.Items as Question[]) || [];
     } else {
-      // Fallback for backward compatibility
+      // Fallback for backward compatibility - return all questions
       const command = new ScanCommand({
         TableName: QUESTIONS_TABLE_NAME,
       });
@@ -85,6 +91,23 @@ export class QuestionsService {
       const response = await docClient.send(command);
       return (response.Items as Question[]) || [];
     }
+  }
+
+  // Get global questions (for home page)
+  async getGlobalQuestions(): Promise<Question[]> {
+    const command = new ScanCommand({
+      TableName: QUESTIONS_TABLE_NAME,
+      FilterExpression: '#global = :global',
+      ExpressionAttributeNames: {
+        '#global': 'global',
+      },
+      ExpressionAttributeValues: {
+        ':global': true,
+      },
+    });
+
+    const response = await docClient.send(command);
+    return (response.Items as Question[]) || [];
   }
 
   // Get a specific question by ID

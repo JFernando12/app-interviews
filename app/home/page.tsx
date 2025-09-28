@@ -29,11 +29,11 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  // Fetch all questions to calculate type counts
+  // Fetch all global questions to calculate type counts
   const fetchQuestions = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/questions');
+      const response = await fetch('/api/questions?global=true');
       if (!response.ok) {
         throw new Error('Failed to fetch questions');
       }

@@ -9,11 +9,6 @@ interface RouteParams {
 // GET /api/questions/[id] - Get a specific question
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { id } = await params;
     const question = await questionsService.getQuestionById(id);
 
@@ -22,6 +17,17 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         { error: 'Question not found' },
         { status: 404 }
       );
+    }
+
+    // For global questions, no authentication is required
+    if (question.global) {
+      return NextResponse.json(question);
+    }
+
+    // For user-specific questions, check authentication and ownership
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if the question belongs to the user
@@ -42,14 +48,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PUT /api/questions/[id] - Update a specific question
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { id } = await params;
 
-    // First check if question exists and belongs to user
+    // First check if question exists
     const existingQuestion = await questionsService.getQuestionById(id);
     if (!existingQuestion) {
       return NextResponse.json(
@@ -58,8 +59,17 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    if (existingQuestion.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // For global questions, allow updates without authentication (admin functionality)
+    // For user-specific questions, check authentication and ownership
+    if (!existingQuestion.global) {
+      const session = await auth();
+      if (!session?.user?.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+
+      if (existingQuestion.userId !== session.user.id) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
     }
 
     const body = await request.json();
@@ -118,14 +128,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE /api/questions/[id] - Delete a specific question
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { id } = await params;
 
-    // First check if question exists and belongs to user
+    // First check if question exists
     const existingQuestion = await questionsService.getQuestionById(id);
     if (!existingQuestion) {
       return NextResponse.json(
@@ -134,8 +139,17 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    if (existingQuestion.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // For global questions, allow deletion without authentication (admin functionality)
+    // For user-specific questions, check authentication and ownership
+    if (!existingQuestion.global) {
+      const session = await auth();
+      if (!session?.user?.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+
+      if (existingQuestion.userId !== session.user.id) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
     }
 
     await questionsService.deleteQuestion(id);
