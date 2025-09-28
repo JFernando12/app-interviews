@@ -26,7 +26,7 @@ interface InterviewFormData {
 
 interface InterviewFormProps {
   initialData?: Interview;
-  onSubmit: (data: InterviewFormData) => void;
+  onSubmit: (data: InterviewFormData) => Promise<void>;
   onCancel?: () => void;
   mode?: 'create' | 'edit' | 'video'; // New mode for video upload workflow
 }
@@ -171,7 +171,7 @@ export default function InterviewForm({
         submissionData.video_path = videoPath;
       }
 
-      onSubmit(submissionData);
+      await onSubmit(submissionData);
     } catch (error) {
       console.error('Form submission error:', error);
     } finally {
