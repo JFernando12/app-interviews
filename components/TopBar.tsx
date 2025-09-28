@@ -25,14 +25,14 @@ const TopBar = () => {
       icon: <Home className="w-5 h-5" />,
     },
     {
-      href: '/interviews',
-      label: 'Interviews',
-      icon: <Users className="w-5 h-5" />,
-    },
-    {
       href: '/feed',
       label: 'Feed',
       icon: <Globe className="w-5 h-5" />,
+    },
+    {
+      href: '/interviews',
+      label: 'Interviews',
+      icon: <Users className="w-5 h-5" />,
     },
     {
       href: '/questions',
@@ -101,13 +101,6 @@ const TopBar = () => {
                       <User className="w-4 h-4 text-white" />
                     </div>
                   )}
-                </Link>
-                <Link
-                  href="/profile"
-                  className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800/50 transition-all duration-200"
-                  title="Profile Settings"
-                >
-                  <Settings className="w-4 h-4" />
                 </Link>
                 <button
                   onClick={() => signOut()}
@@ -220,7 +213,6 @@ const TopBar = () => {
                       <User className="w-5 h-5 text-white" />
                     </div>
                   )}
-                  <Settings className="w-4 h-4 text-gray-400 ml-auto" />
                 </Link>
                 <button
                   onClick={() => signOut()}

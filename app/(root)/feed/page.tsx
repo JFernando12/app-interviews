@@ -78,26 +78,6 @@ export default function FeedPage() {
                   </p>
                 </div>
               </div>
-
-              {/* Stats */}
-              <div className="hidden sm:flex items-center space-x-6 text-sm">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {interviews.length}
-                  </div>
-                  <div className="text-gray-500 dark:text-gray-400">
-                    Public Interviews
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {interviews.filter((i) => !i.anonymous).length}
-                  </div>
-                  <div className="text-gray-500 dark:text-gray-400">
-                    Named Contributors
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>

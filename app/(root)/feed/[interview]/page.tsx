@@ -21,6 +21,7 @@ import {
   QUESTION_TYPE_DISPLAY,
   INTERVIEW_STATE_DISPLAY,
   InterviewState,
+  QuestionType,
 } from '@/types/enums';
 
 interface FeedInterview {
@@ -28,7 +29,7 @@ interface FeedInterview {
   company: string;
   type?: string;
   programming_language?: string;
-  state: string;
+  state: InterviewState;
   user_id: string;
   video_path?: string;
   public?: boolean;
@@ -226,7 +227,9 @@ export default function FeedInterviewDetailPage() {
                   {interview.user.company && !interview.anonymous && (
                     <>
                       <span className="mx-2">at</span>
-                      <span className="font-medium">{interview.user.company}</span>
+                      <span className="font-medium">
+                        {interview.user.company}
+                      </span>
                     </>
                   )}
                 </div>
@@ -252,7 +255,10 @@ export default function FeedInterviewDetailPage() {
               {interview.type && (
                 <div className="flex items-center text-gray-600 dark:text-gray-400">
                   <Tag className="w-5 h-5 mr-3" />
-                  <span>{QUESTION_TYPE_DISPLAY[interview.type]}</span>
+                  <span>
+                    {QUESTION_TYPE_DISPLAY[interview.type as QuestionType] ||
+                      interview.type}
+                  </span>
                 </div>
               )}
             </div>
@@ -305,7 +311,7 @@ export default function FeedInterviewDetailPage() {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -315,7 +321,7 @@ export default function FeedInterviewDetailPage() {
                         {question.question}
                       </p>
                     </div>
-                    
+
                     {question.context && (
                       <div>
                         <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -326,7 +332,7 @@ export default function FeedInterviewDetailPage() {
                         </p>
                       </div>
                     )}
-                    
+
                     <div>
                       <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Answer:
@@ -347,7 +353,8 @@ export default function FeedInterviewDetailPage() {
         {/* Footer note */}
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            This interview was shared publicly by the community to help others learn and prepare.
+            This interview was shared publicly by the community to help others
+            learn and prepare.
           </p>
         </div>
       </div>
