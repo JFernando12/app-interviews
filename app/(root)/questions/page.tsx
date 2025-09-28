@@ -130,9 +130,9 @@ export default function QuestionsPage() {
         (q) =>
           q.question.toLowerCase().includes(query) ||
           q.answer.toLowerCase().includes(query) ||
-          q.context.toLowerCase().includes(query) ||
-          q.type.toLowerCase().includes(query) ||
-          q.programming_language.toLowerCase().includes(query)
+          q.context?.toLowerCase().includes(query) ||
+          q.type?.toLowerCase().includes(query) ||
+          q.programming_language?.toLowerCase().includes(query)
       );
     }
 
