@@ -68,25 +68,25 @@ export class QuestionTypeUtils {
    */
   static fromString(value: string): QuestionType | null {
     const normalized = value.toLowerCase().replace(/[-\s]/g, '');
-    
+
     // Direct mapping for common variations
     const mappings: Record<string, QuestionType> = {
-      'behavioral': QuestionType.BEHAVIORAL,
-      'behaviour': QuestionType.BEHAVIORAL,
-      'behavioural': QuestionType.BEHAVIORAL,
-      'technical': QuestionType.TECHNICAL,
-      'tech': QuestionType.TECHNICAL,
-      'systemdesign': QuestionType.SYSTEM_DESIGN,
+      behavioral: QuestionType.BEHAVIORAL,
+      behaviour: QuestionType.BEHAVIORAL,
+      behavioural: QuestionType.BEHAVIORAL,
+      technical: QuestionType.TECHNICAL,
+      tech: QuestionType.TECHNICAL,
+      systemdesign: QuestionType.SYSTEM_DESIGN,
       'system-design': QuestionType.SYSTEM_DESIGN,
-      'system_design': QuestionType.SYSTEM_DESIGN,
-      'leadership': QuestionType.LEADERSHIP,
-      'management': QuestionType.LEADERSHIP,
-      'lead': QuestionType.LEADERSHIP,
-      'coding': QuestionType.CODING,
-      'code': QuestionType.CODING,
-      'programming': QuestionType.CODING,
-      'algorithm': QuestionType.CODING,
-      'other': QuestionType.OTHER,
+      system_design: QuestionType.SYSTEM_DESIGN,
+      leadership: QuestionType.LEADERSHIP,
+      management: QuestionType.LEADERSHIP,
+      lead: QuestionType.LEADERSHIP,
+      coding: QuestionType.CODING,
+      code: QuestionType.CODING,
+      programming: QuestionType.CODING,
+      algorithm: QuestionType.CODING,
+      other: QuestionType.OTHER,
     };
 
     return mappings[normalized] || null;
@@ -97,7 +97,7 @@ export class QuestionTypeUtils {
    */
   static categorizeQuestion(question: string, context?: string): QuestionType {
     const content = `${question} ${context || ''}`.toLowerCase();
-    
+
     // Score each type based on keyword matches
     const scores: Record<QuestionType, number> = {
       [QuestionType.BEHAVIORAL]: 0,
@@ -120,7 +120,7 @@ export class QuestionTypeUtils {
     // Find the type with the highest score
     let maxScore = 0;
     let bestType = QuestionType.OTHER;
-    
+
     for (const [type, score] of Object.entries(scores)) {
       if (score > maxScore) {
         maxScore = score;
@@ -132,30 +132,13 @@ export class QuestionTypeUtils {
   }
 
   /**
-   * Check if a question matches a specific type
-   */
-  static matchesType(question: string, context: string | undefined, type: QuestionType): boolean {
-    const content = `${question} ${context || ''}`.toLowerCase();
-    const keywords = QUESTION_TYPE_KEYWORDS[type];
-    
-    return keywords.some(keyword => content.includes(keyword));
-  }
-
-  /**
    * Get valid enum values as array of strings for form options
    */
   static getFormOptions(): Array<{ value: QuestionType; label: string }> {
-    return this.getAllTypes().map(type => ({
+    return this.getAllTypes().map((type) => ({
       value: type,
       label: this.getDisplayName(type),
     }));
-  }
-
-  /**
-   * Validate if a string is a valid question type
-   */
-  static isValidType(value: string): value is QuestionType {
-    return Object.values(QuestionType).includes(value as QuestionType);
   }
 
   /**

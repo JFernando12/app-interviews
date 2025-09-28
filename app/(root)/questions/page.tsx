@@ -17,12 +17,10 @@ import {
   Zap,
   Search,
   LogIn,
-  AlertCircle,
-  CheckCircle,
 } from 'lucide-react';
 
 export default function QuestionsPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -82,14 +80,7 @@ export default function QuestionsPage() {
       }
 
       const count = questionList.filter((q) => {
-        if (QuestionTypeUtils.isValidType(type.id)) {
-          return QuestionTypeUtils.matchesType(
-            q.question,
-            q.context,
-            type.id as QuestionType
-          );
-        }
-        return false;
+        return type.id === q.type;
       }).length;
 
       return { ...type, count };
@@ -122,16 +113,14 @@ export default function QuestionsPage() {
   // Filter questions based on type and search
   const filterQuestions = () => {
     let filtered = questions;
+    console.log('Filtered: ', filtered);
+    console.log('Filtering questions:', { filterType, searchQuery });
+    console.log('filterType:: ', filterType);
 
     // Filter by type
-    if (filterType !== 'all' && QuestionTypeUtils.isValidType(filterType)) {
-      filtered = filtered.filter((q) =>
-        QuestionTypeUtils.matchesType(
-          q.question,
-          q.context,
-          filterType as QuestionType
-        )
-      );
+    if (filterType !== 'all') {
+      filtered = filtered.filter((q) => filterType === q.type);
+      console.log('Filtered by type:', filtered);
     }
 
     // Filter by search query

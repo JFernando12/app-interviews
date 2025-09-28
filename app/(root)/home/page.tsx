@@ -7,16 +7,7 @@ import {
   QuestionType as QuestionTypeEnum,
   QuestionTypeUtils,
 } from '@/types/enums';
-import {
-  HelpCircle,
-  Code,
-  Users,
-  Target,
-  Zap,
-  ArrowRight,
-  AlertCircle,
-  CheckCircle,
-} from 'lucide-react';
+import { HelpCircle, Code, Users, Target, Zap, ArrowRight } from 'lucide-react';
 
 interface QuestionTypeDisplay {
   id: string;
@@ -62,18 +53,7 @@ export default function HomePage() {
   // Calculate question counts by type
   const getQuestionCount = (type: string): number => {
     if (type === 'all') return questions.length;
-
-    if (QuestionTypeUtils.isValidType(type)) {
-      return questions.filter((q) =>
-        QuestionTypeUtils.matchesType(
-          q.question,
-          q.context,
-          type as QuestionTypeEnum
-        )
-      ).length;
-    }
-
-    return 0;
+    return questions.filter((q) => q.type === type).length;
   };
 
   // Define question types
