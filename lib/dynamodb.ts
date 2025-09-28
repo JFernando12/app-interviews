@@ -277,6 +277,23 @@ export class InterviewsService {
     await docClient.send(command);
     return true;
   }
+
+  // Get all public interviews (for feed)
+  async getPublicInterviews(): Promise<Interview[]> {
+    const command = new ScanCommand({
+      TableName: INTERVIEWS_TABLE_NAME,
+      FilterExpression: '#public = :public',
+      ExpressionAttributeNames: {
+        '#public': 'public',
+      },
+      ExpressionAttributeValues: {
+        ':public': true,
+      },
+    });
+
+    const response = await docClient.send(command);
+    return (response.Items as Interview[]) || [];
+  }
 }
 
 export const interviewsService = new InterviewsService();
