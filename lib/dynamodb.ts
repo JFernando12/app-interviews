@@ -29,8 +29,8 @@ export interface Question {
   interview_id?: string; // Optional for global questions
   user_id?: string; // Optional for global questions
   global: boolean; // True for global questions, false for user-specific
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Interview {
@@ -43,14 +43,14 @@ export interface Interview {
   video_path?: string; // Optional, S3 path to uploaded video
   public?: boolean; // Optional, whether the interview is public
   anonymous?: boolean; // Optional, whether the interview is anonymous (only when public is true)
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export class QuestionsService {
   // Create a new question
   async createQuestion(
-    questionData: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>
+    questionData: Omit<Question, 'id' | 'created_at' | 'updated_at'>
   ): Promise<Question> {
     const id = uuidv4();
     const now = new Date().toISOString();
@@ -58,8 +58,8 @@ export class QuestionsService {
     const question: Question = {
       id,
       ...questionData,
-      createdAt: now,
-      updatedAt: now,
+      created_at: now,
+      updated_at: now,
     };
 
     const command = new PutCommand({
@@ -131,20 +131,22 @@ export class QuestionsService {
   // Update a question
   async updateQuestion(
     id: string,
-    updates: Partial<Omit<Question, 'id' | 'createdAt'>>
+    updates: Partial<Omit<Question, 'id' | 'created_at'>>
   ): Promise<Question | null> {
-    const updatedAt = new Date().toISOString();
+    const updated_at = new Date().toISOString();
 
     // Build update expression dynamically
     const updateExpressions: string[] = [];
     const expressionAttributeNames: { [key: string]: string } = {};
     const expressionAttributeValues: { [key: string]: any } = {};
 
-    Object.entries({ ...updates, updatedAt }).forEach(([key, value], index) => {
-      updateExpressions.push(`#${key} = :val${index}`);
-      expressionAttributeNames[`#${key}`] = key;
-      expressionAttributeValues[`:val${index}`] = value;
-    });
+    Object.entries({ ...updates, updated_at }).forEach(
+      ([key, value], index) => {
+        updateExpressions.push(`#${key} = :val${index}`);
+        expressionAttributeNames[`#${key}`] = key;
+        expressionAttributeValues[`:val${index}`] = value;
+      }
+    );
 
     const command = new UpdateCommand({
       TableName: QUESTIONS_TABLE_NAME,
@@ -176,7 +178,7 @@ export const questionsService = new QuestionsService();
 export class InterviewsService {
   // Create a new interview
   async createInterview(
-    interviewData: Omit<Interview, 'id' | 'createdAt' | 'updatedAt'>
+    interviewData: Omit<Interview, 'id' | 'created_at' | 'updated_at'>
   ): Promise<Interview> {
     const id = uuidv4();
     const now = new Date().toISOString();
@@ -184,8 +186,8 @@ export class InterviewsService {
     const interview: Interview = {
       id,
       ...interviewData,
-      createdAt: now,
-      updatedAt: now,
+      created_at: now,
+      updated_at: now,
     };
 
     const command = new PutCommand({
@@ -235,20 +237,22 @@ export class InterviewsService {
   // Update an interview
   async updateInterview(
     id: string,
-    updates: Partial<Omit<Interview, 'id' | 'createdAt'>>
+    updates: Partial<Omit<Interview, 'id' | 'created_at'>>
   ): Promise<Interview | null> {
-    const updatedAt = new Date().toISOString();
+    const updated_at = new Date().toISOString();
 
     // Build update expression dynamically
     const updateExpressions: string[] = [];
     const expressionAttributeNames: { [key: string]: string } = {};
     const expressionAttributeValues: { [key: string]: any } = {};
 
-    Object.entries({ ...updates, updatedAt }).forEach(([key, value], index) => {
-      updateExpressions.push(`#${key} = :val${index}`);
-      expressionAttributeNames[`#${key}`] = key;
-      expressionAttributeValues[`:val${index}`] = value;
-    });
+    Object.entries({ ...updates, updated_at }).forEach(
+      ([key, value], index) => {
+        updateExpressions.push(`#${key} = :val${index}`);
+        expressionAttributeNames[`#${key}`] = key;
+        expressionAttributeValues[`:val${index}`] = value;
+      }
+    );
 
     const command = new UpdateCommand({
       TableName: INTERVIEWS_TABLE_NAME,

@@ -8,8 +8,8 @@ A Next.js application for managing interview questions with DynamoDB storage. Th
   "question": "Question text",
   "answer": "Answer text", 
   "context": "Additional context or background information",
-  "createdAt": "2025-09-27T10:30:00.000Z",
-  "updatedAt": "2025-09-27T10:30:00.000Z"
+  "created_at": "2025-09-27T10:30:00.000Z",
+  "updated_at": "2025-09-27T10:30:00.000Z"
 }
 ```
 
@@ -123,8 +123,8 @@ Get all questions.
     "question": "Question text",
     "answer": "Answer text",
     "context": "Context text",
-    "createdAt": "2025-09-27T10:30:00.000Z",
-    "updatedAt": "2025-09-27T10:30:00.000Z"
+    "created_at": "2025-09-27T10:30:00.000Z",
+    "updated_at": "2025-09-27T10:30:00.000Z"
   }
 ]
 ```

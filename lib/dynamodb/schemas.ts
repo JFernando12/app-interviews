@@ -82,8 +82,8 @@ export interface UserProfile {
   };
 
   // Metadata del sistema
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
   version: number; // Para versionado de configuraciones
 }
 

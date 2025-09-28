@@ -120,7 +120,7 @@ export default function InterviewDetailPage() {
                   <div className="flex items-center">
                     <Calendar className="w-5 h-5 mr-2" />
                     <span>
-                      {new Date(interview.createdAt).toLocaleDateString()}
+                      {new Date(interview.created_at).toLocaleDateString()}
                     </span>
                   </div>
                 </div>

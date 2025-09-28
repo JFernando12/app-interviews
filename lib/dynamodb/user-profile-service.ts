@@ -62,8 +62,8 @@ export class UserProfileService {
         // Si tenemos el nombre del usuario, lo usamos
         ...(userName && { title: userName }),
       },
-      createdAt: now,
-      updatedAt: now,
+      created_at: now,
+      updated_at: now,
       version: 1,
     };
 
@@ -100,7 +100,7 @@ export class UserProfileService {
 
       // Construir la expresión de actualización dinámicamente
       const updateExpressionParts = [
-        'updatedAt = :now',
+        'updated_at = :now',
         'version = version + :inc',
       ];
       const expressionAttributeNames: Record<string, string> = {};
@@ -111,7 +111,7 @@ export class UserProfileService {
 
       // Procesar cada actualización
       Object.entries(updates).forEach(([key, value], index) => {
-        if (key !== 'user_id' && key !== 'createdAt' && key !== 'version') {
+        if (key !== 'user_id' && key !== 'created_at' && key !== 'version') {
           const attrName = `#attr${index}`;
           const attrValue = `:val${index}`;
 
@@ -158,7 +158,7 @@ export class UserProfileService {
         TableName: TABLE_NAME,
         Key: { id: user_id },
         UpdateExpression: `SET 
-          updatedAt = :now,
+          updated_at = :now,
           version = version + :inc,
           subscription = if_not_exists(subscription, :emptyObj)`,
         ExpressionAttributeValues: {
@@ -215,7 +215,7 @@ export class UserProfileService {
         TableName: TABLE_NAME,
         Key: { id: user_id },
         UpdateExpression: `SET 
-          updatedAt = :now,
+          updated_at = :now,
           version = version + :inc,
           stats = if_not_exists(stats, :emptyStats)`,
         ExpressionAttributeValues: {
@@ -273,7 +273,7 @@ export class UserProfileService {
         TableName: TABLE_NAME,
         Key: { id: user_id },
         UpdateExpression: `SET 
-          updatedAt = :now,
+          updated_at = :now,
           version = version + :inc,
           stats.#statName = if_not_exists(stats.#statName, :zero) + :increment`,
         ExpressionAttributeNames: {
@@ -350,7 +350,7 @@ export class UserProfileService {
         TableName: TABLE_NAME,
         Key: { id: user_id },
         UpdateExpression: `SET 
-          updatedAt = :now,
+          updated_at = :now,
           version = version + :inc,
           subscription.#status = :status,
           privacy.profileVisibility = :visibility`,

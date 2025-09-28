@@ -37,65 +37,6 @@ export default function QuestionList({
     });
   };
 
-  const getQuestionTypeInfo = (question: Question) => {
-    const context = question.context?.toLowerCase() || '';
-    const questionText = question.question.toLowerCase();
-
-    if (context.includes('behavioral') || questionText.includes('behavioral')) {
-      return {
-        name: 'Behavioral',
-        icon: Users,
-        color:
-          'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
-      };
-    }
-    if (
-      context.includes('system') ||
-      context.includes('design') ||
-      questionText.includes('system') ||
-      questionText.includes('design')
-    ) {
-      return {
-        name: 'System Design',
-        icon: Target,
-        color:
-          'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400',
-      };
-    }
-    if (
-      context.includes('leadership') ||
-      context.includes('management') ||
-      questionText.includes('leadership') ||
-      questionText.includes('management')
-    ) {
-      return {
-        name: 'Leadership',
-        icon: Zap,
-        color:
-          'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400',
-      };
-    }
-    if (
-      context.includes('technical') ||
-      questionText.includes('technical') ||
-      context.includes('coding') ||
-      questionText.includes('coding')
-    ) {
-      return {
-        name: 'Technical',
-        icon: Code,
-        color:
-          'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
-      };
-    }
-
-    return {
-      name: 'General',
-      icon: MessageSquare,
-      color: 'bg-gray-100 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400',
-    };
-  };
-
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -145,8 +86,9 @@ export default function QuestionList({
   return (
     <div className="space-y-4">
       {questions.map((question) => {
-        const typeInfo = getQuestionTypeInfo(question);
-        const IconComponent = typeInfo.icon;
+        const typeInfo = {
+          name: question.type,
+        };
 
         return (
           <div
@@ -155,11 +97,6 @@ export default function QuestionList({
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4 flex-1">
-                <div
-                  className={`w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform ${typeInfo.color}`}
-                >
-                  <IconComponent className="h-6 w-6" />
-                </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
                     {question.question}
@@ -170,13 +107,8 @@ export default function QuestionList({
                   <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-500">
                     <div className="flex items-center">
                       <Calendar className="h-3 w-3 mr-1" />
-                      {formatDate(question.createdAt)}
+                      {formatDate(question.created_at)}
                     </div>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${typeInfo.color}`}
-                    >
-                      {typeInfo.name}
-                    </span>
                     {question.programming_language && (
                       <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-xs">
                         {question.programming_language}

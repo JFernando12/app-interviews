@@ -62,7 +62,7 @@ export async function PATCH(request: NextRequest) {
 
     // Prevenir modificación de campos protegidos
     delete updates.user_id;
-    delete updates.createdAt;
+    delete updates.created_at;
     delete updates.version;
 
     // Validar suscripción (solo admins pueden cambiar planes manualmente)

@@ -141,7 +141,7 @@ export default function QuestionsPage() {
 
   // Save a question (create or update)
   const saveQuestion = async (
-    questionData: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>
+    questionData: Omit<Question, 'id' | 'created_at' | 'updated_at'>
   ) => {
     try {
       const url = editingQuestion

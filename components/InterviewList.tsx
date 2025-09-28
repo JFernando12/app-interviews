@@ -141,7 +141,7 @@ export default function InterviewList({
                 <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mt-2">
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-1" />
-                    Created {formatDate(interview.createdAt)}
+                    Created {formatDate(interview.created_at)}
                   </div>
                 </div>
 
@@ -160,10 +160,10 @@ export default function InterviewList({
                   )}
                 </div>
 
-                {interview.updatedAt !== interview.createdAt && (
+                {interview.updated_at !== interview.created_at && (
                   <div className="flex items-center text-xs text-gray-500 dark:text-gray-500 mt-1">
                     <Edit className="h-3 w-3 mr-1" />
-                    Updated {formatDate(interview.updatedAt)}
+                    Updated {formatDate(interview.updated_at)}
                   </div>
                 )}
               </div>

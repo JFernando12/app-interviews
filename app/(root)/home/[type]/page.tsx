@@ -190,13 +190,13 @@ export default function TypePage() {
       switch (sortBy) {
         case 'newest':
           return (
-            new Date(b.createdAt || '').getTime() -
-            new Date(a.createdAt || '').getTime()
+            new Date(b.created_at || '').getTime() -
+            new Date(a.created_at || '').getTime()
           );
         case 'oldest':
           return (
-            new Date(a.createdAt || '').getTime() -
-            new Date(b.createdAt || '').getTime()
+            new Date(a.created_at || '').getTime() -
+            new Date(b.created_at || '').getTime()
           );
         case 'question':
           return a.question.localeCompare(b.question);
@@ -416,10 +416,10 @@ export default function TypePage() {
                           {question.context}
                         </div>
                       )}
-                      {question.createdAt && (
+                      {question.created_at && (
                         <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                           <Calendar className="w-4 h-4 mr-1" />
-                          {new Date(question.createdAt).toLocaleDateString()}
+                          {new Date(question.created_at).toLocaleDateString()}
                         </div>
                       )}
                     </div>

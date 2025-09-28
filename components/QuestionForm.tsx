@@ -14,7 +14,7 @@ interface QuestionFormProps {
   global: boolean;
   initialData?: Question;
   onSubmit: (
-    data: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>
+    data: Omit<Question, 'id' | 'created_at' | 'updated_at'>
   ) => Promise<void>;
   onCancel?: () => void;
 }
