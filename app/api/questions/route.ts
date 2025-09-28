@@ -25,14 +25,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Filter by type if specified
-    if (type && type !== 'all' && QuestionTypeUtils.isValidType(type)) {
-      questions = questions.filter((q) =>
-        QuestionTypeUtils.matchesType(
-          q.question,
-          q.context,
-          type as QuestionType
-        )
-      );
+    if (type && type !== 'all') {
+      questions = questions.filter((q) => q.type === type);
     }
 
     return NextResponse.json(questions);
