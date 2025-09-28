@@ -28,14 +28,9 @@ export default function QuestionsPage() {
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterType, setFilterType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [notification, setNotification] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
 
   // Question type filters
   const questionTypes = [
@@ -92,17 +87,10 @@ export default function QuestionsPage() {
     });
   };
 
-  // Show notification
-  const showNotification = (type: 'success' | 'error', message: string) => {
-    setNotification({ type, message });
-    setTimeout(() => setNotification(null), 5000);
-  };
-
   // Fetch user-specific questions
   const fetchQuestions = async () => {
     try {
       setLoading(true);
-      setError(null);
 
       const response = await fetch('/api/questions');
       if (!response.ok) {
@@ -117,8 +105,6 @@ export default function QuestionsPage() {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Failed to load questions';
-      setError(message);
-      showNotification('error', message);
     } finally {
       setLoading(false);
     }
@@ -213,14 +199,8 @@ export default function QuestionsPage() {
       await fetchQuestions();
       setEditingQuestion(null);
       setIsModalOpen(false);
-      showNotification(
-        'success',
-        `Question ${editingQuestion ? 'updated' : 'created'} successfully`
-      );
     } catch (err) {
       const message = err instanceof Error ? err.message : 'An error occurred';
-      setError(message);
-      showNotification('error', message);
     }
   };
 
@@ -247,12 +227,7 @@ export default function QuestionsPage() {
       }
 
       await fetchQuestions();
-      showNotification('success', 'Question deleted successfully');
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Failed to delete question';
-      setError(message);
-      showNotification('error', message);
     }
   };
 
@@ -352,40 +327,6 @@ export default function QuestionsPage() {
             </div>
           </div>
         </div>
-
-        {/* Notification */}
-        {notification && (
-          <div
-            className={`mb-6 p-4 rounded-lg flex items-center ${
-              notification.type === 'success'
-                ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800'
-                : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'
-            }`}
-          >
-            {notification.type === 'success' ? (
-              <CheckCircle className="h-5 w-5 mr-3" />
-            ) : (
-              <AlertCircle className="h-5 w-5 mr-3" />
-            )}
-            {notification.message}
-          </div>
-        )}
-
-        {/* Error Display */}
-        {error && !notification && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 mr-3 text-red-800 dark:text-red-200" />
-              <p className="text-red-800 dark:text-red-200">{error}</p>
-            </div>
-            <button
-              onClick={fetchQuestions}
-              className="mt-2 text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
-            >
-              Try again
-            </button>
-          </div>
-        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar - Filters */}
