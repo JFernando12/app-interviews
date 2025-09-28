@@ -33,7 +33,13 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { company, programming_language, type } = body;
+    const {
+      company,
+      programming_language,
+      type,
+      public: isPublic,
+      anonymous,
+    } = body;
 
     // Validate required fields
     if (!company) {
@@ -53,6 +59,8 @@ export async function POST(request: NextRequest) {
       type: derivedType,
       state: InterviewState.PENDING, // Default state for new interviews
       user_id: session.user.id,
+      public: isPublic || false,
+      anonymous: anonymous || false,
     });
 
     return NextResponse.json(newInterview, { status: 201 });

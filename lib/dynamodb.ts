@@ -41,6 +41,8 @@ export interface Interview {
   state: InterviewState; // Required field for tracking interview progress
   user_id: string;
   video_path?: string; // Optional, S3 path to uploaded video
+  public?: boolean; // Optional, whether the interview is public
+  anonymous?: boolean; // Optional, whether the interview is anonymous (only when public is true)
   createdAt: string;
   updatedAt: string;
 }

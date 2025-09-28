@@ -20,6 +20,8 @@ interface InterviewFormData {
   questions: QuestionData[];
   video_path?: string;
   videoFile?: File; // Add video file property
+  public?: boolean;
+  anonymous?: boolean;
 }
 
 interface InterviewFormProps {
@@ -40,6 +42,8 @@ export default function InterviewForm({
     programming_language: '',
     type: '' as QuestionType | '',
     state: InterviewState.PENDING,
+    public: false,
+    anonymous: false,
   });
   const [questions, setQuestions] = useState<QuestionData[]>([]);
   const [videoPath, setVideoPath] = useState<string>('');
@@ -58,6 +62,8 @@ export default function InterviewForm({
         programming_language: initialData.programming_language || '',
         type: initialData.type || '',
         state: initialData.state || InterviewState.PENDING,
+        public: (initialData as any).public || false,
+        anonymous: (initialData as any).anonymous || false,
       });
       setVideoPath(initialData.video_path || '');
     } else {
@@ -66,6 +72,8 @@ export default function InterviewForm({
         programming_language: '',
         type: '',
         state: InterviewState.PENDING,
+        public: false,
+        anonymous: false,
       });
       setVideoPath('');
     }
@@ -76,10 +84,10 @@ export default function InterviewForm({
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
 
     // Clear errors when user starts typing
@@ -87,6 +95,15 @@ export default function InterviewForm({
       setErrors((prev) => ({
         ...prev,
         [name]: '',
+      }));
+    }
+
+    // If public is unchecked, also uncheck anonymous
+    if (name === 'public' && !checked) {
+      setFormData((prev) => ({
+        ...prev,
+        public: false,
+        anonymous: false,
       }));
     }
   };
@@ -131,6 +148,8 @@ export default function InterviewForm({
       const submissionData: InterviewFormData = {
         company: formData.company.trim(),
         questions: questions,
+        public: formData.public,
+        anonymous: formData.anonymous,
       };
 
       // Add video file if selected
@@ -305,6 +324,85 @@ export default function InterviewForm({
             </select>
           </div>
         )}
+
+        {/* Public and Anonymous Toggles */}
+        <div className="space-y-4">
+          {/* Public Toggle */}
+          <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+            <div className="flex-1">
+              <label
+                htmlFor="public"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer"
+              >
+                Public Interview
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Make this interview visible to other users
+              </p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                id="public"
+                name="public"
+                checked={formData.public}
+                onChange={handleChange}
+                className="sr-only"
+                disabled={isSubmitting}
+              />
+              <div
+                className={`w-11 h-6 bg-gray-200 dark:bg-gray-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 ${
+                  formData.public ? 'bg-blue-600' : ''
+                } transition-colors`}
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform ${
+                    formData.public ? 'translate-x-5' : 'translate-x-0'
+                  } mt-0.5 ml-0.5`}
+                ></div>
+              </div>
+            </label>
+          </div>
+
+          {/* Anonymous Toggle - Only show when public is true */}
+          {formData.public && (
+            <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+              <div className="flex-1">
+                <label
+                  htmlFor="anonymous"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer"
+                >
+                  Anonymous Interview
+                </label>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Hide your identity in this public interview
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="anonymous"
+                  name="anonymous"
+                  checked={formData.anonymous}
+                  onChange={handleChange}
+                  className="sr-only"
+                  disabled={isSubmitting}
+                />
+                <div
+                  className={`w-11 h-6 bg-gray-200 dark:bg-gray-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 ${
+                    formData.anonymous ? 'bg-blue-600' : ''
+                  } transition-colors`}
+                >
+                  <div
+                    className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform ${
+                      formData.anonymous ? 'translate-x-5' : 'translate-x-0'
+                    } mt-0.5 ml-0.5`}
+                  ></div>
+                </div>
+              </label>
+            </div>
+          )}
+        </div>
 
         {/* Video Upload Section */}
         {(mode === 'video' || showVideoUpload) && initialData?.id && (

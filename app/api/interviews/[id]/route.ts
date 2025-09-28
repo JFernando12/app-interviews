@@ -52,7 +52,15 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { company, programming_language, type, state, video_path } = body;
+    const {
+      company,
+      programming_language,
+      type,
+      state,
+      video_path,
+      public: isPublic,
+      anonymous,
+    } = body;
 
     // Validate required fields
     if (!company) {
@@ -102,6 +110,8 @@ export async function PUT(
     if (type !== undefined) updateData.type = type;
     if (state !== undefined) updateData.state = state;
     if (video_path !== undefined) updateData.video_path = video_path;
+    if (isPublic !== undefined) updateData.public = isPublic;
+    if (anonymous !== undefined) updateData.anonymous = anonymous;
 
     const updatedInterview = await interviewsService.updateInterview(
       id,
