@@ -8,7 +8,7 @@ import {
   QUESTION_TYPE_DISPLAY,
   INTERVIEW_STATE_DISPLAY,
 } from '@/types/enums';
-import { AlertCircle, Save, X, Video } from 'lucide-react';
+import { AlertCircle, Save, X, Video, Loader } from 'lucide-react';
 import QuestionUploader, { QuestionData } from '@/components/QuestionUploader';
 import VideoUploader from '@/components/VideoUploader';
 
@@ -469,9 +469,13 @@ export default function InterviewForm({
             className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
           >
             <div className="flex items-center justify-center">
-              <Save className="h-4 w-4 mr-2" />
+              {isSubmitting ? (
+                <Loader className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
               {isSubmitting
-                ? 'Saving...'
+                ? 'Creating Interview...'
                 : initialData
                 ? 'Update Interview'
                 : 'Create Interview'}

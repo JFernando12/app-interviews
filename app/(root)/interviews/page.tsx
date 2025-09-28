@@ -11,6 +11,8 @@ interface InterviewFormData {
   company: string;
   type?: string;
   programming_language?: string;
+  public?: boolean;
+  anonymous?: boolean;
   questions: Array<{
     context: string;
     question: string;
@@ -88,6 +90,8 @@ export default function InterviewsPage() {
             company: formData.company,
             type: formData.type,
             programming_language: formData.questions,
+            public: formData.public,
+            anonymous: formData.anonymous,
           }),
         });
 

@@ -41,10 +41,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Update interview with video path and set state to processing
-    const updatedInterview = await interviewsService.updateInterview(interview_id, {
-      video_path: video_path,
-      state: InterviewState.PROCESSING,
-    });
+    const updatedInterview = await interviewsService.updateInterview(
+      interview_id,
+      {
+        video_path: video_path,
+      }
+    );
 
     if (!updatedInterview) {
       return NextResponse.json(
