@@ -17,6 +17,8 @@ import {
   Zap,
   Search,
   LogIn,
+  BookOpen,
+  Eye,
 } from 'lucide-react';
 
 export default function QuestionsPage() {
@@ -30,6 +32,7 @@ export default function QuestionsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterType, setFilterType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [studyMode, setStudyMode] = useState(false);
 
   // Question type filters
   const questionTypes = [
@@ -278,22 +281,44 @@ export default function QuestionsPage() {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center">
                   Questions
+                  {studyMode && (
+                    <span className="ml-3 px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-full text-sm font-medium">
+                      Study Mode
+                    </span>
+                  )}
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Manage your personal interview questions collection.
+                  {studyMode
+                    ? 'Study mode shows complete context, questions, and answers for better learning.'
+                    : 'Manage your personal interview questions collection.'}
                 </p>
               </div>
-              <button
-                onClick={openNewQuestionModal}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-              >
-                <div className="flex items-center">
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Question
-                </div>
-              </button>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setStudyMode(!studyMode)}
+                  className={`font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+                    studyMode
+                      ? 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-gray-500'
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    {studyMode ? 'Exit Study Mode' : 'Study Mode'}
+                  </div>
+                </button>
+                <button
+                  onClick={openNewQuestionModal}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                >
+                  <div className="flex items-center">
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Question
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -384,6 +409,7 @@ export default function QuestionsPage() {
                     onEdit={editQuestion}
                     onDelete={deleteQuestion}
                     isLoading={loading}
+                    studyMode={studyMode}
                   />
                 </div>
               </div>
