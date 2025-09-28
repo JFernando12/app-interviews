@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { questionsService } from '@/lib/dynamodb';
 import { auth } from '@/auth';
+import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 
 // GET /api/questions - Get all questions, optionally filtered by type
 export async function GET(request: NextRequest) {
@@ -24,42 +25,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Filter by type if specified
-    if (type && type !== 'all') {
-      questions = questions.filter((q) => {
-        const context = q.context?.toLowerCase() || '';
-        const questionText = q.question?.toLowerCase() || '';
-
-        switch (type) {
-          case 'behavioral':
-            return (
-              context.includes('behavioral') ||
-              questionText.includes('behavioral')
-            );
-          case 'technical':
-            return (
-              context.includes('technical') ||
-              questionText.includes('technical') ||
-              context.includes('coding') ||
-              questionText.includes('coding')
-            );
-          case 'system-design':
-            return (
-              context.includes('system') ||
-              context.includes('design') ||
-              questionText.includes('system') ||
-              questionText.includes('design')
-            );
-          case 'leadership':
-            return (
-              context.includes('leadership') ||
-              context.includes('management') ||
-              questionText.includes('leadership') ||
-              questionText.includes('management')
-            );
-          default:
-            return false;
-        }
-      });
+    if (type && type !== 'all' && QuestionTypeUtils.isValidType(type)) {
+      questions = questions.filter((q) =>
+        QuestionTypeUtils.matchesType(
+          q.question,
+          q.context,
+          type as QuestionType
+        )
+      );
     }
 
     return NextResponse.json(questions);
@@ -96,6 +69,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate and normalize the type field
+    const normalizedType =
+      QuestionTypeUtils.fromString(type) || QuestionType.OTHER;
+
     let questionData;
 
     if (global) {
@@ -104,7 +81,7 @@ export async function POST(request: NextRequest) {
         question,
         answer,
         context,
-        type,
+        type: normalizedType,
         programming_language,
         global: true,
       };
@@ -119,7 +96,7 @@ export async function POST(request: NextRequest) {
         question,
         answer,
         context: context,
-        type: type,
+        type: normalizedType,
         programming_language: programming_language,
         interview_id,
         user_id: session.user.id,

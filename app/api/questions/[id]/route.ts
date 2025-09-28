@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { questionsService } from '@/lib/dynamodb';
 import { auth } from '@/auth';
+import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -101,7 +102,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (question) updates.question = question;
     if (answer) updates.answer = answer;
     if (context) updates.context = context;
-    if (type) updates.type = type;
+    if (type)
+      updates.type = QuestionTypeUtils.fromString(type) || QuestionType.OTHER;
     if (programming_language)
       updates.programming_language = programming_language;
     if (interview_id) updates.interview_id = interview_id;

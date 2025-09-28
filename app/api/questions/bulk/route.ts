@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { questionsService } from '@/lib/dynamodb';
 import { auth } from '@/auth';
+import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 
 // POST /api/questions/bulk - Create multiple questions
 export async function POST(request: NextRequest) {
@@ -72,11 +73,15 @@ export async function POST(request: NextRequest) {
     for (let i = 0; i < questions.length; i++) {
       try {
         const questionData = questions[i];
+        // Normalize the type
+        const normalizedType =
+          QuestionTypeUtils.fromString(questionData.type) || QuestionType.OTHER;
+
         const newQuestion = await questionsService.createQuestion({
           question: questionData.question,
           answer: questionData.answer,
           context: questionData.context,
-          type: questionData.type,
+          type: normalizedType,
           programming_language: questionData.programming_language,
           interview_id: interview_id,
           user_id: session.user.id,

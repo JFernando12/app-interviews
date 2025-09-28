@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Question } from '@/lib/dynamodb';
+import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 import QuestionForm from '@/components/QuestionForm';
 import QuestionList from '@/components/QuestionList';
 import Modal from '@/components/Modal';
@@ -35,10 +36,42 @@ export default function QuestionsPage() {
   // Question type filters
   const questionTypes = [
     { id: 'all', name: 'All Questions', icon: HelpCircle, count: 0 },
-    { id: 'behavioral', name: 'Behavioral', icon: Users, count: 0 },
-    { id: 'technical', name: 'Technical', icon: Code, count: 0 },
-    { id: 'system-design', name: 'System Design', icon: Target, count: 0 },
-    { id: 'leadership', name: 'Leadership', icon: Zap, count: 0 },
+    {
+      id: QuestionType.BEHAVIORAL,
+      name: QuestionTypeUtils.getDisplayName(QuestionType.BEHAVIORAL),
+      icon: Users,
+      count: 0,
+    },
+    {
+      id: QuestionType.TECHNICAL,
+      name: QuestionTypeUtils.getDisplayName(QuestionType.TECHNICAL),
+      icon: Code,
+      count: 0,
+    },
+    {
+      id: QuestionType.SYSTEM_DESIGN,
+      name: QuestionTypeUtils.getDisplayName(QuestionType.SYSTEM_DESIGN),
+      icon: Target,
+      count: 0,
+    },
+    {
+      id: QuestionType.LEADERSHIP,
+      name: QuestionTypeUtils.getDisplayName(QuestionType.LEADERSHIP),
+      icon: Zap,
+      count: 0,
+    },
+    {
+      id: QuestionType.CODING,
+      name: QuestionTypeUtils.getDisplayName(QuestionType.CODING),
+      icon: Code,
+      count: 0,
+    },
+    {
+      id: QuestionType.OTHER,
+      name: QuestionTypeUtils.getDisplayName(QuestionType.OTHER),
+      icon: HelpCircle,
+      count: 0,
+    },
   ];
 
   // Update counts
@@ -49,38 +82,14 @@ export default function QuestionsPage() {
       }
 
       const count = questionList.filter((q) => {
-        const context = q.context?.toLowerCase() || '';
-        const question = q.question?.toLowerCase() || '';
-
-        switch (type.id) {
-          case 'behavioral':
-            return (
-              context.includes('behavioral') || question.includes('behavioral')
-            );
-          case 'technical':
-            return (
-              context.includes('technical') ||
-              question.includes('technical') ||
-              context.includes('coding') ||
-              question.includes('coding')
-            );
-          case 'system-design':
-            return (
-              context.includes('system') ||
-              context.includes('design') ||
-              question.includes('system') ||
-              question.includes('design')
-            );
-          case 'leadership':
-            return (
-              context.includes('leadership') ||
-              context.includes('management') ||
-              question.includes('leadership') ||
-              question.includes('management')
-            );
-          default:
-            return false;
+        if (QuestionTypeUtils.isValidType(type.id)) {
+          return QuestionTypeUtils.matchesType(
+            q.question,
+            q.context,
+            type.id as QuestionType
+          );
         }
+        return false;
       }).length;
 
       return { ...type, count };
@@ -115,41 +124,14 @@ export default function QuestionsPage() {
     let filtered = questions;
 
     // Filter by type
-    if (filterType !== 'all') {
-      filtered = filtered.filter((q) => {
-        const context = q.context?.toLowerCase() || '';
-        const question = q.question?.toLowerCase() || '';
-
-        switch (filterType) {
-          case 'behavioral':
-            return (
-              context.includes('behavioral') || question.includes('behavioral')
-            );
-          case 'technical':
-            return (
-              context.includes('technical') ||
-              question.includes('technical') ||
-              context.includes('coding') ||
-              question.includes('coding')
-            );
-          case 'system-design':
-            return (
-              context.includes('system') ||
-              context.includes('design') ||
-              question.includes('system') ||
-              question.includes('design')
-            );
-          case 'leadership':
-            return (
-              context.includes('leadership') ||
-              context.includes('management') ||
-              question.includes('leadership') ||
-              question.includes('management')
-            );
-          default:
-            return true;
-        }
-      });
+    if (filterType !== 'all' && QuestionTypeUtils.isValidType(filterType)) {
+      filtered = filtered.filter((q) =>
+        QuestionTypeUtils.matchesType(
+          q.question,
+          q.context,
+          filterType as QuestionType
+        )
+      );
     }
 
     // Filter by search query

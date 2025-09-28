@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Interview } from '@/lib/dynamodb';
+import { QuestionType } from '@/types/enums';
 import { AlertCircle, Save, X } from 'lucide-react';
 import QuestionUploader, { QuestionData } from '@/components/QuestionUploader';
 
@@ -160,7 +161,7 @@ export default function InterviewForm({
           <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
             <QuestionUploader
               onQuestionsChange={setQuestions}
-              defaultType="technical"
+              defaultType={QuestionType.TECHNICAL}
               defaultProgrammingLanguage="JavaScript"
             />
           </div>

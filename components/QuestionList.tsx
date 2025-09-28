@@ -1,6 +1,7 @@
 'use client';
 
 import { Question } from '@/lib/dynamodb';
+import { QuestionTypeUtils } from '@/types/enums';
 import {
   HelpCircle,
   Edit,
@@ -181,9 +182,9 @@ export default function QuestionList({
                         {question.programming_language}
                       </span>
                     )}
-                    {question.type && question.type !== 'general' && (
+                    {question.type && (
                       <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-full text-xs">
-                        {question.type}
+                        {QuestionTypeUtils.getDisplayName(question.type)}
                       </span>
                     )}
                   </div>

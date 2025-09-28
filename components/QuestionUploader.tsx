@@ -2,29 +2,36 @@
 
 import { useState, useRef } from 'react';
 import { Upload, Plus, Trash2, FileText, AlertCircle, CheckCircle } from 'lucide-react';
+import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 
 export interface QuestionData {
   context: string;
   question: string;
   answer: string;
-  type?: string;
+  type?: QuestionType;
   programming_language?: string;
 }
 
 interface QuestionUploaderProps {
   onQuestionsChange: (questions: QuestionData[]) => void;
-  defaultType?: string;
+  defaultType?: QuestionType;
   defaultProgrammingLanguage?: string;
 }
 
-export default function QuestionUploader({ 
-  onQuestionsChange, 
-  defaultType = '',
-  defaultProgrammingLanguage = ''
+export default function QuestionUploader({
+  onQuestionsChange,
+  defaultType = QuestionType.TECHNICAL,
+  defaultProgrammingLanguage = '',
 }: QuestionUploaderProps) {
   const [activeTab, setActiveTab] = useState<'manual' | 'file'>('manual');
   const [questions, setQuestions] = useState<QuestionData[]>([
-    { context: '', question: '', answer: '', type: defaultType, programming_language: defaultProgrammingLanguage }
+    {
+      context: '',
+      question: '',
+      answer: '',
+      type: defaultType,
+      programming_language: defaultProgrammingLanguage,
+    },
   ]);
   const [fileError, setFileError] = useState<string>('');
   const [fileSuccess, setFileSuccess] = useState<string>('');
@@ -33,11 +40,19 @@ export default function QuestionUploader({
   // Update parent component when questions change
   const updateQuestions = (newQuestions: QuestionData[]) => {
     setQuestions(newQuestions);
-    onQuestionsChange(newQuestions.filter(q => q.question.trim() && q.answer.trim() && q.context.trim()));
+    onQuestionsChange(
+      newQuestions.filter(
+        (q) => q.question.trim() && q.answer.trim() && q.context.trim()
+      )
+    );
   };
 
   // Handle manual question input changes
-  const handleQuestionChange = (index: number, field: keyof QuestionData, value: string) => {
+  const handleQuestionChange = (
+    index: number,
+    field: keyof QuestionData,
+    value: string
+  ) => {
     const newQuestions = [...questions];
     newQuestions[index] = { ...newQuestions[index], [field]: value };
     updateQuestions(newQuestions);
@@ -45,13 +60,16 @@ export default function QuestionUploader({
 
   // Add new question row
   const addQuestion = () => {
-    const newQuestions = [...questions, { 
-      context: '', 
-      question: '', 
-      answer: '', 
-      type: defaultType, 
-      programming_language: defaultProgrammingLanguage 
-    }];
+    const newQuestions = [
+      ...questions,
+      {
+        context: '',
+        question: '',
+        answer: '',
+        type: defaultType,
+        programming_language: defaultProgrammingLanguage,
+      },
+    ];
     updateQuestions(newQuestions);
   };
 
@@ -88,28 +106,45 @@ export default function QuestionUploader({
         }
 
         const validQuestions: QuestionData[] = [];
-        
+
         parsedQuestions.forEach((item, index) => {
           if (typeof item !== 'object' || item === null) {
             throw new Error(`Question ${index + 1}: Must be an object`);
           }
 
-          const { context, question, answer, type, programming_language } = item;
+          const { context, question, answer, type, programming_language } =
+            item;
 
           if (!context || !question || !answer) {
-            throw new Error(`Question ${index + 1}: Missing required fields (context, question, answer)`);
+            throw new Error(
+              `Question ${
+                index + 1
+              }: Missing required fields (context, question, answer)`
+            );
           }
 
-          if (typeof context !== 'string' || typeof question !== 'string' || typeof answer !== 'string') {
-            throw new Error(`Question ${index + 1}: context, question, and answer must be strings`);
+          if (
+            typeof context !== 'string' ||
+            typeof question !== 'string' ||
+            typeof answer !== 'string'
+          ) {
+            throw new Error(
+              `Question ${
+                index + 1
+              }: context, question, and answer must be strings`
+            );
           }
 
           validQuestions.push({
             context: context.trim(),
             question: question.trim(),
             answer: answer.trim(),
-            type: type || defaultType,
-            programming_language: programming_language || defaultProgrammingLanguage,
+            type:
+              QuestionTypeUtils.fromString(type) ||
+              defaultType ||
+              QuestionType.OTHER,
+            programming_language:
+              programming_language || defaultProgrammingLanguage,
           });
         });
 
@@ -118,12 +153,15 @@ export default function QuestionUploader({
         }
 
         updateQuestions(validQuestions);
-        setFileSuccess(`Successfully loaded ${validQuestions.length} questions from file`);
+        setFileSuccess(
+          `Successfully loaded ${validQuestions.length} questions from file`
+        );
         setActiveTab('manual'); // Switch to manual tab to show loaded questions
-        
       } catch (error) {
         console.error('File parsing error:', error);
-        setFileError(error instanceof Error ? error.message : 'Failed to parse JSON file');
+        setFileError(
+          error instanceof Error ? error.message : 'Failed to parse JSON file'
+        );
       }
     };
 
@@ -146,9 +184,9 @@ export default function QuestionUploader({
           Add Questions (Optional)
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          You can add questions manually or upload a JSON file with the format: 
+          You can add questions manually or upload a JSON file with the format:
           <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded ml-1">
-            [{"{"}"context":"...", "question":"...", "answer":"..."{"}"}]
+            [{'{'}"context":"...", "question":"...", "answer":"..."{'}'}]
           </code>
         </p>
       </div>
@@ -185,7 +223,10 @@ export default function QuestionUploader({
       {activeTab === 'manual' && (
         <div className="space-y-4">
           {questions.map((question, index) => (
-            <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 space-y-3">
+            <div
+              key={index}
+              className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 space-y-3"
+            >
               <div className="flex items-center justify-between">
                 <h4 className="font-medium text-gray-900 dark:text-white">
                   Question {index + 1}
@@ -201,7 +242,7 @@ export default function QuestionUploader({
                   </button>
                 )}
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -210,28 +251,35 @@ export default function QuestionUploader({
                   <input
                     type="text"
                     value={question.context}
-                    onChange={(e) => handleQuestionChange(index, 'context', e.target.value)}
+                    onChange={(e) =>
+                      handleQuestionChange(index, 'context', e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                     placeholder="e.g., Behavioral, Technical, etc."
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Type
                   </label>
                   <select
                     value={question.type || ''}
-                    onChange={(e) => handleQuestionChange(index, 'type', e.target.value)}
+                    onChange={(e) =>
+                      handleQuestionChange(
+                        index,
+                        'type',
+                        e.target.value as QuestionType
+                      )
+                    }
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                   >
                     <option value="">Select type...</option>
-                    <option value="behavioral">Behavioral</option>
-                    <option value="technical">Technical</option>
-                    <option value="system-design">System Design</option>
-                    <option value="leadership">Leadership</option>
-                    <option value="coding">Coding</option>
-                    <option value="other">Other</option>
+                    {QuestionTypeUtils.getFormOptions().map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -243,32 +291,42 @@ export default function QuestionUploader({
                 <input
                   type="text"
                   value={question.programming_language || ''}
-                  onChange={(e) => handleQuestionChange(index, 'programming_language', e.target.value)}
+                  onChange={(e) =>
+                    handleQuestionChange(
+                      index,
+                      'programming_language',
+                      e.target.value
+                    )
+                  }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                   placeholder="e.g., JavaScript, Python, Java, etc."
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Question *
                 </label>
                 <textarea
                   value={question.question}
-                  onChange={(e) => handleQuestionChange(index, 'question', e.target.value)}
+                  onChange={(e) =>
+                    handleQuestionChange(index, 'question', e.target.value)
+                  }
                   rows={2}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                   placeholder="Enter the interview question..."
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Answer *
                 </label>
                 <textarea
                   value={question.answer}
-                  onChange={(e) => handleQuestionChange(index, 'answer', e.target.value)}
+                  onChange={(e) =>
+                    handleQuestionChange(index, 'answer', e.target.value)
+                  }
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                   placeholder="Enter the expected answer..."
@@ -276,7 +334,7 @@ export default function QuestionUploader({
               </div>
             </div>
           ))}
-          
+
           <button
             type="button"
             onClick={addQuestion}
@@ -311,7 +369,8 @@ export default function QuestionUploader({
                 Choose JSON File
               </button>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Expected format: [{"{"}"context":"...", "question":"...", "answer":"..."{"}"}]
+                Expected format: [{'{'}"context":"...", "question":"...",
+                "answer":"..."{'}'}]
               </p>
             </div>
           </div>
@@ -320,7 +379,9 @@ export default function QuestionUploader({
             <div className="flex items-center p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
               <AlertCircle className="h-5 w-5 text-red-500 mr-3" />
               <div>
-                <p className="text-sm text-red-800 dark:text-red-200">{fileError}</p>
+                <p className="text-sm text-red-800 dark:text-red-200">
+                  {fileError}
+                </p>
                 <button
                   type="button"
                   onClick={clearFile}
@@ -335,19 +396,30 @@ export default function QuestionUploader({
           {fileSuccess && (
             <div className="flex items-center p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
               <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-              <p className="text-sm text-green-800 dark:text-green-200">{fileSuccess}</p>
+              <p className="text-sm text-green-800 dark:text-green-200">
+                {fileSuccess}
+              </p>
             </div>
           )}
         </div>
       )}
 
-      {questions.length > 0 && questions.some(q => q.question.trim() && q.answer.trim() && q.context.trim()) && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
-            {questions.filter(q => q.question.trim() && q.answer.trim() && q.context.trim()).length} question(s) ready to be added to the interview
-          </p>
-        </div>
-      )}
+      {questions.length > 0 &&
+        questions.some(
+          (q) => q.question.trim() && q.answer.trim() && q.context.trim()
+        ) && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              {
+                questions.filter(
+                  (q) =>
+                    q.question.trim() && q.answer.trim() && q.context.trim()
+                ).length
+              }{' '}
+              question(s) ready to be added to the interview
+            </p>
+          </div>
+        )}
     </div>
   );
 }

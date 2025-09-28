@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Question } from '@/lib/dynamodb';
 import {
+  QuestionType as QuestionTypeEnum,
+  QuestionTypeUtils,
+} from '@/types/enums';
+import {
   HelpCircle,
   Code,
   Users,
@@ -14,7 +18,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 
-interface QuestionType {
+interface QuestionTypeDisplay {
   id: string;
   name: string;
   description: string;
@@ -59,87 +63,84 @@ export default function HomePage() {
   const getQuestionCount = (type: string): number => {
     if (type === 'all') return questions.length;
 
-    return questions.filter((q) => {
-      const context = q.context?.toLowerCase() || '';
-      const question = q.question?.toLowerCase() || '';
+    if (QuestionTypeUtils.isValidType(type)) {
+      return questions.filter((q) =>
+        QuestionTypeUtils.matchesType(
+          q.question,
+          q.context,
+          type as QuestionTypeEnum
+        )
+      ).length;
+    }
 
-      switch (type) {
-        case 'behavioral':
-          return (
-            context.includes('behavioral') || question.includes('behavioral')
-          );
-        case 'technical':
-          return (
-            context.includes('technical') ||
-            question.includes('technical') ||
-            context.includes('coding') ||
-            question.includes('coding')
-          );
-        case 'system-design':
-          return (
-            context.includes('system') ||
-            context.includes('design') ||
-            question.includes('system') ||
-            question.includes('design')
-          );
-        case 'leadership':
-          return (
-            context.includes('leadership') ||
-            context.includes('management') ||
-            question.includes('leadership') ||
-            question.includes('management')
-          );
-        default:
-          return false;
-      }
-    }).length;
+    return 0;
   };
 
   // Define question types
-  const questionTypes: QuestionType[] = [
+  const questionTypes: QuestionTypeDisplay[] = [
     {
-      id: 'behavioral',
-      name: 'Behavioral Questions',
-      description:
-        'Assess soft skills, past experiences, and cultural fit through STAR methodology',
+      id: QuestionTypeEnum.BEHAVIORAL,
+      name:
+        QuestionTypeUtils.getDisplayName(QuestionTypeEnum.BEHAVIORAL) +
+        ' Questions',
+      description: QuestionTypeUtils.getDescription(
+        QuestionTypeEnum.BEHAVIORAL
+      ),
       icon: <Users className="w-10 h-10" />,
       color: 'text-blue-600',
       bgColor: 'bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-100',
       borderColor: 'border-blue-200 group-hover:border-blue-300',
-      count: getQuestionCount('behavioral'),
+      count: getQuestionCount(QuestionTypeEnum.BEHAVIORAL),
     },
     {
-      id: 'technical',
-      name: 'Technical Questions',
-      description:
-        'Evaluate coding skills, algorithms, and technical problem-solving abilities',
+      id: QuestionTypeEnum.TECHNICAL,
+      name:
+        QuestionTypeUtils.getDisplayName(QuestionTypeEnum.TECHNICAL) +
+        ' Questions',
+      description: QuestionTypeUtils.getDescription(QuestionTypeEnum.TECHNICAL),
       icon: <Code className="w-10 h-10" />,
       color: 'text-purple-600',
       bgColor: 'bg-gradient-to-br from-purple-50 via-purple-100 to-violet-100',
       borderColor: 'border-purple-200 group-hover:border-purple-300',
-      count: getQuestionCount('technical'),
+      count: getQuestionCount(QuestionTypeEnum.TECHNICAL),
     },
     {
-      id: 'system-design',
-      name: 'System Design',
-      description:
-        'Test architecture knowledge, scalability thinking, and system trade-offs',
+      id: QuestionTypeEnum.SYSTEM_DESIGN,
+      name: QuestionTypeUtils.getDisplayName(QuestionTypeEnum.SYSTEM_DESIGN),
+      description: QuestionTypeUtils.getDescription(
+        QuestionTypeEnum.SYSTEM_DESIGN
+      ),
       icon: <Target className="w-10 h-10" />,
       color: 'text-green-600',
       bgColor: 'bg-gradient-to-br from-green-50 via-green-100 to-emerald-100',
       borderColor: 'border-green-200 group-hover:border-green-300',
-      count: getQuestionCount('system-design'),
+      count: getQuestionCount(QuestionTypeEnum.SYSTEM_DESIGN),
     },
     {
-      id: 'leadership',
-      name: 'Leadership & Management',
-      description:
-        'Explore management philosophy, team building, and strategic decision-making',
+      id: QuestionTypeEnum.LEADERSHIP,
+      name:
+        QuestionTypeUtils.getDisplayName(QuestionTypeEnum.LEADERSHIP) +
+        ' & Management',
+      description: QuestionTypeUtils.getDescription(
+        QuestionTypeEnum.LEADERSHIP
+      ),
       icon: <Zap className="w-10 h-10" />,
       color: 'text-orange-600',
       bgColor: 'bg-gradient-to-br from-orange-50 via-orange-100 to-amber-100',
       borderColor: 'border-orange-200 group-hover:border-orange-300',
-      count: getQuestionCount('leadership'),
+      count: getQuestionCount(QuestionTypeEnum.LEADERSHIP),
+    },
+    {
+      id: QuestionTypeEnum.CODING,
+      name:
+        QuestionTypeUtils.getDisplayName(QuestionTypeEnum.CODING) +
+        ' Questions',
+      description: QuestionTypeUtils.getDescription(QuestionTypeEnum.CODING),
+      icon: <Code className="w-10 h-10" />,
+      color: 'text-indigo-600',
+      bgColor: 'bg-gradient-to-br from-indigo-50 via-indigo-100 to-blue-100',
+      borderColor: 'border-indigo-200 group-hover:border-indigo-300',
+      count: getQuestionCount(QuestionTypeEnum.CODING),
     },
     {
       id: 'all',

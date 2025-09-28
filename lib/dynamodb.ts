@@ -1,6 +1,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, DeleteCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { v4 as uuidv4 } from 'uuid';
+import { QuestionType } from '@/types/enums';
 
 // Configure DynamoDB client
 const client = new DynamoDBClient({
@@ -23,7 +24,7 @@ export interface Question {
   question: string;
   context: string;
   answer: string;
-  type: string;
+  type: QuestionType;
   programming_language: string;
   interview_id?: string; // Optional for global questions
   user_id?: string; // Optional for global questions

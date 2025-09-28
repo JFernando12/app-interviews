@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Question } from '@/lib/dynamodb';
+import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 import { AlertCircle, Save, X } from 'lucide-react';
 
 interface QuestionFormProps {
@@ -23,7 +24,7 @@ export default function QuestionForm({
     question: '',
     answer: '',
     context: '',
-    type: '',
+    type: '' as QuestionType | '',
     programming_language: '',
     interview_id: '',
     user_id: '',
@@ -101,6 +102,10 @@ export default function QuestionForm({
       newErrors.answer = 'Answer must be at least 10 characters long';
     }
 
+    if (!formData.type) {
+      newErrors.type = 'Question type is required';
+    }
+
     // Optional field validations - only validate if they have content
     if (formData.context.trim() && formData.context.trim().length < 5) {
       newErrors.context =
@@ -123,6 +128,7 @@ export default function QuestionForm({
     try {
       const submissionData = {
         ...formData,
+        type: formData.type as QuestionType,
         global: global,
         user_id: undefined, // Let the API handle the user_id
       };
@@ -347,12 +353,11 @@ export default function QuestionForm({
               disabled={isSubmitting}
             >
               <option value="">Select question type...</option>
-              <option value="behavioral">Behavioral</option>
-              <option value="technical">Technical</option>
-              <option value="system-design">System Design</option>
-              <option value="leadership">Leadership</option>
-              <option value="coding">Coding</option>
-              <option value="other">Other</option>
+              {QuestionTypeUtils.getFormOptions().map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
             {errors.type && (
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">

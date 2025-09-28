@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { Suspense } from 'react';
 
 const errorMessages: Record<string, string> = {
   Signin: 'Try signing in with a different account.',
@@ -14,11 +15,12 @@ const errorMessages: Record<string, string> = {
   OAuthAccountNotLinked:
     'To confirm your identity, sign in with the same account you used originally.',
   EmailSignin: 'Check your email address.',
-  CredentialsSignin: 'Sign in failed. Check the details you provided are correct.',
+  CredentialsSignin:
+    'Sign in failed. Check the details you provided are correct.',
   default: 'Unable to sign in.',
 };
 
-export default function AuthError() {
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error') || 'default';
 
@@ -39,7 +41,7 @@ export default function AuthError() {
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               {errorMessages[error] || errorMessages.default}
             </p>
-            
+
             <div className="space-y-3">
               <Link
                 href="/auth/signin"
@@ -47,7 +49,7 @@ export default function AuthError() {
               >
                 Try Again
               </Link>
-              
+
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200"
@@ -58,7 +60,7 @@ export default function AuthError() {
             </div>
           </div>
         </div>
-        
+
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             If you continue to have problems, please contact support.
@@ -66,5 +68,19 @@ export default function AuthError() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthError() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+        </div>
+      }
+    >
+      <AuthErrorContent />
+    </Suspense>
   );
 }
