@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { AlertCircle, CheckCircle, Globe, Users } from 'lucide-react';
 import FeedInterviewList from '@/components/FeedInterviewList';
 import { Interview } from '@/lib/dynamodb';
@@ -15,6 +16,7 @@ interface FeedInterview extends Interview {
 }
 
 export default function FeedPage() {
+  const router = useRouter();
   const [interviews, setInterviews] = useState<FeedInterview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [notification, setNotification] = useState<{
@@ -46,12 +48,9 @@ export default function FeedPage() {
     setTimeout(() => setNotification(null), 5000);
   };
 
-  // Handle view interview (placeholder for future functionality)
+  // Handle view interview
   const handleView = (interview: FeedInterview) => {
-    // Navigate to interview detail page or open modal
-    console.log('Viewing interview:', interview.id);
-    // You can implement navigation to interview detail page here
-    // router.push(`/feed/${interview.id}`);
+    router.push(`/feed/${interview.id}`);
   };
 
   // Load public interviews on component mount
@@ -79,7 +78,7 @@ export default function FeedPage() {
                   </p>
                 </div>
               </div>
-              
+
               {/* Stats */}
               <div className="hidden sm:flex items-center space-x-6 text-sm">
                 <div className="text-center">
@@ -92,7 +91,7 @@ export default function FeedPage() {
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {interviews.filter(i => !i.anonymous).length}
+                    {interviews.filter((i) => !i.anonymous).length}
                   </div>
                   <div className="text-gray-500 dark:text-gray-400">
                     Named Contributors
@@ -131,9 +130,14 @@ export default function FeedPage() {
                   Community Contributions
                 </p>
                 <p className="text-blue-700 dark:text-blue-300">
-                  These interviews have been shared publicly by community members to help others learn and prepare. 
-                  {interviews.filter(i => i.anonymous).length > 0 && (
-                    <> Some contributors have chosen to remain anonymous while still sharing their valuable experiences.</>
+                  These interviews have been shared publicly by community
+                  members to help others learn and prepare.
+                  {interviews.filter((i) => i.anonymous).length > 0 && (
+                    <>
+                      {' '}
+                      Some contributors have chosen to remain anonymous while
+                      still sharing their valuable experiences.
+                    </>
                   )}
                 </p>
               </div>
