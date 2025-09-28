@@ -93,28 +93,28 @@ export default function Modal({
   };
 
   return (
-    <div 
+    <div
       className="modal-backdrop flex items-center justify-center p-4 sm:p-6"
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      <div 
+      <div
         ref={modalRef}
         className={`modal-content w-full ${getSizeClasses()} max-h-[90vh] overflow-hidden`}
       >
-        <div className="card m-0 flex flex-col max-h-[90vh]">
+        <div className="bg-gray-900 shadow-2xl rounded-xl flex flex-col max-h-[90vh] border border-gray-700">
           {/* Modal Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white rounded-t-xl">
+          <div className="flex items-center justify-between p-6 border-b border-gray-700 bg-gray-800 rounded-t-xl">
             <div>
-              <h2 id="modal-title" className="heading-md text-on-card">
+              <h2 id="modal-title" className="heading-md text-white">
                 {title}
               </h2>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+              className="p-2 rounded-lg hover:bg-gray-700 transition-colors text-gray-400 hover:text-gray-200"
               aria-label="Close modal"
             >
               <X className="w-6 h-6" />
@@ -122,10 +122,8 @@ export default function Modal({
           </div>
 
           {/* Modal Body */}
-          <div className="flex-1 overflow-y-auto p-6 bg-white">
-            <div className="max-w-none">
-              {children}
-            </div>
+          <div className="flex-1 overflow-y-auto p-6 bg-gray-900">
+            <div className="max-w-none">{children}</div>
           </div>
         </div>
       </div>

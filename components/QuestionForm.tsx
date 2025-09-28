@@ -97,18 +97,10 @@ export default function QuestionForm({
       newErrors.answer = 'Answer must be at least 10 characters long';
     }
 
-    if (!formData.context.trim()) {
-      newErrors.context = 'Context is required';
-    } else if (formData.context.trim().length < 5) {
-      newErrors.context = 'Context must be at least 5 characters long';
-    }
-
-    if (!formData.type.trim()) {
-      newErrors.type = 'Question type is required';
-    }
-
-    if (!formData.programming_language.trim()) {
-      newErrors.programming_language = 'Programming language is required';
+    // Optional field validations - only validate if they have content
+    if (formData.context.trim() && formData.context.trim().length < 5) {
+      newErrors.context =
+        'Context must be at least 5 characters long if provided';
     }
 
     setErrors(newErrors);
@@ -178,12 +170,12 @@ export default function QuestionForm({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-700 p-6">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-xl font-bold text-white">
           {initialData ? 'Edit Question' : 'Create New Question'}
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-gray-300 mt-1">
           {initialData
             ? 'Update question details and answers'
             : 'Add a new question to your collection'}
@@ -196,9 +188,7 @@ export default function QuestionForm({
           <label
             htmlFor="question"
             className={`block text-sm font-medium mb-2 transition-colors ${
-              focusedField === 'question'
-                ? 'text-blue-600 dark:text-blue-400'
-                : 'text-gray-700 dark:text-gray-300'
+              focusedField === 'question' ? 'text-blue-400' : 'text-gray-200'
             }`}
           >
             Interview Question *
@@ -214,14 +204,14 @@ export default function QuestionForm({
               placeholder="Enter the interview question..."
               className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 resize-none ${
                 errors.question
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800'
-              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
+                  ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20'
+                  : 'border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+              } bg-gray-800 text-white placeholder-gray-400`}
               rows={3}
               maxLength={getCharacterLimit('question')}
               disabled={isSubmitting}
             />
-            <div className="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500">
+            <div className="absolute bottom-3 right-3 text-xs text-gray-400">
               {getCharacterCount('question')}/{getCharacterLimit('question')}
             </div>
             {errors.question && (
@@ -231,7 +221,7 @@ export default function QuestionForm({
             )}
           </div>
           {errors.question && (
-            <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+            <p className="mt-2 text-sm text-red-400 flex items-center">
               <AlertCircle className="h-4 w-4 mr-1" />
               {errors.question}
             </p>
@@ -243,9 +233,7 @@ export default function QuestionForm({
           <label
             htmlFor="answer"
             className={`block text-sm font-medium mb-2 transition-colors ${
-              focusedField === 'answer'
-                ? 'text-blue-600 dark:text-blue-400'
-                : 'text-gray-700 dark:text-gray-300'
+              focusedField === 'answer' ? 'text-blue-400' : 'text-gray-200'
             }`}
           >
             Expected Answer / Key Points *
@@ -261,14 +249,14 @@ export default function QuestionForm({
               placeholder="Describe the ideal answer or key points to look for..."
               className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
                 errors.answer
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800'
-              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
+                  ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20'
+                  : 'border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+              } bg-gray-800 text-white placeholder-gray-400`}
               rows={5}
               maxLength={getCharacterLimit('answer')}
               disabled={isSubmitting}
             />
-            <div className="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500">
+            <div className="absolute bottom-3 right-3 text-xs text-gray-400">
               {getCharacterCount('answer')}/{getCharacterLimit('answer')}
             </div>
             {errors.answer && (
@@ -278,7 +266,7 @@ export default function QuestionForm({
             )}
           </div>
           {errors.answer && (
-            <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+            <p className="mt-2 text-sm text-red-400 flex items-center">
               <AlertCircle className="h-4 w-4 mr-1" />
               {errors.answer}
             </p>
@@ -290,12 +278,10 @@ export default function QuestionForm({
           <label
             htmlFor="context"
             className={`block text-sm font-medium mb-2 transition-colors ${
-              focusedField === 'context'
-                ? 'text-blue-600 dark:text-blue-400'
-                : 'text-gray-700 dark:text-gray-300'
+              focusedField === 'context' ? 'text-blue-400' : 'text-gray-200'
             }`}
           >
-            Context / Notes *
+            Context / Notes
           </label>
           <div className="relative">
             <textarea
@@ -308,14 +294,14 @@ export default function QuestionForm({
               placeholder="Add context, role type, difficulty level, or additional notes..."
               className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 resize-none ${
                 errors.context
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800'
-              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
+                  ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20'
+                  : 'border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+              } bg-gray-800 text-white placeholder-gray-400`}
               rows={3}
               maxLength={getCharacterLimit('context')}
               disabled={isSubmitting}
             />
-            <div className="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500">
+            <div className="absolute bottom-3 right-3 text-xs text-gray-400">
               {getCharacterCount('context')}/{getCharacterLimit('context')}
             </div>
             {errors.context && (
@@ -325,7 +311,7 @@ export default function QuestionForm({
             )}
           </div>
           {errors.context && (
-            <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+            <p className="mt-2 text-sm text-red-400 flex items-center">
               <AlertCircle className="h-4 w-4 mr-1" />
               {errors.context}
             </p>
@@ -337,12 +323,10 @@ export default function QuestionForm({
           <label
             htmlFor="type"
             className={`block text-sm font-medium mb-2 transition-colors ${
-              focusedField === 'type'
-                ? 'text-blue-600 dark:text-blue-400'
-                : 'text-gray-700 dark:text-gray-300'
+              focusedField === 'type' ? 'text-blue-400' : 'text-gray-200'
             }`}
           >
-            Question Type *
+            Question Type
           </label>
           <div className="relative">
             <select
@@ -354,9 +338,9 @@ export default function QuestionForm({
               onBlur={handleBlur}
               className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
                 errors.type
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800'
-              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+                  ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20'
+                  : 'border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+              } bg-gray-800 text-white`}
               disabled={isSubmitting}
             >
               <option value="">Select question type...</option>
@@ -374,7 +358,7 @@ export default function QuestionForm({
             )}
           </div>
           {errors.type && (
-            <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+            <p className="mt-2 text-sm text-red-400 flex items-center">
               <AlertCircle className="h-4 w-4 mr-1" />
               {errors.type}
             </p>
@@ -387,30 +371,72 @@ export default function QuestionForm({
             htmlFor="programming_language"
             className={`block text-sm font-medium mb-2 transition-colors ${
               focusedField === 'programming_language'
-                ? 'text-blue-600 dark:text-blue-400'
-                : 'text-gray-700 dark:text-gray-300'
+                ? 'text-blue-400'
+                : 'text-gray-200'
             }`}
           >
-            Programming Language *
+            Programming Language / Framework
           </label>
           <div className="relative">
-            <input
-              type="text"
+            <select
               id="programming_language"
               name="programming_language"
               value={formData.programming_language}
               onChange={handleChange}
               onFocus={() => handleFocus('programming_language')}
               onBlur={handleBlur}
-              placeholder="e.g., JavaScript, Python, Java, etc."
               className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
                 errors.programming_language
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800'
-              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
-              maxLength={getCharacterLimit('programming_language')}
+                  ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20'
+                  : 'border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+              } bg-gray-800 text-white`}
               disabled={isSubmitting}
-            />
+            >
+              <option value="">Select language/framework...</option>
+              <optgroup label="Programming Languages">
+                <option value="JavaScript">JavaScript</option>
+                <option value="Python">Python</option>
+                <option value="Java">Java</option>
+                <option value="TypeScript">TypeScript</option>
+                <option value="C#">C#</option>
+                <option value="C++">C++</option>
+                <option value="C">C</option>
+                <option value="Go">Go</option>
+                <option value="Rust">Rust</option>
+                <option value="PHP">PHP</option>
+                <option value="Ruby">Ruby</option>
+                <option value="Swift">Swift</option>
+                <option value="Kotlin">Kotlin</option>
+                <option value="Scala">Scala</option>
+                <option value="R">R</option>
+                <option value="Dart">Dart</option>
+                <option value="SQL">SQL</option>
+              </optgroup>
+              <optgroup label="Frameworks & Libraries">
+                <option value="React">React</option>
+                <option value="Vue.js">Vue.js</option>
+                <option value="Angular">Angular</option>
+                <option value="Next.js">Next.js</option>
+                <option value="Node.js">Node.js</option>
+                <option value="Express">Express</option>
+                <option value="Django">Django</option>
+                <option value="Flask">Flask</option>
+                <option value="Spring Boot">Spring Boot</option>
+                <option value="Laravel">Laravel</option>
+                <option value="Ruby on Rails">Ruby on Rails</option>
+                <option value="ASP.NET">ASP.NET</option>
+                <option value="Flutter">Flutter</option>
+                <option value="React Native">React Native</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option value="General">General</option>
+                <option value="System Design">System Design</option>
+                <option value="DevOps">DevOps</option>
+                <option value="Cloud">Cloud</option>
+                <option value="Database">Database</option>
+                <option value="Other">Other</option>
+              </optgroup>
+            </select>
             {errors.programming_language && (
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <AlertCircle className="h-5 w-5 text-red-500" />
@@ -418,7 +444,7 @@ export default function QuestionForm({
             )}
           </div>
           {errors.programming_language && (
-            <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+            <p className="mt-2 text-sm text-red-400 flex items-center">
               <AlertCircle className="h-4 w-4 mr-1" />
               {errors.programming_language}
             </p>
@@ -426,11 +452,11 @@ export default function QuestionForm({
         </div>
 
         {/* Form Actions */}
-        <div className="flex gap-3 pt-6 border-t border-gray-200 dark:border-gray-600">
+        <div className="flex gap-3 pt-6 border-t border-gray-700">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
           >
             <div className="flex items-center justify-center">
               <Save className="h-4 w-4 mr-2" />
@@ -446,7 +472,7 @@ export default function QuestionForm({
               type="button"
               onClick={handleCancel}
               disabled={isSubmitting}
-              className="px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+              className="px-4 py-3 border border-gray-600 text-gray-300 font-medium rounded-lg hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900"
             >
               <div className="flex items-center justify-center">
                 <X className="h-4 w-4 mr-2" />
