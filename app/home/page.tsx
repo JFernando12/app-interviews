@@ -29,17 +29,7 @@ export default function HomePage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notification, setNotification] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
   const router = useRouter();
-
-  // Show notification
-  const showNotification = (type: 'success' | 'error', message: string) => {
-    setNotification({ type, message });
-    setTimeout(() => setNotification(null), 5000);
-  };
 
   // Fetch all global questions to calculate type counts
   const fetchQuestions = async () => {
@@ -52,12 +42,10 @@ export default function HomePage() {
       }
       const data = await response.json();
       setQuestions(data);
-      showNotification('success', 'Question categories loaded successfully');
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'An error occurred';
       setError(errorMessage);
-      showNotification('error', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -167,13 +155,6 @@ export default function HomePage() {
   ];
 
   const handleTypeSelect = (typeId: string) => {
-    const selectedType = questionTypes.find((type) => type.id === typeId);
-    if (selectedType && selectedType.count > 0) {
-      showNotification(
-        'success',
-        `Loading ${selectedType.name.toLowerCase()}...`
-      );
-    }
     router.push(`/home/${typeId}`);
   };
 
@@ -246,25 +227,6 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-
-        {/* Notification */}
-        {notification && (
-          <div
-            className={`mb-6 p-4 rounded-lg flex items-center ${
-              notification.type === 'success'
-                ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800'
-                : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'
-            }`}
-          >
-            {notification.type === 'success' ? (
-              <CheckCircle className="h-5 w-5 mr-3" />
-            ) : (
-              <AlertCircle className="h-5 w-5 mr-3" />
-            )}
-            {notification.message}
-          </div>
-        )}
-
         {/* Question Types Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {questionTypes.map((type) => (

@@ -47,10 +47,6 @@ export default function TypePage() {
     'newest'
   );
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
-  const [notification, setNotification] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
 
   // Define question type configurations
   const questionTypeConfig: Record<string, QuestionTypeInfo> = {
@@ -103,12 +99,6 @@ export default function TypePage() {
 
   const currentType = questionTypeConfig[type] || questionTypeConfig.all;
 
-  // Show notification
-  const showNotification = (type: 'success' | 'error', message: string) => {
-    setNotification({ type, message });
-    setTimeout(() => setNotification(null), 5000);
-  };
-
   // Fetch questions
   const fetchQuestions = async () => {
     try {
@@ -120,12 +110,10 @@ export default function TypePage() {
       }
       const data = await response.json();
       setQuestions(data);
-      showNotification('success', 'Questions loaded successfully');
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'An error occurred';
       setError(errorMessage);
-      showNotification('error', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -239,12 +227,7 @@ export default function TypePage() {
 
       // Remove from local state
       setQuestions((prev) => prev.filter((q) => q.id !== id));
-      showNotification('success', 'Question deleted successfully');
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to delete question';
-      showNotification('error', errorMessage);
-    }
+    } catch (err) {}
   };
 
   const toggleCardExpansion = (questionId: string) => {
@@ -342,24 +325,6 @@ export default function TypePage() {
             </div>
           </div>
         </div>
-
-        {/* Notification */}
-        {notification && (
-          <div
-            className={`mb-6 p-4 rounded-lg flex items-center ${
-              notification.type === 'success'
-                ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800'
-                : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'
-            }`}
-          >
-            {notification.type === 'success' ? (
-              <CheckCircle className="h-5 w-5 mr-3" />
-            ) : (
-              <AlertCircle className="h-5 w-5 mr-3" />
-            )}
-            {notification.message}
-          </div>
-        )}
 
         {/* Search and Filter Controls */}
         <div className="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
