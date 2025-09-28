@@ -38,8 +38,8 @@ export default function QuestionUploader({
   defaultType = QuestionType.TECHNICAL,
   defaultProgrammingLanguage = '',
 }: QuestionUploaderProps) {
-  const [activeTab, setActiveTab] = useState<'manual' | 'file' | 'video'>(
-    'manual'
+  const [activeTab, setActiveTab] = useState<'video' | 'file' | 'manual'>(
+    'video'
   );
   const [questions, setQuestions] = useState<QuestionData[]>([
     {
@@ -268,15 +268,15 @@ export default function QuestionUploader({
         <nav className="-mb-px flex space-x-8">
           <button
             type="button"
-            onClick={() => setActiveTab('manual')}
+            onClick={() => setActiveTab('video')}
             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'manual'
+              activeTab === 'video'
                 ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                 : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
             }`}
           >
-            <Plus className="h-4 w-4 inline mr-2" />
-            Manual Entry
+            <Video className="h-4 w-4 inline mr-2" />
+            Video Upload
           </button>
           <button
             type="button"
@@ -292,15 +292,15 @@ export default function QuestionUploader({
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('video')}
+            onClick={() => setActiveTab('manual')}
             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'video'
+              activeTab === 'manual'
                 ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                 : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
             }`}
           >
-            <Video className="h-4 w-4 inline mr-2" />
-            Video Upload
+            <Plus className="h-4 w-4 inline mr-2" />
+            Manual Entry
           </button>
         </nav>
       </div>

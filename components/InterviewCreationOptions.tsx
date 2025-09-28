@@ -18,9 +18,17 @@ interface InterviewCreationOptionsProps {
 
 const creationOptions: CreationOption[] = [
   {
+    id: 'video',
+    title: 'Video Upload',
+    description: 'Upload interview video for automatic processing and analysis',
+    icon: Video,
+    color: 'purple',
+  },
+  {
     id: 'manual',
     title: 'Manual Entry',
-    description: 'Create interview manually with form input and upload questions',
+    description:
+      'Create interview manually with form input and upload questions',
     icon: FileText,
     color: 'blue',
   },
@@ -30,13 +38,6 @@ const creationOptions: CreationOption[] = [
     description: 'Import interview data from a JSON file',
     icon: Upload,
     color: 'green',
-  },
-  {
-    id: 'video',
-    title: 'Video Upload',
-    description: 'Upload interview video for automatic processing and analysis',
-    icon: Video,
-    color: 'purple',
   },
 ];
 
