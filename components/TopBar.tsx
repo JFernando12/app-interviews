@@ -220,14 +220,6 @@ const TopBar = () => {
                       <User className="w-5 h-5 text-white" />
                     </div>
                   )}
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      {session.user?.name}
-                    </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {session.user?.description || session.user?.email}
-                    </span>
-                  </div>
                   <Settings className="w-4 h-4 text-gray-400 ml-auto" />
                 </Link>
                 <button

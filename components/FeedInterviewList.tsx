@@ -117,23 +117,19 @@ export default function FeedInterviewList({
                   <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                     <User className="h-4 w-4 mr-1" />
                     <span className="font-medium">{interview.user.name}</span>
-                    {interview.user.title && !interview.anonymous && (
-                      <>
-                        <span className="mx-2">·</span>
-                        <span>{interview.user.title}</span>
-                      </>
-                    )}
                     {interview.user.company && !interview.anonymous && (
                       <>
                         <span className="mx-2">at</span>
-                        <span className="font-medium">{interview.user.company}</span>
+                        <span className="font-medium">
+                          {interview.user.company}
+                        </span>
                       </>
                     )}
                   </div>
                 </div>
               </div>
             </div>
-            
+
             {/* View button */}
             {onView && (
               <button
@@ -191,14 +187,14 @@ export default function FeedInterviewList({
               <Calendar className="h-4 w-4 mr-2" />
               Created {formatDate(interview.created_at)}
             </div>
-            
+
             {interview.programming_language && (
               <div className="flex items-center">
                 <Code className="h-4 w-4 mr-2" />
                 {interview.programming_language}
               </div>
             )}
-            
+
             {interview.type && (
               <div className="flex items-center">
                 <Tag className="h-4 w-4 mr-2" />
