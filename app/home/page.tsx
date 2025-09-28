@@ -9,7 +9,9 @@ import {
   Users,
   Target,
   Zap,
-  ArrowRight
+  ArrowRight,
+  AlertCircle,
+  CheckCircle,
 } from 'lucide-react';
 
 interface QuestionType {
@@ -27,20 +29,35 @@ export default function HomePage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
   const router = useRouter();
+
+  // Show notification
+  const showNotification = (type: 'success' | 'error', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000);
+  };
 
   // Fetch all global questions to calculate type counts
   const fetchQuestions = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await fetch('/api/questions?global=true');
       if (!response.ok) {
         throw new Error('Failed to fetch questions');
       }
       const data = await response.json();
       setQuestions(data);
+      showNotification('success', 'Question categories loaded successfully');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage =
+        err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
+      showNotification('error', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -150,20 +167,33 @@ export default function HomePage() {
   ];
 
   const handleTypeSelect = (typeId: string) => {
+    const selectedType = questionTypes.find((type) => type.id === typeId);
+    if (selectedType && selectedType.count > 0) {
+      showNotification(
+        'success',
+        `Loading ${selectedType.name.toLowerCase()}...`
+      );
+    }
     router.push(`/home/${typeId}`);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-spinner w-12 h-12 border-indigo-200 border-t-indigo-600 mx-auto mb-6"></div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            Loading question types...
-          </h3>
-          <p className="text-gray-600">
-            Please wait while we prepare your question categories
-          </p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Loading question categories...
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Please wait while we prepare your question categories
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -171,41 +201,88 @@ export default function HomePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 mb-4">
-            <HelpCircle className="w-16 h-16 mx-auto" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-red-600 dark:text-red-400 mb-4">
+                  <HelpCircle className="w-16 h-16 mx-auto" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Error Loading Questions
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
+                <button
+                  onClick={fetchQuestions}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            Error Loading Questions
-          </h3>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button onClick={fetchQuestions} className="btn btn-primary">
-            Try Again
-          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-10">
-      {/* Question Types Grid */}
-      <div className="container py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Question Categories
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Choose a category to practice interview questions or browse
+                  your complete collection.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Notification */}
+        {notification && (
+          <div
+            className={`mb-6 p-4 rounded-lg flex items-center ${
+              notification.type === 'success'
+                ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800'
+                : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'
+            }`}
+          >
+            {notification.type === 'success' ? (
+              <CheckCircle className="h-5 w-5 mr-3" />
+            ) : (
+              <AlertCircle className="h-5 w-5 mr-3" />
+            )}
+            {notification.message}
+          </div>
+        )}
+
+        {/* Question Types Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {questionTypes.map((type) => (
             <div
               key={type.id}
               onClick={() => handleTypeSelect(type.id)}
               className={`
-                relative p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer
+                relative p-6 rounded-xl border transition-all duration-200 cursor-pointer
                 hover:shadow-lg hover:scale-[1.02] group
-                ${type.bgColor} ${type.borderColor}
+                bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700
+                hover:border-gray-300 dark:hover:border-gray-600 shadow-sm
               `}
             >
               {/* Question Count Badge */}
               <div className="absolute top-4 right-4">
-                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-white/90 text-gray-700 shadow-sm">
+                <span
+                  className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${type.color} bg-gray-50 dark:bg-gray-700`}
+                >
                   {type.count}
                 </span>
               </div>
@@ -214,10 +291,10 @@ export default function HomePage() {
               <div className={`${type.color} mb-4`}>{type.icon}</div>
 
               {/* Content */}
-              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-gray-800">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-gray-800 dark:group-hover:text-gray-200">
                 {type.name}
               </h3>
-              <p className="text-gray-700 mb-4 text-sm leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 mb-4 text-sm leading-relaxed">
                 {type.description}
               </p>
 
