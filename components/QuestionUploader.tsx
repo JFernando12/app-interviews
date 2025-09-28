@@ -487,32 +487,33 @@ export default function QuestionUploader({
 
       {activeTab === 'video' && (
         <div className="space-y-4">
-          <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
-            <Video className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-            <div className="space-y-2">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Upload an interview video for automatic processing
-              </p>
-              <input
-                ref={videoInputRef}
-                type="file"
-                accept="video/*"
-                onChange={handleVideoUpload}
-                className="hidden"
-              />
-              <button
-                type="button"
-                onClick={() => videoInputRef.current?.click()}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                disabled={!!videoFile}
-              >
-                Choose Video File
-              </button>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Supported formats: MP4, MOV, AVI, WebM, MPEG (Max 500MB)
-              </p>
+          {!videoFile && (
+            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
+              <Video className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Upload an interview video for automatic processing
+                </p>
+                <input
+                  ref={videoInputRef}
+                  type="file"
+                  accept="video/mp4,video/mpeg,video/quicktime,video/x-msvideo,video/webm,video/x-matroska,.mp4,.mov,.avi,.webm,.mpeg,.mkv"
+                  onChange={handleVideoUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => videoInputRef.current?.click()}
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Choose Video File
+                </button>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Supported formats: MP4, MOV, AVI, WebM, MPEG, MKV (Max 500MB)
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           {videoFile && (
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4">
