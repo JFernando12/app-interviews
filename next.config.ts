@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  // Output configuration for Amplify deployment
-  output: 'standalone',
-  
+const nextConfig: NextConfig = {  
   // Image optimization settings for Amplify
   images: {
     unoptimized: true,
