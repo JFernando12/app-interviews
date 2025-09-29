@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Question } from '@/lib/dynamodb';
-import { QuestionType, QuestionTypeUtils } from '@/types/enums';
+import { QuestionType, QuestionTypeUtils, ProgrammingLanguage, ProgrammingLanguageUtils } from '@/types/enums';
 import QuestionForm from '@/components/QuestionForm';
 import QuestionList from '@/components/QuestionList';
 import Modal from '@/components/Modal';
@@ -34,6 +34,7 @@ function QuestionsPageContent() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterType, setFilterType] = useState<string>('all');
+  const [filterLanguage, setFilterLanguage] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [studyMode, setStudyMode] = useState(false);
   const [interviewData, setInterviewData] = useState<{
@@ -87,6 +88,16 @@ function QuestionsPageContent() {
     },
   ];
 
+  // Programming language filters
+  const programmingLanguages = [
+    { id: 'all', name: 'All Languages', count: 0 },
+    ...ProgrammingLanguageUtils.getAllLanguages().map(lang => ({
+      id: lang,
+      name: ProgrammingLanguageUtils.getDisplayName(lang),
+      count: 0,
+    })),
+  ];
+
   // Update counts
   const updateTypeCounts = (questionList: Question[]) => {
     return questionTypes.map((type) => {
@@ -99,6 +110,21 @@ function QuestionsPageContent() {
       }).length;
 
       return { ...type, count };
+    });
+  };
+
+  // Update language counts
+  const updateLanguageCounts = (questionList: Question[]) => {
+    return programmingLanguages.map((language) => {
+      if (language.id === 'all') {
+        return { ...language, count: questionList.length };
+      }
+
+      const count = questionList.filter((q) => {
+        return language.id === q.programming_language;
+      }).length;
+
+      return { ...language, count };
     });
   };
 
@@ -148,13 +174,20 @@ function QuestionsPageContent() {
   const filterQuestions = () => {
     let filtered = questions;
     console.log('Filtered: ', filtered);
-    console.log('Filtering questions:', { filterType, searchQuery });
+    console.log('Filtering questions:', { filterType, filterLanguage, searchQuery });
     console.log('filterType:: ', filterType);
+    console.log('filterLanguage:: ', filterLanguage);
 
     // Filter by type
     if (filterType !== 'all') {
       filtered = filtered.filter((q) => filterType === q.type);
       console.log('Filtered by type:', filtered);
+    }
+
+    // Filter by programming language
+    if (filterLanguage !== 'all') {
+      filtered = filtered.filter((q) => filterLanguage === q.programming_language);
+      console.log('Filtered by language:', filtered);
     }
 
     // Filter by search query
@@ -269,7 +302,7 @@ function QuestionsPageContent() {
 
   useEffect(() => {
     filterQuestions();
-  }, [questions, filterType, searchQuery]);
+  }, [questions, filterType, filterLanguage, searchQuery]);
 
   // Show loading spinner while checking authentication
   if (status === 'loading') {
@@ -306,6 +339,7 @@ function QuestionsPageContent() {
   }
 
   const typesWithCounts = updateTypeCounts(questions);
+  const languagesWithCounts = updateLanguageCounts(questions);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-4">
@@ -379,10 +413,10 @@ function QuestionsPageContent() {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar - Filters */}
-          <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-4">
-              {/* Search */}
-              <div className="mb-6">
+          <div className="lg:col-span-1 space-y-6">
+            {/* Search Container */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Search Questions
                 </label>
@@ -397,8 +431,10 @@ function QuestionsPageContent() {
                   />
                 </div>
               </div>
+            </div>
 
-              {/* Type Filters */}
+            {/* Type Filters Container */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <div>
                 <h3 className="font-medium text-gray-900 dark:text-white mb-3">
                   Filter by Type
@@ -426,6 +462,36 @@ function QuestionsPageContent() {
                 </div>
               </div>
             </div>
+
+            {/* Programming Language Filters Container */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <div>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-3">
+                  Filter by Language
+                </h3>
+                <div className="space-y-2">
+                  {languagesWithCounts.map((language) => (
+                    <button
+                      key={language.id}
+                      onClick={() => setFilterLanguage(language.id)}
+                      className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+                        filterLanguage === language.id
+                          ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Code className="w-4 h-4" />
+                        <span className="text-sm font-medium">{language.name}</span>
+                      </div>
+                      <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full">
+                        {language.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Main Content */}
@@ -438,23 +504,40 @@ function QuestionsPageContent() {
                       <h2 className="font-semibold text-gray-900 dark:text-white">
                         {filteredQuestions.length} Question
                         {filteredQuestions.length !== 1 ? 's' : ''}
-                        {filterType !== 'all' && (
+                        {(filterType !== 'all' || filterLanguage !== 'all') && (
                           <span className="text-sm font-normal text-gray-600 dark:text-gray-400 ml-2">
-                            in{' '}
-                            {
-                              typesWithCounts.find((t) => t.id === filterType)
-                                ?.name
-                            }
+                            {filterType !== 'all' && (
+                              <>
+                                in{' '}
+                                {
+                                  typesWithCounts.find((t) => t.id === filterType)
+                                    ?.name
+                                }
+                              </>
+                            )}
+                            {filterType !== 'all' && filterLanguage !== 'all' && ' • '}
+                            {filterLanguage !== 'all' && (
+                              <>
+                                for{' '}
+                                {
+                                  languagesWithCounts.find((l) => l.id === filterLanguage)
+                                    ?.name
+                                }
+                              </>
+                            )}
                           </span>
                         )}
                       </h2>
                       <div className="flex items-center space-x-3">
-                        {filterType !== 'all' && (
+                        {(filterType !== 'all' || filterLanguage !== 'all') && (
                           <button
-                            onClick={() => setFilterType('all')}
+                            onClick={() => {
+                              setFilterType('all');
+                              setFilterLanguage('all');
+                            }}
                             className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1"
                           >
-                            Clear filter
+                            Clear filters
                           </button>
                         )}
                       </div>
