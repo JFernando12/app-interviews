@@ -3,11 +3,12 @@ import { questionsService } from '@/lib/dynamodb';
 import { auth } from '@/auth';
 import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 
-// GET /api/questions - Get all questions, optionally filtered by type
+// GET /api/questions - Get all questions, optionally filtered by type or interview_id
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
+    const interview_id = searchParams.get('interview_id');
     const global = searchParams.get('global') === 'true'; // Check if requesting global questions
 
     let questions;
@@ -21,7 +22,14 @@ export async function GET(request: NextRequest) {
       if (!session?.user?.id) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
-      questions = await questionsService.getAllQuestions(session.user.id);
+
+      if (interview_id) {
+        // Get questions for a specific interview
+        questions = await questionsService.getQuestionsByInterviewId(interview_id, session.user.id);
+      } else {
+        // Get all user questions
+        questions = await questionsService.getAllQuestions(session.user.id);
+      }
     }
 
     // Filter by type if specified

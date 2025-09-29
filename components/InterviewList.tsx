@@ -1,6 +1,7 @@
 'use client';
 
 import { Interview } from '@/lib/dynamodb';
+import { useRouter } from 'next/navigation';
 import {
   Building2,
   Calendar,
@@ -36,6 +37,8 @@ export default function InterviewList({
   onView,
   isLoading = false,
 }: InterviewListProps) {
+  const router = useRouter();
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -44,6 +47,19 @@ export default function InterviewList({
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  const handleInterviewClick = (
+    interviewId: string,
+    event: React.MouseEvent
+  ) => {
+    // Prevent navigation if clicking on action buttons
+    const target = event.target as HTMLElement;
+    if (target.closest('button')) {
+      return;
+    }
+
+    router.push(`/questions?interview_id=${interviewId}`);
   };
 
   if (isLoading) {
@@ -93,7 +109,8 @@ export default function InterviewList({
       {interviews.map((interview) => (
         <div
           key={interview.id}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 group"
+          onClick={(e) => handleInterviewClick(interview.id, e)}
+          className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 group cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">

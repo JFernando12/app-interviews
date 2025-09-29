@@ -233,7 +233,7 @@ export default function InterviewsPage() {
   const handleDelete = async (id: string) => {
     if (
       !confirm(
-        'Are you sure you want to delete this interview? This action cannot be undone.'
+        'Are you sure you want to delete this interview? This will also delete all associated questions. This action cannot be undone.'
       )
     ) {
       return;
@@ -249,7 +249,10 @@ export default function InterviewsPage() {
       }
 
       setInterviews((prev) => prev.filter((interview) => interview.id !== id));
-      showNotification('success', 'Interview deleted successfully');
+      showNotification(
+        'success',
+        'Interview and associated questions deleted successfully'
+      );
     } catch (error) {
       console.error('Error deleting interview:', error);
       showNotification('error', 'Failed to delete interview');

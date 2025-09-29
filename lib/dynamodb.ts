@@ -117,6 +117,32 @@ export class QuestionsService {
     return (response.Items as Question[]) || [];
   }
 
+  // Get questions by interview ID
+  async getQuestionsByInterviewId(
+    interview_id: string,
+    user_id?: string
+  ): Promise<Question[]> {
+    let filterExpression = 'interview_id = :interview_id';
+    const expressionAttributeValues: any = {
+      ':interview_id': interview_id,
+    };
+
+    // If user_id is provided, also filter by user_id for security
+    if (user_id) {
+      filterExpression += ' AND user_id = :user_id';
+      expressionAttributeValues[':user_id'] = user_id;
+    }
+
+    const command = new ScanCommand({
+      TableName: QUESTIONS_TABLE_NAME,
+      FilterExpression: filterExpression,
+      ExpressionAttributeValues: expressionAttributeValues,
+    });
+
+    const response = await docClient.send(command);
+    return (response.Items as Question[]) || [];
+  }
+
   // Get a specific question by ID
   async getQuestionById(id: string): Promise<Question | null> {
     const command = new GetCommand({
@@ -170,6 +196,31 @@ export class QuestionsService {
 
     await docClient.send(command);
     return true;
+  }
+
+  // Delete all questions associated with an interview
+  async deleteQuestionsByInterviewId(
+    interview_id: string,
+    user_id?: string
+  ): Promise<boolean> {
+    try {
+      // First, get all questions for this interview
+      const questions = await this.getQuestionsByInterviewId(
+        interview_id,
+        user_id
+      );
+
+      // Delete each question individually
+      const deletePromises = questions.map((question) =>
+        this.deleteQuestion(question.id)
+      );
+      await Promise.all(deletePromises);
+
+      return true;
+    } catch (error) {
+      console.error('Error deleting questions by interview_id:', error);
+      return false;
+    }
   }
 }
 
@@ -267,15 +318,32 @@ export class InterviewsService {
     return (response.Attributes as Interview) || null;
   }
 
-  // Delete an interview
-  async deleteInterview(id: string): Promise<boolean> {
-    const command = new DeleteCommand({
-      TableName: INTERVIEWS_TABLE_NAME,
-      Key: { id },
-    });
+  // Delete an interview and its associated questions
+  async deleteInterview(id: string, user_id?: string): Promise<boolean> {
+    try {
+      // First, verify the interview exists and belongs to the user (if user_id provided)
+      if (user_id) {
+        const interview = await this.getInterviewById(id);
+        if (!interview || interview.user_id !== user_id) {
+          throw new Error('Interview not found or access denied');
+        }
+      }
 
-    await docClient.send(command);
-    return true;
+      // Delete all associated questions first
+      await questionsService.deleteQuestionsByInterviewId(id, user_id);
+
+      // Then delete the interview
+      const command = new DeleteCommand({
+        TableName: INTERVIEWS_TABLE_NAME,
+        Key: { id },
+      });
+
+      await docClient.send(command);
+      return true;
+    } catch (error) {
+      console.error('Error deleting interview:', error);
+      return false;
+    }
   }
 
   // Get all public interviews (for feed)

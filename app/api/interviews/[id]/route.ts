@@ -165,10 +165,20 @@ export async function DELETE(
       );
     }
 
-    await interviewsService.deleteInterview(id);
+    const success = await interviewsService.deleteInterview(
+      id,
+      session.user.id
+    );
+
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Failed to delete interview and associated questions' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
-      { message: 'Interview deleted successfully' },
+      { message: 'Interview and associated questions deleted successfully' },
       { status: 200 }
     );
   } catch (error) {

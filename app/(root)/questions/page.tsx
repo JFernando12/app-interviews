@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Question } from '@/lib/dynamodb';
 import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 import QuestionForm from '@/components/QuestionForm';
@@ -24,6 +24,8 @@ import {
 export default function QuestionsPage() {
   const { status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const interview_id = searchParams.get('interview_id');
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
@@ -33,6 +35,9 @@ export default function QuestionsPage() {
   const [filterType, setFilterType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [studyMode, setStudyMode] = useState(false);
+  const [interviewData, setInterviewData] = useState<{
+    company: string;
+  } | null>(null);
 
   // Question type filters
   const questionTypes = [
@@ -90,12 +95,31 @@ export default function QuestionsPage() {
     });
   };
 
+  // Fetch interview data when interview_id is provided
+  const fetchInterviewData = async (id: string) => {
+    try {
+      const response = await fetch(`/api/interviews/${id}`);
+      if (response.ok) {
+        const interview = await response.json();
+        setInterviewData({ company: interview.company });
+      }
+    } catch (error) {
+      console.error('Error fetching interview data:', error);
+    }
+  };
+
   // Fetch user-specific questions
   const fetchQuestions = async () => {
     try {
       setLoading(true);
 
-      const response = await fetch('/api/questions');
+      // Build the API URL with optional interview_id parameter
+      const url = new URL('/api/questions', window.location.origin);
+      if (interview_id) {
+        url.searchParams.set('interview_id', interview_id);
+      }
+
+      const response = await fetch(url.toString());
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error('Please sign in to view your questions');
@@ -230,8 +254,11 @@ export default function QuestionsPage() {
 
     if (status === 'authenticated') {
       fetchQuestions();
+      if (interview_id) {
+        fetchInterviewData(interview_id);
+      }
     }
-  }, [status, router]);
+  }, [status, router, interview_id]); // Added interview_id as dependency
 
   useEffect(() => {
     filterQuestions();
@@ -282,7 +309,19 @@ export default function QuestionsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center">
-                  Questions
+                  {interview_id && interviewData ? (
+                    <>
+                      Interview Questions - {interviewData.company}
+                      <button
+                        onClick={() => router.push('/questions')}
+                        className="ml-3 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline"
+                      >
+                        View All Questions
+                      </button>
+                    </>
+                  ) : (
+                    'Questions'
+                  )}
                   {studyMode && (
                     <span className="ml-3 px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-full text-sm font-medium">
                       Study Mode
@@ -292,6 +331,8 @@ export default function QuestionsPage() {
                 <p className="text-gray-600 dark:text-gray-400">
                   {studyMode
                     ? 'Study mode shows complete context, questions, and answers for better learning.'
+                    : interview_id && interviewData
+                    ? `Questions for ${interviewData.company} interview session.`
                     : 'Manage your personal interview questions collection.'}
                 </p>
               </div>
