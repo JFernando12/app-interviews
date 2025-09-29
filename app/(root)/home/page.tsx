@@ -141,20 +141,51 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
-            <div className="flex items-center justify-center">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Loading question categories...
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Please wait while we prepare your question categories
-                </p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header Skeleton */}
+          <div className="mb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 animate-pulse">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="w-48 h-8 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
+                  <div className="w-96 h-5 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                </div>
               </div>
             </div>
+          </div>
+
+          {/* Question Types Grid Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-pulse"
+              >
+                {/* Question Count Badge */}
+                <div className="flex justify-end mb-4">
+                  <div className="w-8 h-6 bg-gray-200 dark:bg-gray-600 rounded-md"></div>
+                </div>
+
+                {/* Icon */}
+                <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded mb-4"></div>
+
+                {/* Content */}
+                <div className="space-y-3">
+                  <div className="w-40 h-6 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                  <div className="space-y-2">
+                    <div className="w-full h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                    <div className="w-3/4 h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                  </div>
+                </div>
+
+                {/* Call to Action */}
+                <div className="flex items-center justify-between mt-4">
+                  <div className="w-24 h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                  <div className="w-4 h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

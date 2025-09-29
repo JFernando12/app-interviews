@@ -246,37 +246,6 @@ export default function InterviewForm({
           )}
         </div>
 
-        {/* Programming Language Field */}
-        <div>
-          <label
-            htmlFor="programming_language"
-            className={`block text-sm font-medium mb-2 transition-colors ${
-              focusedField === 'programming_language'
-                ? 'text-blue-600 dark:text-blue-400'
-                : 'text-gray-700 dark:text-gray-300'
-            }`}
-          >
-            Programming Language
-          </label>
-          <select
-            id="programming_language"
-            name="programming_language"
-            value={formData.programming_language}
-            onChange={handleChange}
-            onFocus={() => setFocusedField('programming_language')}
-            onBlur={() => setFocusedField(null)}
-            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
-            disabled={isSubmitting}
-          >
-            <option value="">Select language...</option>
-            {Object.values(ProgrammingLanguage).map((language) => (
-              <option key={language} value={language}>
-                {PROGRAMMING_LANGUAGE_DISPLAY[language]}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Question Type Field */}
         <div>
           <label
@@ -303,6 +272,37 @@ export default function InterviewForm({
             {Object.values(QuestionType).map((type) => (
               <option key={type} value={type}>
                 {QUESTION_TYPE_DISPLAY[type]}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Programming Language Field */}
+        <div>
+          <label
+            htmlFor="programming_language"
+            className={`block text-sm font-medium mb-2 transition-colors ${
+              focusedField === 'programming_language'
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            Programming Language
+          </label>
+          <select
+            id="programming_language"
+            name="programming_language"
+            value={formData.programming_language}
+            onChange={handleChange}
+            onFocus={() => setFocusedField('programming_language')}
+            onBlur={() => setFocusedField(null)}
+            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+            disabled={isSubmitting}
+          >
+            <option value="">Select language...</option>
+            {Object.values(ProgrammingLanguage).map((language) => (
+              <option key={language} value={language}>
+                {PROGRAMMING_LANGUAGE_DISPLAY[language]}
               </option>
             ))}
           </select>
