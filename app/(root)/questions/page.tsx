@@ -8,6 +8,7 @@ import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 import QuestionForm from '@/components/QuestionForm';
 import QuestionList from '@/components/QuestionList';
 import Modal from '@/components/Modal';
+import ExportDropdown from '@/components/ExportDropdown';
 import {
   Plus,
   HelpCircle,
@@ -343,6 +344,12 @@ function QuestionsPageContent() {
                 </p>
               </div>
               <div className="flex items-center space-x-3">
+                <ExportDropdown
+                  questions={filteredQuestions}
+                  filterType={filterType}
+                  searchQuery={searchQuery}
+                  disabled={loading}
+                />
                 <button
                   onClick={() => setStudyMode(!studyMode)}
                   className={`font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
@@ -441,14 +448,22 @@ function QuestionsPageContent() {
                           </span>
                         )}
                       </h2>
-                      {filterType !== 'all' && (
-                        <button
-                          onClick={() => setFilterType('all')}
-                          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1"
-                        >
-                          Clear filter
-                        </button>
-                      )}
+                      <div className="flex items-center space-x-3">
+                        <ExportDropdown
+                          questions={filteredQuestions}
+                          filterType={filterType}
+                          searchQuery={searchQuery}
+                          disabled={loading}
+                        />
+                        {filterType !== 'all' && (
+                          <button
+                            onClick={() => setFilterType('all')}
+                            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1"
+                          >
+                            Clear filter
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
                   <QuestionList
