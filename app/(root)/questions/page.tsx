@@ -173,21 +173,15 @@ function QuestionsPageContent() {
   // Filter questions based on type and search
   const filterQuestions = () => {
     let filtered = questions;
-    console.log('Filtered: ', filtered);
-    console.log('Filtering questions:', { filterType, filterLanguage, searchQuery });
-    console.log('filterType:: ', filterType);
-    console.log('filterLanguage:: ', filterLanguage);
 
     // Filter by type
     if (filterType !== 'all') {
       filtered = filtered.filter((q) => filterType === q.type);
-      console.log('Filtered by type:', filtered);
     }
 
     // Filter by programming language
     if (filterLanguage !== 'all') {
       filtered = filtered.filter((q) => filterLanguage === q.programming_language);
-      console.log('Filtered by language:', filtered);
     }
 
     // Filter by search query

@@ -57,8 +57,6 @@ export default function ExportDropdown({
       const filename = generateFilename(filterType, searchQuery, questions.length, format);
       const title = getExportTitle();
       
-      console.log(`Exporting ${questions.length} questions as ${format}...`);
-
       switch (format) {
         case 'pdf':
           await exportToPDF(questions, { filename, title });
@@ -72,8 +70,6 @@ export default function ExportDropdown({
         default:
           throw new Error('Unsupported export format');
       }
-      
-      console.log(`Export completed successfully: ${filename}`);
     } catch (error) {
       console.error('Export failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
