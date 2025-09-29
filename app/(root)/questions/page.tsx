@@ -304,6 +304,15 @@ function QuestionsPageContent() {
     filterQuestions();
   }, [questions, filterType, filterLanguage, searchQuery]);
 
+  // Clear filters when entering study mode
+  useEffect(() => {
+    if (studyMode) {
+      setFilterType('all');
+      setFilterLanguage('all');
+      setSearchQuery('');
+    }
+  }, [studyMode]);
+
   // Show loading spinner while checking authentication
   if (status === 'loading') {
     return (
@@ -411,91 +420,93 @@ function QuestionsPageContent() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className={`grid grid-cols-1 ${studyMode ? 'lg:grid-cols-1' : 'lg:grid-cols-4'} gap-6`}>
           {/* Sidebar - Filters */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Search Container */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Search Questions
-                </label>
-                <div className="relative">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+          {!studyMode && (
+            <div className="lg:col-span-1 space-y-6">
+              {/* Search Container */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Search Questions
+                  </label>
+                  <div className="relative">
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Type Filters Container */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <div>
-                <h3 className="font-medium text-gray-900 dark:text-white mb-3">
-                  Filter by Type
-                </h3>
-                <div className="space-y-2">
-                  {typesWithCounts.map((type) => (
-                    <button
-                      key={type.id}
-                      onClick={() => setFilterType(type.id)}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
-                        filterType === type.id
-                          ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
-                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <type.icon className="w-4 h-4" />
-                        <span className="text-sm font-medium">{type.name}</span>
-                      </div>
-                      <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full">
-                        {type.count}
-                      </span>
-                    </button>
-                  ))}
+              {/* Type Filters Container */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div>
+                  <h3 className="font-medium text-gray-900 dark:text-white mb-3">
+                    Filter by Type
+                  </h3>
+                  <div className="space-y-2">
+                    {typesWithCounts.map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => setFilterType(type.id)}
+                        className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+                          filterType === type.id
+                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <type.icon className="w-4 h-4" />
+                          <span className="text-sm font-medium">{type.name}</span>
+                        </div>
+                        <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full">
+                          {type.count}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Programming Language Filters Container */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <div>
-                <h3 className="font-medium text-gray-900 dark:text-white mb-3">
-                  Filter by Language
-                </h3>
-                <div className="space-y-2">
-                  {languagesWithCounts.map((language) => (
-                    <button
-                      key={language.id}
-                      onClick={() => setFilterLanguage(language.id)}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
-                        filterLanguage === language.id
-                          ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
-                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Code className="w-4 h-4" />
-                        <span className="text-sm font-medium">{language.name}</span>
-                      </div>
-                      <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full">
-                        {language.count}
-                      </span>
-                    </button>
-                  ))}
+              {/* Programming Language Filters Container */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div>
+                  <h3 className="font-medium text-gray-900 dark:text-white mb-3">
+                    Filter by Language
+                  </h3>
+                  <div className="space-y-2">
+                    {languagesWithCounts.map((language) => (
+                      <button
+                        key={language.id}
+                        onClick={() => setFilterLanguage(language.id)}
+                        className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+                          filterLanguage === language.id
+                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Code className="w-4 h-4" />
+                          <span className="text-sm font-medium">{language.name}</span>
+                        </div>
+                        <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full">
+                          {language.count}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Main Content */}
-          <div className="lg:col-span-3">
+          <div className={studyMode ? 'col-span-1' : 'lg:col-span-3'}>
             {filteredQuestions.length > 0 || loading ? (
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <div className="p-6">

@@ -100,11 +100,11 @@ export default function QuestionList({
     return (
       <div className="mb-4">
         {label && (
-          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          <h4 className={`font-semibold text-gray-700 dark:text-gray-300 mb-2 ${studyMode ? 'text-base mb-3' : 'text-sm'}`}>
             {label}
           </h4>
         )}
-        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
+        <p className={`text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap ${studyMode ? 'text-base' : 'text-sm'}`}>
           {displayText}
         </p>
         {!studyMode && needsTruncation && (
@@ -229,10 +229,10 @@ export default function QuestionList({
               {/* Context */}
               {question.context && (
                 <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-3">
                     Context
                   </h4>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
+                  <p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed whitespace-pre-wrap">
                     {question.context}
                   </p>
                 </div>
@@ -240,20 +240,20 @@ export default function QuestionList({
 
               {/* Question */}
               <div className="mb-4">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-3">
                   Question
                 </h4>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
+                <p className="text-gray-800 dark:text-gray-200 text-lg font-medium leading-relaxed whitespace-pre-wrap">
                   {question.question}
                 </p>
               </div>
 
               {/* Answer */}
               <div className="mb-4">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-3">
                   Answer
                 </h4>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
+                <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed whitespace-pre-wrap">
                   {question.answer}
                 </p>
               </div>
@@ -280,7 +280,7 @@ export default function QuestionList({
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4 flex-1">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
                     {shouldTruncate(question.question, 150) &&
                     !isExpanded(question.id, 'question') ? (
                       <>
@@ -289,7 +289,7 @@ export default function QuestionList({
                           onClick={() =>
                             toggleExpansion(question.id, 'question')
                           }
-                          className="ml-2 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
+                          className="ml-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
                         >
                           <ChevronDown className="h-3 w-3 mr-1" />
                           Show more
@@ -303,7 +303,7 @@ export default function QuestionList({
                             onClick={() =>
                               toggleExpansion(question.id, 'question')
                             }
-                            className="ml-2 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
+                            className="ml-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
                           >
                             <ChevronUp className="h-3 w-3 mr-1" />
                             Show less
@@ -313,14 +313,14 @@ export default function QuestionList({
                     )}
                   </h3>
 
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                  <p className="text-gray-600 dark:text-gray-400 text-base mb-4">
                     {shouldTruncate(question.answer, 200) &&
                     !isExpanded(question.id, 'answer') ? (
                       <>
                         {truncateText(question.answer, 200)}
                         <button
                           onClick={() => toggleExpansion(question.id, 'answer')}
-                          className="ml-2 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
+                          className="ml-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
                         >
                           <ChevronDown className="h-3 w-3 mr-1" />
                           Show more
@@ -334,7 +334,7 @@ export default function QuestionList({
                             onClick={() =>
                               toggleExpansion(question.id, 'answer')
                             }
-                            className="ml-2 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
+                            className="ml-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
                           >
                             <ChevronUp className="h-3 w-3 mr-1" />
                             Show less
@@ -345,11 +345,11 @@ export default function QuestionList({
                   </p>
 
                   {question.context && (
-                    <div className="mb-3">
-                      <p className="text-gray-500 dark:text-gray-400 text-xs mb-1 font-medium">
+                    <div className="mb-4">
+                      <p className="text-gray-500 dark:text-gray-400 text-sm mb-2 font-medium">
                         Context:
                       </p>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">
+                      <p className="text-gray-600 dark:text-gray-400 text-base">
                         {shouldTruncate(question.context, 150) &&
                         !isExpanded(question.id, 'context') ? (
                           <>
@@ -358,7 +358,7 @@ export default function QuestionList({
                               onClick={() =>
                                 toggleExpansion(question.id, 'context')
                               }
-                              className="ml-2 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
+                              className="ml-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
                             >
                               <ChevronDown className="h-3 w-3 mr-1" />
                               Show more
@@ -372,7 +372,7 @@ export default function QuestionList({
                                 onClick={() =>
                                   toggleExpansion(question.id, 'context')
                                 }
-                                className="ml-2 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
+                                className="ml-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 inline-flex items-center"
                               >
                                 <ChevronUp className="h-3 w-3 mr-1" />
                                 Show less
