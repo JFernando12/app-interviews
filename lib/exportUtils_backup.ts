@@ -36,10 +36,10 @@ export const exportToPDF = async (
     black: [0, 0, 0],
     darkGray: [60, 60, 60],
     lightGray: [150, 150, 150],
-    veryLightGray: [220, 220, 220],
+    veryLightGray: [220, 220, 220]
   };
 
-  // Helper function to add text with wrapping
+  // Helper function to add text with wrapping and better formatting
   const addWrappedText = (
     text: string,
     x: number,
@@ -51,7 +51,7 @@ export const exportToPDF = async (
     doc.setFontSize(fontSize);
     doc.setTextColor(color[0], color[1], color[2]);
     const lines = doc.splitTextToSize(text, maxWidth);
-    const lineHeight = fontSize * 0.35; // Reduced line height for more compact spacing
+    const lineHeight = fontSize * 0.4;
 
     for (let i = 0; i < lines.length; i++) {
       const currentY = y + i * lineHeight;
@@ -64,202 +64,195 @@ export const exportToPDF = async (
       }
     }
 
-    return y + lines.length * lineHeight + 3; // Reduced spacing after text blocks
+    return y + lines.length * lineHeight + 5;
   };
 
-  // Title - simple and clean
-  doc.setFontSize(18);
+  // Helper function to add a simple header
+  const addSimpleHeader = (
+    text: string,
+    y: number
+  ) => {
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
+    doc.text(text, margin, y);
+    return y + 15;
+  };
+
+  // Title with styling
+  doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
-  yPosition = addWrappedText(title, margin, yPosition + 10, maxWidth, 18);
-
-  // Simple line under title
-  doc.setDrawColor(
-    colors.lightGray[0],
-    colors.lightGray[1],
-    colors.lightGray[2]
+  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  yPosition = addWrappedText(
+    title,
+    margin,
+    yPosition + 15,
+    maxWidth,
+    24,
+    colors.primary
   );
-  doc.setLineWidth(0.5);
-  doc.line(margin, yPosition + 3, pageWidth - margin, yPosition + 3);
-  yPosition += 15; // Reduced spacing after title
 
-  // Metadata - simple text
+  // Add a line under the title
+  doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  doc.setLineWidth(0.5);
+  doc.line(margin, yPosition, pageWidth - margin, yPosition);
+  yPosition += 15;
+
+  // Metadata section with improved styling
   if (includeMetadata) {
-    doc.setFontSize(10);
+    yPosition = addHeaderBox('Export Information', yPosition, colors.accent);
+
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(
-      colors.darkGray[0],
-      colors.darkGray[1],
-      colors.darkGray[2]
-    );
     const metadata = [
-      `Total Questions: ${questions.length}`,
-      `Export Date: ${new Date().toLocaleDateString()}`,
-      `Export Time: ${new Date().toLocaleTimeString()}`,
+      `📊 Total Questions: ${questions.length}`,
+      `📅 Export Date: ${new Date().toLocaleDateString()}`,
+      `🕒 Export Time: ${new Date().toLocaleTimeString()}`,
     ];
 
     metadata.forEach((line) => {
       yPosition = addWrappedText(
         line,
-        margin,
+        margin + 5,
         yPosition,
-        maxWidth,
+        maxWidth - 10,
         10,
-        colors.darkGray
+        colors.secondary
       );
     });
-    yPosition += 10; // Reduced spacing after metadata
+    yPosition += 15;
   }
 
-  // Questions with clean formatting
+  // Questions with improved formatting
   questions.forEach((question, index) => {
-    if (yPosition > pageHeight - 100) {
+    if (yPosition > pageHeight - 120) {
       doc.addPage();
       yPosition = margin;
     }
 
-    // Question number and type - simple bold text
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
+    // Question number and type with colored background
     const questionTitle = `${index + 1}. ${QuestionTypeUtils.getDisplayName(
       question.type
     )}`;
-    yPosition = addWrappedText(
-      questionTitle,
-      margin,
-      yPosition + 10,
-      maxWidth,
-      14
-    ); // Reduced spacing before question
+    yPosition = addHeaderBox(questionTitle, yPosition + 10);
 
-    // Programming language - simple text in parentheses
+    // Programming language badge (if available)
     if (question.programming_language) {
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'italic');
-      doc.setTextColor(
-        colors.darkGray[0],
-        colors.darkGray[1],
-        colors.darkGray[2]
+      doc.setFillColor(
+        colors.lightGray[0],
+        colors.lightGray[1],
+        colors.lightGray[2]
       );
-      yPosition = addWrappedText(
-        `(${question.programming_language})`,
-        margin,
-        yPosition,
-        maxWidth,
-        10,
-        colors.darkGray
+      doc.setDrawColor(
+        colors.secondary[0],
+        colors.secondary[1],
+        colors.secondary[2]
       );
-    }
+      doc.roundedRect(margin, yPosition, 60, 8, 2, 2, 'FD');
 
-    yPosition += 2; // Minimal spacing after language
-
-    // Context section - simple label
-    if (question.context && question.context.trim()) {
+      doc.setFontSize(8);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(
-        colors.darkGray[0],
-        colors.darkGray[1],
-        colors.darkGray[2]
+        colors.secondary[0],
+        colors.secondary[1],
+        colors.secondary[2]
       );
+      doc.text(question.programming_language, margin + 3, yPosition + 5);
+      yPosition += 15;
+    }
+
+    // Context section with icon
+    if (question.context && question.context.trim()) {
+      doc.setFont('helvetica', 'bold');
       yPosition = addWrappedText(
-        'Context:',
+        '📋 Context:',
         margin,
-        yPosition + 3,
+        yPosition + 5,
         maxWidth,
-        10,
-        colors.darkGray
-      ); // Reduced spacing
+        11,
+        colors.primary
+      );
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
       yPosition = addWrappedText(
         question.context,
         margin + 5,
         yPosition,
         maxWidth - 5,
-        10
+        10,
+        colors.text
       );
+      yPosition += 5;
     }
 
-    // Question section - simple label
+    // Question section with icon
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(
-      colors.darkGray[0],
-      colors.darkGray[1],
-      colors.darkGray[2]
-    );
     yPosition = addWrappedText(
-      'Question:',
+      '❓ Question:',
       margin,
-      yPosition + 3,
+      yPosition + 5,
       maxWidth,
-      10,
-      colors.darkGray
-    ); // Reduced spacing
+      11,
+      colors.primary
+    );
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
     yPosition = addWrappedText(
       question.question,
       margin + 5,
       yPosition,
       maxWidth - 5,
-      10
-    );
-
-    // Answer section - simple label
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(
-      colors.darkGray[0],
-      colors.darkGray[1],
-      colors.darkGray[2]
-    );
-    yPosition = addWrappedText(
-      'Answer:',
-      margin,
-      yPosition + 3,
-      maxWidth,
       10,
-      colors.darkGray
-    ); // Reduced spacing
+      colors.text
+    );
+    yPosition += 5;
+
+    // Answer section with icon
+    doc.setFont('helvetica', 'bold');
+    yPosition = addWrappedText(
+      '✅ Answer:',
+      margin,
+      yPosition + 5,
+      maxWidth,
+      11,
+      colors.accent
+    );
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
     yPosition = addWrappedText(
       question.answer,
       margin + 5,
       yPosition,
       maxWidth - 5,
-      10
+      10,
+      colors.text
     );
 
-    // Simple separator line between questions
+    // Add separator line between questions
     if (index < questions.length - 1) {
-      yPosition += 8; // Reduced spacing before separator
+      yPosition += 10;
       doc.setDrawColor(
-        colors.veryLightGray[0],
-        colors.veryLightGray[1],
-        colors.veryLightGray[2]
+        colors.lightGray[0],
+        colors.lightGray[1],
+        colors.lightGray[2]
       );
       doc.setLineWidth(0.3);
-      doc.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 3; // Reduced spacing after separator
+      doc.line(margin + 10, yPosition, pageWidth - margin - 10, yPosition);
+      yPosition += 10;
     } else {
-      yPosition += 12; // Reduced final spacing
+      yPosition += 20;
     }
   });
 
-  // Simple footer on each page
+  // Footer on last page
   const totalPages = doc.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(
-      colors.lightGray[0],
-      colors.lightGray[1],
-      colors.lightGray[2]
+      colors.secondary[0],
+      colors.secondary[1],
+      colors.secondary[2]
     );
     doc.text(
-      `Page ${i} of ${totalPages}`,
+      `Page ${i} of ${totalPages} • Generated ${new Date().toLocaleDateString()}`,
       pageWidth - margin,
       pageHeight - 10,
       { align: 'right' }

@@ -449,12 +449,6 @@ function QuestionsPageContent() {
                         )}
                       </h2>
                       <div className="flex items-center space-x-3">
-                        <ExportDropdown
-                          questions={filteredQuestions}
-                          filterType={filterType}
-                          searchQuery={searchQuery}
-                          disabled={loading}
-                        />
                         {filterType !== 'all' && (
                           <button
                             onClick={() => setFilterType('all')}
