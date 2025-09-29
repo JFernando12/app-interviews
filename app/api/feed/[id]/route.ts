@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { interviewsService } from '@/lib/dynamodb';
+import { interviewsService, questionsService } from '@/lib/dynamodb';
 import { UserProfileService } from '@/lib/dynamodb/user-profile-service';
 
-// GET /api/feed/[id] - Get a specific public interview with user information
+// GET /api/feed/[id] - Get a specific public interview with user information and questions
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -58,7 +58,14 @@ export async function GET(
       };
     }
 
-    return NextResponse.json(enrichedInterview);
+    // Get all questions for this interview (regardless of their public status)
+    const questions = await questionsService.getQuestionsByInterviewId(id);
+
+    // Return both interview and questions
+    return NextResponse.json({
+      interview: enrichedInterview,
+      questions: questions,
+    });
   } catch (error) {
     console.error('Error fetching public interview:', error);
     return NextResponse.json(

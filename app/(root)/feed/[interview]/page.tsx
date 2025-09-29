@@ -62,24 +62,22 @@ export default function FeedInterviewDetailPage() {
     try {
       setLoading(true);
 
-      // Fetch public interview details
-      const interviewResponse = await fetch(`/api/feed/${interviewId}`);
-      if (!interviewResponse.ok) {
-        if (interviewResponse.status === 404) {
+      // Fetch public interview details and questions from the same route
+      const response = await fetch(`/api/feed/${interviewId}`);
+      if (!response.ok) {
+        if (response.status === 404) {
           throw new Error('Interview not found or not public');
         }
         throw new Error('Failed to load interview');
       }
-      const interviewData = await interviewResponse.json();
-      setInterview(interviewData);
-
-      // Fetch questions for this interview
-      const questionsResponse = await fetch(
-        `/api/questions?interview_id=${interviewId}&public=true`
-      );
-      if (questionsResponse.ok) {
-        const questionsData = await questionsResponse.json();
-        setQuestions(questionsData);
+      const data = await response.json();
+      
+      // Set interview data
+      setInterview(data.interview || data);
+      
+      // Set questions data if available
+      if (data.questions) {
+        setQuestions(data.questions);
       }
     } catch (error) {
       console.error('Error fetching interview details:', error);
