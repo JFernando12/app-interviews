@@ -19,8 +19,8 @@ const nextConfig: NextConfig = {
   env: {
     // AWS Configuration
     AWS_REGION: process.env.AWS_REGION,
-    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
-    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+    NEXT_AWS_ACCESS_KEY_ID: process.env.NEXT_AWS_ACCESS_KEY_ID,
+    NEXT_AWS_SECRET_ACCESS_KEY: process.env.NEXT_AWS_SECRET_ACCESS_KEY,
     
     // S3 Configuration
     S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,

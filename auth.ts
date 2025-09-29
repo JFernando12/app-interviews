@@ -8,8 +8,8 @@ import { UserProfileService } from '@/lib/dynamodb/user-profile-service';
 
 const config: DynamoDBClientConfig = {
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    accessKeyId: process.env.NEXT_AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.NEXT_AWS_SECRET_ACCESS_KEY!,
   },
   region: 'us-east-1',
 };
