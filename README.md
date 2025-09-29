@@ -50,7 +50,7 @@ Edit `.env.local` with your AWS configuration:
 
 ```env
 # DynamoDB Configuration
-AWS_REGION=us-east-1
+NEXT_AWS_REGION=us-east-1
 NEXT_AWS_ACCESS_KEY_ID=your_access_key_id_here
 NEXT_AWS_SECRET_ACCESS_KEY=your_secret_access_key_here
 DYNAMODB_TABLE_NAME=questions

@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
   // Environment variables validation
   env: {
     // AWS Configuration
-    AWS_REGION: process.env.AWS_REGION,
+    NEXT_AWS_REGION: process.env.NEXT_AWS_REGION,
     NEXT_AWS_ACCESS_KEY_ID: process.env.NEXT_AWS_ACCESS_KEY_ID,
     NEXT_AWS_SECRET_ACCESS_KEY: process.env.NEXT_AWS_SECRET_ACCESS_KEY,
     

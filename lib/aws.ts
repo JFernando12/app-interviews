@@ -4,7 +4,7 @@ import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 
 // Configure AWS clients
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION || 'us-east-1',
+  region: process.env.NEXT_AWS_REGION || 'us-east-1',
   credentials: {
     accessKeyId: process.env.NEXT_AWS_ACCESS_KEY_ID || '',
     secretAccessKey: process.env.NEXT_AWS_SECRET_ACCESS_KEY || '',
@@ -12,7 +12,7 @@ const s3Client = new S3Client({
 });
 
 const sqsClient = new SQSClient({
-  region: process.env.AWS_REGION || 'us-east-1',
+  region: process.env.NEXT_AWS_REGION || 'us-east-1',
   credentials: {
     accessKeyId: process.env.NEXT_AWS_ACCESS_KEY_ID || '',
     secretAccessKey: process.env.NEXT_AWS_SECRET_ACCESS_KEY || '',
@@ -118,7 +118,7 @@ export class AWSService {
    */
   static getVideoUrl(videoPath: string): string {
     const key = this.extractVideoKey(videoPath);
-    return `https://${S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${key}`;
+    return `https://${S3_BUCKET_NAME}.s3.${process.env.NEXT_AWS_REGION || 'us-east-1'}.amazonaws.com/${key}`;
   }
 }
 
