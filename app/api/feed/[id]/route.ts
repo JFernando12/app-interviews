@@ -5,14 +5,14 @@ import { UserProfileService } from '@/lib/dynamodb/user-profile-service';
 // GET /api/feed/[id] - Get a specific public interview with user information
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Get the interview
     const interview = await interviewsService.getInterviewById(id);
-    
+
     if (!interview) {
       return NextResponse.json(
         { error: 'Interview not found' },
@@ -30,7 +30,7 @@ export async function GET(
 
     // Get user profile information
     const userProfile = await UserProfileService.getProfile(interview.user_id);
-    
+
     // Enrich interview with user profile information
     let enrichedInterview;
     if (interview.anonymous) {
@@ -41,17 +41,20 @@ export async function GET(
           title: null,
           company: null,
           avatar: null,
-        }
+        },
       };
     } else {
       enrichedInterview = {
         ...interview,
         user: {
-          name: userProfile?.profile?.title || userProfile?.profile?.company || 'Developer',
+          name:
+            userProfile?.profile?.title ||
+            userProfile?.profile?.company ||
+            'Developer',
           title: userProfile?.profile?.title || null,
           company: userProfile?.profile?.company || null,
           avatar: userProfile?.profile?.avatar || null,
-        }
+        },
       };
     }
 

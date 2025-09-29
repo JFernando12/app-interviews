@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Question } from '@/lib/dynamodb';
@@ -21,7 +21,7 @@ import {
   Eye,
 } from 'lucide-react';
 
-export default function QuestionsPage() {
+function QuestionsPageContent() {
   const { status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -43,8 +43,8 @@ export default function QuestionsPage() {
   const questionTypes = [
     { id: 'all', name: 'All Questions', icon: HelpCircle, count: 0 },
     {
-      id: QuestionType.BEHAVIORAL,
-      name: QuestionTypeUtils.getDisplayName(QuestionType.BEHAVIORAL),
+      id: QuestionType.HUMAN_RESOURCES,
+      name: QuestionTypeUtils.getDisplayName(QuestionType.HUMAN_RESOURCES),
       icon: Users,
       count: 0,
     },
@@ -52,6 +52,12 @@ export default function QuestionsPage() {
       id: QuestionType.TECHNICAL,
       name: QuestionTypeUtils.getDisplayName(QuestionType.TECHNICAL),
       icon: Code,
+      count: 0,
+    },
+    {
+      id: QuestionType.BEHAVIORAL,
+      name: QuestionTypeUtils.getDisplayName(QuestionType.BEHAVIORAL),
+      icon: Users,
       count: 0,
     },
     {
@@ -512,5 +518,19 @@ export default function QuestionsPage() {
         </Modal>
       </div>
     </div>
+  );
+}
+
+export default function QuestionsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      }
+    >
+      <QuestionsPageContent />
+    </Suspense>
   );
 }
