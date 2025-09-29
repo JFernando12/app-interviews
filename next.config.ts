@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
 
   // Environment variables validation
   env: {
+    // To deploy on Amplify
+    AUTH_TRUST_HOST: process.env.AUTH_TRUST_HOST,
     // AWS Configuration
     NEXT_AWS_REGION: process.env.NEXT_AWS_REGION,
     NEXT_AWS_ACCESS_KEY_ID: process.env.NEXT_AWS_ACCESS_KEY_ID,
