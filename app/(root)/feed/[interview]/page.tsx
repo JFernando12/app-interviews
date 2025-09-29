@@ -103,13 +103,117 @@ export default function FeedInterviewDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="text-gray-600 dark:text-gray-400 mt-4">
-                Loading interview details...
-              </p>
+          {/* Back Navigation Skeleton */}
+          <div className="mb-6 animate-pulse">
+            <div className="flex items-center">
+              <div className="w-5 h-5 bg-gray-200 dark:bg-gray-600 rounded mr-2"></div>
+              <div className="w-40 h-5 bg-gray-200 dark:bg-gray-600 rounded"></div>
             </div>
+          </div>
+
+          {/* Interview Header Skeleton */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6 animate-pulse">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-xl"></div>
+                <div>
+                  <div className="w-48 h-8 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-20 h-6 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+                    <div className="w-16 h-6 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+                    <div className="w-14 h-6 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Interview metadata skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="space-y-3">
+                <div className="flex items-center">
+                  <div className="w-5 h-5 bg-gray-200 dark:bg-gray-600 rounded mr-3"></div>
+                  <div className="w-32 h-5 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-5 h-5 bg-gray-200 dark:bg-gray-600 rounded mr-3"></div>
+                  <div className="w-28 h-5 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center">
+                  <div className="w-5 h-5 bg-gray-200 dark:bg-gray-600 rounded mr-3"></div>
+                  <div className="w-24 h-5 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-5 h-5 bg-gray-200 dark:bg-gray-600 rounded mr-3"></div>
+                  <div className="w-20 h-5 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Questions Section Skeleton */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
+            <div className="flex items-center justify-between mb-6">
+              <div className="w-40 h-6 bg-gray-200 dark:bg-gray-600 rounded"></div>
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-gray-200 dark:bg-gray-600 rounded mr-2"></div>
+                <div className="w-16 h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+              </div>
+            </div>
+
+            {/* Question Cards Skeleton */}
+            <div className="space-y-6">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-6"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-24 h-6 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-5 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+                      <div className="w-12 h-5 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Question */}
+                    <div>
+                      <div className="w-16 h-4 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
+                      <div className="space-y-2">
+                        <div className="w-full h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                        <div className="w-3/4 h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                      </div>
+                    </div>
+
+                    {/* Context */}
+                    <div>
+                      <div className="w-14 h-4 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
+                      <div className="w-2/3 h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                    </div>
+
+                    {/* Answer */}
+                    <div>
+                      <div className="w-12 h-4 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
+                      <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
+                        <div className="space-y-2">
+                          <div className="w-full h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                          <div className="w-full h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                          <div className="w-5/6 h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                          <div className="w-4/5 h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Footer note skeleton */}
+          <div className="mt-8 text-center animate-pulse">
+            <div className="w-80 h-4 bg-gray-200 dark:bg-gray-600 rounded mx-auto"></div>
           </div>
         </div>
       </div>
