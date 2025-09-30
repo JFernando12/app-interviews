@@ -59,22 +59,25 @@ export default function FeedPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-4">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-4">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Header */}
-        <div className="mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="mb-4 sm:mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                  <Globe className="h-6 w-6 text-white" />
+              <div className="flex items-center space-x-3 sm:space-x-4 min-w-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                <div className="min-w-0">
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 truncate">
                     Community Feed
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 hidden sm:block">
                     Discover public interviews shared by the community
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 sm:hidden">
+                    Public interviews from the community
                   </p>
                 </div>
               </div>
@@ -85,27 +88,27 @@ export default function FeedPage() {
         {/* Notification */}
         {notification && (
           <div
-            className={`mb-6 p-4 rounded-lg flex items-center ${
+            className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg flex items-start ${
               notification.type === 'success'
                 ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800'
                 : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'
             }`}
           >
             {notification.type === 'success' ? (
-              <CheckCircle className="h-5 w-5 mr-3" />
+              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
             ) : (
-              <AlertCircle className="h-5 w-5 mr-3" />
+              <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
             )}
-            {notification.message}
+            <span className="text-sm sm:text-base">{notification.message}</span>
           </div>
         )}
 
         {/* Info Banner */}
         {!isLoading && interviews.length > 0 && (
-          <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-            <div className="flex items-start space-x-3">
-              <Users className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-              <div className="text-sm">
+          <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="flex items-start space-x-2 sm:space-x-3">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="text-xs sm:text-sm min-w-0">
                 <p className="text-blue-800 dark:text-blue-200 font-medium mb-1">
                   Community Contributions
                 </p>
