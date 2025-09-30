@@ -6,6 +6,7 @@ import { Plus, AlertCircle, CheckCircle } from 'lucide-react';
 import InterviewForm from '@/components/InterviewForm';
 import InterviewList from '@/components/InterviewList';
 import Modal from '@/components/Modal';
+import PageHeader from '@/components/PageHeader';
 
 interface InterviewFormData {
   company: string;
@@ -287,27 +288,21 @@ export default function InterviewsPage() {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Header */}
         <div className="mb-4 sm:mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
-              <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                  Interviews
-                </h1>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-                  Manage your interview sessions and track companies here.
-                </p>
+          <PageHeader
+            title="Interviews"
+            description="Manage your interview sessions and track companies here."
+          />
+          <div className="mt-3 sm:mt-4 flex justify-end">
+            <button
+              onClick={openCreateForm}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm sm:text-base flex-shrink-0"
+            >
+              <div className="flex items-center justify-center">
+                <Plus className="h-4 w-4 mr-2" />
+                <span className="hidden xs:inline">New Interview</span>
+                <span className="xs:hidden">New</span>
               </div>
-              <button
-                onClick={openCreateForm}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm sm:text-base flex-shrink-0"
-              >
-                <div className="flex items-center justify-center">
-                  <Plus className="h-4 w-4 mr-2" />
-                  <span className="hidden xs:inline">New Interview</span>
-                  <span className="xs:hidden">New</span>
-                </div>
-              </button>
-            </div>
+            </button>
           </div>
         </div>
 

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AlertCircle, CheckCircle, Globe, Users } from 'lucide-react';
 import FeedInterviewList from '@/components/FeedInterviewList';
 import { Interview } from '@/lib/dynamodb';
+import PageHeader from '@/components/PageHeader';
 
 interface FeedInterview extends Interview {
   user: {
@@ -63,26 +64,10 @@ export default function FeedPage() {
       <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Header */}
         <div className="mb-4 sm:mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3 sm:space-x-4 min-w-0">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                </div>
-                <div className="min-w-0">
-                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 truncate">
-                    Community Feed
-                  </h1>
-                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 hidden sm:block">
-                    Discover public interviews shared by the community
-                  </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 sm:hidden">
-                    Public interviews from the community
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <PageHeader
+            title="Community Feed"
+            description="Discover public interviews shared by the community"
+          />
         </div>
 
         {/* Notification */}
