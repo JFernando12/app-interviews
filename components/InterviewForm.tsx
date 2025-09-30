@@ -190,19 +190,19 @@ export default function InterviewForm({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+    <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+      <div className="mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
           {initialData ? 'Edit Interview' : 'Create New Interview'}
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
           {initialData
             ? 'Update interview details'
             : 'Add a new interview to track'}
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {/* Company Field */}
         <div>
           <label
@@ -224,7 +224,7 @@ export default function InterviewForm({
               onChange={handleChange}
               onFocus={() => setFocusedField('company')}
               onBlur={() => setFocusedField(null)}
-              className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 text-sm sm:text-base ${
                 errors.company
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                   : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800'
@@ -265,7 +265,7 @@ export default function InterviewForm({
             onChange={handleChange}
             onFocus={() => setFocusedField('type')}
             onBlur={() => setFocusedField(null)}
-            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+            className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm sm:text-base`}
             disabled={isSubmitting}
           >
             <option value="">Select type...</option>
@@ -296,7 +296,7 @@ export default function InterviewForm({
             onChange={handleChange}
             onFocus={() => setFocusedField('programming_language')}
             onBlur={() => setFocusedField(null)}
-            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+            className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm sm:text-base`}
             disabled={isSubmitting}
           >
             <option value="">Select language...</option>
@@ -328,7 +328,7 @@ export default function InterviewForm({
               onChange={handleChange}
               onFocus={() => setFocusedField('state')}
               onBlur={() => setFocusedField(null)}
-              className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm sm:text-base`}
               disabled={isSubmitting}
             >
               {Object.values(InterviewState).map((state) => (
@@ -341,13 +341,13 @@ export default function InterviewForm({
         )}
 
         {/* Public and Anonymous Toggles */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Public Toggle */}
-          <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
-            <div className="flex-1">
+          <div className="flex items-start sm:items-center justify-between p-3 sm:p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+            <div className="flex-1 mr-3 sm:mr-4">
               <label
                 htmlFor="public"
-                className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer block"
               >
                 Public Interview
               </label>
@@ -355,7 +355,7 @@ export default function InterviewForm({
                 Make this interview visible to other users
               </p>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
+            <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
               <input
                 type="checkbox"
                 id="public"
@@ -366,14 +366,16 @@ export default function InterviewForm({
                 disabled={isSubmitting}
               />
               <div
-                className={`w-11 h-6 bg-gray-200 dark:bg-gray-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 ${
+                className={`w-10 h-6 sm:w-11 sm:h-6 bg-gray-200 dark:bg-gray-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 ${
                   formData.public ? 'bg-blue-600' : ''
                 } transition-colors`}
               >
                 <div
-                  className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform ${
-                    formData.public ? 'translate-x-5' : 'translate-x-0'
-                  } mt-0.5 ml-0.5`}
+                  className={`w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full shadow transform transition-transform ${
+                    formData.public
+                      ? 'translate-x-4 sm:translate-x-5'
+                      : 'translate-x-0'
+                  } mt-1 sm:mt-0.5 ml-1 sm:ml-0.5`}
                 ></div>
               </div>
             </label>
@@ -381,11 +383,11 @@ export default function InterviewForm({
 
           {/* Anonymous Toggle - Only show when public is true */}
           {formData.public && (
-            <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
-              <div className="flex-1">
+            <div className="flex items-start sm:items-center justify-between p-3 sm:p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+              <div className="flex-1 mr-3 sm:mr-4">
                 <label
                   htmlFor="anonymous"
-                  className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer block"
                 >
                   Anonymous Interview
                 </label>
@@ -393,7 +395,7 @@ export default function InterviewForm({
                   Hide your identity in this public interview
                 </p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
+              <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
                 <input
                   type="checkbox"
                   id="anonymous"
@@ -404,14 +406,16 @@ export default function InterviewForm({
                   disabled={isSubmitting}
                 />
                 <div
-                  className={`w-11 h-6 bg-gray-200 dark:bg-gray-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 ${
+                  className={`w-10 h-6 sm:w-11 sm:h-6 bg-gray-200 dark:bg-gray-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 ${
                     formData.anonymous ? 'bg-blue-600' : ''
                   } transition-colors`}
                 >
                   <div
-                    className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform ${
-                      formData.anonymous ? 'translate-x-5' : 'translate-x-0'
-                    } mt-0.5 ml-0.5`}
+                    className={`w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full shadow transform transition-transform ${
+                      formData.anonymous
+                        ? 'translate-x-4 sm:translate-x-5'
+                        : 'translate-x-0'
+                    } mt-1 sm:mt-0.5 ml-1 sm:ml-0.5`}
                   ></div>
                 </div>
               </label>
@@ -451,7 +455,7 @@ export default function InterviewForm({
 
         {/* Question Upload Section - Only show for new interviews */}
         {!initialData && (
-          <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+          <div className="border-t border-gray-200 dark:border-gray-600 pt-4 sm:pt-6">
             <QuestionUploader
               onQuestionsChange={setQuestions}
               onVideoUpload={handleVideoFileSelected}
@@ -462,11 +466,11 @@ export default function InterviewForm({
         )}
 
         {/* Form Actions */}
-        <div className="flex gap-3 pt-6 border-t border-gray-200 dark:border-gray-600">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t border-gray-200 dark:border-gray-600">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+            className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm sm:text-base"
           >
             <div className="flex items-center justify-center">
               {isSubmitting ? (
@@ -486,7 +490,7 @@ export default function InterviewForm({
               type="button"
               onClick={onCancel}
               disabled={isSubmitting}
-              className="px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+              className="w-full sm:w-auto px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm sm:text-base"
             >
               <div className="flex items-center justify-center">
                 <X className="h-4 w-4 mr-2" />
