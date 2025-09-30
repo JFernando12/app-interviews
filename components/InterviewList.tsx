@@ -64,21 +64,22 @@ export default function InterviewList({
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {[...Array(3)].map((_, i) => (
           <div
             key={i}
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-pulse"
+            className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 animate-pulse"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-lg"></div>
-                <div className="space-y-2">
-                  <div className="w-32 h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
-                  <div className="w-24 h-3 bg-gray-200 dark:bg-gray-600 rounded"></div>
+            <div className="flex items-start justify-between">
+              <div className="flex items-start space-x-3 sm:space-x-4 flex-1 min-w-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 dark:bg-gray-600 rounded-lg flex-shrink-0"></div>
+                <div className="space-y-2 flex-1 min-w-0">
+                  <div className="w-28 sm:w-32 h-4 sm:h-5 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                  <div className="w-20 sm:w-24 h-3 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                  <div className="w-24 sm:w-32 h-3 bg-gray-200 dark:bg-gray-600 rounded"></div>
                 </div>
               </div>
-              <div className="flex space-x-2">
+              <div className="flex space-x-1 sm:space-x-2 flex-shrink-0">
                 <div className="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded"></div>
                 <div className="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded"></div>
                 <div className="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded"></div>
@@ -92,12 +93,12 @@ export default function InterviewList({
 
   if (interviews.length === 0) {
     return (
-      <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-        <Building2 className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+      <div className="text-center py-8 sm:py-12 bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl border border-gray-200 dark:border-gray-700">
+        <Building2 className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-gray-400 mb-4" />
+        <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2">
           No interviews yet
         </h3>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 px-4 sm:px-0">
           Create your first interview to get started.
         </p>
       </div>
@@ -105,25 +106,25 @@ export default function InterviewList({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {interviews.map((interview) => (
         <div
           key={interview.id}
           onClick={(e) => handleInterviewClick(interview.id, e)}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 group cursor-pointer"
+          className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 group cursor-pointer active:scale-[0.99] hover:border-blue-300 dark:hover:border-blue-600"
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-900/40 transition-colors">
-                <Building2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+          <div className="flex items-start justify-between">
+            <div className="flex items-start space-x-3 sm:space-x-4 flex-1 min-w-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-900/40 transition-colors flex-shrink-0">
+                <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <div className="min-w-0 flex-1">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
                   {interview.company}
                 </h3>
 
                 {/* State badge */}
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
                   <span
                     className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                       interview.state === InterviewState.COMPLETED
@@ -154,39 +155,46 @@ export default function InterviewList({
                   )}
                 </div>
 
-                {/* Programming language and type */}
-                <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-1" />
+                {/* Creation date */}
+                <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
+                  <span className="truncate">
                     Created {formatDate(interview.created_at)}
-                  </div>
+                  </span>
                 </div>
 
-                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-500 mt-1">
+                {/* Programming language and type */}
+                <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 dark:text-gray-500 mt-1 flex-wrap">
                   {interview.programming_language && (
                     <div className="flex items-center">
-                      <Code className="h-3 w-3 mr-1" />
-                      {interview.programming_language}
+                      <Code className="h-3 w-3 mr-1 flex-shrink-0" />
+                      <span className="truncate">
+                        {interview.programming_language}
+                      </span>
                     </div>
                   )}
                   {interview.type && (
                     <div className="flex items-center">
-                      <Tag className="h-3 w-3 mr-1" />
-                      {QUESTION_TYPE_DISPLAY[interview.type]}
+                      <Tag className="h-3 w-3 mr-1 flex-shrink-0" />
+                      <span className="truncate">
+                        {QUESTION_TYPE_DISPLAY[interview.type]}
+                      </span>
                     </div>
                   )}
                 </div>
 
                 {interview.updated_at !== interview.created_at && (
                   <div className="flex items-center text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    <Edit className="h-3 w-3 mr-1" />
-                    Updated {formatDate(interview.updated_at)}
+                    <Edit className="h-3 w-3 mr-1 flex-shrink-0" />
+                    <span className="truncate">
+                      Updated {formatDate(interview.updated_at)}
+                    </span>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="flex items-center space-x-1 sm:space-x-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0">
               {onView && (
                 <button
                   onClick={() => onView(interview)}

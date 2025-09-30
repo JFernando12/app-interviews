@@ -283,27 +283,28 @@ export default function InterviewsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-4">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Header */}
-        <div className="mb-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+        <div className="mb-4 sm:mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
                   Interviews
                 </h1>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                   Manage your interview sessions and track companies here.
                 </p>
               </div>
               <button
                 onClick={openCreateForm}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm sm:text-base flex-shrink-0"
               >
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
                   <Plus className="h-4 w-4 mr-2" />
-                  New Interview
+                  <span className="hidden xs:inline">New Interview</span>
+                  <span className="xs:hidden">New</span>
                 </div>
               </button>
             </div>
@@ -313,18 +314,18 @@ export default function InterviewsPage() {
         {/* Notification */}
         {notification && (
           <div
-            className={`mb-6 p-4 rounded-lg flex items-center ${
+            className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg flex items-start ${
               notification.type === 'success'
                 ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800'
                 : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'
             }`}
           >
             {notification.type === 'success' ? (
-              <CheckCircle className="h-5 w-5 mr-3" />
+              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
             ) : (
-              <AlertCircle className="h-5 w-5 mr-3" />
+              <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
             )}
-            {notification.message}
+            <span className="text-sm sm:text-base">{notification.message}</span>
           </div>
         )}
 
