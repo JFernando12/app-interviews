@@ -97,12 +97,11 @@ export default function ExportDropdown({
     return (
       <button
         disabled
-        className="bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed"
+        className="flex items-center justify-center bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-medium h-8 px-3 sm:h-9 sm:px-4 rounded-lg cursor-not-allowed text-xs sm:text-sm min-w-[80px] sm:min-w-[100px]"
       >
-        <div className="flex items-center">
-          <Download className="h-4 w-4 mr-2" />
-          Export ({questions.length})
-        </div>
+        <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
+        <span className="hidden sm:inline">Export ({questions.length})</span>
+        <span className="sm:hidden">Export</span>
       </button>
     );
   }
@@ -112,22 +111,36 @@ export default function ExportDropdown({
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isExporting}
-        className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium h-8 px-3 sm:h-9 sm:px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm shadow-sm hover:shadow-md min-w-[80px] sm:min-w-[100px]"
       >
-        <div className="flex items-center">
-          <Download className={`h-4 w-4 mr-2 ${isExporting ? 'animate-bounce' : ''}`} />
-          {isExporting ? 'Exporting...' : `Export (${questions.length})`}
-        </div>
+        <Download
+          className={`h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0 ${
+            isExporting ? 'animate-bounce' : ''
+          }`}
+        />
+        {isExporting ? (
+          <>
+            <span className="hidden sm:inline">Exporting...</span>
+            <span className="sm:hidden">Export...</span>
+          </>
+        ) : (
+          <>
+            <span className="hidden sm:inline">
+              Export ({questions.length})
+            </span>
+            <span className="sm:hidden">Export</span>
+          </>
+        )}
       </button>
 
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div 
-            className="fixed inset-0 z-10" 
+          <div
+            className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          
+
           {/* Dropdown Menu */}
           <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-20">
             <div className="p-3 border-b border-gray-200 dark:border-gray-700">
@@ -135,10 +148,11 @@ export default function ExportDropdown({
                 Export Questions
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Choose your preferred format to download {questions.length} question{questions.length !== 1 ? 's' : ''}
+                Choose your preferred format to download {questions.length}{' '}
+                question{questions.length !== 1 ? 's' : ''}
               </p>
             </div>
-            
+
             <div className="py-2">
               {exportOptions.map((option) => {
                 const Icon = option.icon;

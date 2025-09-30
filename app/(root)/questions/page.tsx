@@ -387,43 +387,43 @@ function QuestionsPageContent() {
                     : 'Manage your personal interview questions collection.'}
                 </p>
               </div>
-              <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center sm:space-x-3">
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  <ExportDropdown
-                    questions={filteredQuestions}
-                    filterType={filterType}
-                    searchQuery={searchQuery}
-                    disabled={loading}
-                  />
-                  <button
-                    onClick={() => setStudyMode(!studyMode)}
-                    className={`font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm ${
-                      studyMode
-                        ? 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-gray-500'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                      <span className="hidden xs:inline">
-                        {studyMode ? 'Exit Study Mode' : 'Study Mode'}
+              <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center sm:space-x-2">
+                {/* Action Buttons Row */}
+                <div className="flex items-center justify-between sm:justify-start space-x-2 w-full sm:w-auto">
+                  <div className="flex items-center space-x-2">
+                    <ExportDropdown
+                      questions={filteredQuestions}
+                      filterType={filterType}
+                      searchQuery={searchQuery}
+                      disabled={loading}
+                    />
+                    <button
+                      onClick={() => setStudyMode(!studyMode)}
+                      className={`flex items-center justify-center h-8 px-3 sm:h-9 sm:px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 dark:focus:ring-offset-gray-800 text-xs sm:text-sm font-medium min-w-[80px] sm:min-w-[90px] ${
+                        studyMode
+                          ? 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500 shadow-sm'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-gray-500'
+                      }`}
+                    >
+                      <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
+                      <span className="hidden sm:inline">
+                        {studyMode ? 'Exit Study' : 'Study'}
                       </span>
-                      <span className="xs:hidden">
+                      <span className="sm:hidden">
                         {studyMode ? 'Exit' : 'Study'}
                       </span>
-                    </div>
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={openNewQuestionModal}
+                    className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium h-8 px-3 sm:h-9 sm:px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:focus:ring-offset-gray-800 text-xs sm:text-sm shadow-sm hover:shadow-md flex-shrink-0 min-w-[80px] sm:min-w-[120px]"
+                  >
+                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
+                    <span className="hidden sm:inline">New Question</span>
+                    <span className="sm:hidden">New</span>
                   </button>
                 </div>
-                <button
-                  onClick={openNewQuestionModal}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm w-full sm:w-auto"
-                >
-                  <div className="flex items-center justify-center">
-                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    <span className="hidden xs:inline">New Question</span>
-                    <span className="xs:hidden">New</span>
-                  </div>
-                </button>
               </div>
             </div>
           </div>
