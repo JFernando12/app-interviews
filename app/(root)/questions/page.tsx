@@ -345,34 +345,41 @@ function QuestionsPageContent() {
   const languagesWithCounts = updateLanguageCounts(questions);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-4">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-3 sm:py-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Header */}
-        <div className="mb-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center">
-                  {interview_id && interviewData ? (
-                    <>
-                      Interview Questions - {interviewData.company}
-                      <button
-                        onClick={() => router.push('/questions')}
-                        className="ml-3 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline"
-                      >
-                        View All Questions
-                      </button>
-                    </>
-                  ) : (
-                    'Questions'
-                  )}
+        <div className="mb-3 sm:mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+            <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 flex flex-col sm:flex-row sm:items-center">
+                  <span className="flex items-center">
+                    {interview_id && interviewData ? (
+                      <>
+                        <span className="sm:hidden">
+                          Interview - {interviewData.company}
+                        </span>
+                        <span className="hidden sm:inline">
+                          Interview Questions - {interviewData.company}
+                        </span>
+                        <button
+                          onClick={() => router.push('/questions')}
+                          className="ml-2 sm:ml-3 text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline"
+                        >
+                          View All
+                        </button>
+                      </>
+                    ) : (
+                      'Questions'
+                    )}
+                  </span>
                   {studyMode && (
-                    <span className="ml-3 px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-full text-sm font-medium">
+                    <span className="mt-1 sm:mt-0 sm:ml-3 inline-flex px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-full text-xs sm:text-sm font-medium">
                       Study Mode
                     </span>
                   )}
                 </h1>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                   {studyMode
                     ? 'Study mode shows complete context, questions, and answers for better learning.'
                     : interview_id && interviewData
@@ -380,33 +387,41 @@ function QuestionsPageContent() {
                     : 'Manage your personal interview questions collection.'}
                 </p>
               </div>
-              <div className="flex items-center space-x-3">
-                <ExportDropdown
-                  questions={filteredQuestions}
-                  filterType={filterType}
-                  searchQuery={searchQuery}
-                  disabled={loading}
-                />
-                <button
-                  onClick={() => setStudyMode(!studyMode)}
-                  className={`font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
-                    studyMode
-                      ? 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-gray-500'
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    {studyMode ? 'Exit Study Mode' : 'Study Mode'}
-                  </div>
-                </button>
+              <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center sm:space-x-3">
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  <ExportDropdown
+                    questions={filteredQuestions}
+                    filterType={filterType}
+                    searchQuery={searchQuery}
+                    disabled={loading}
+                  />
+                  <button
+                    onClick={() => setStudyMode(!studyMode)}
+                    className={`font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm ${
+                      studyMode
+                        ? 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-gray-500'
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      <span className="hidden xs:inline">
+                        {studyMode ? 'Exit Study Mode' : 'Study Mode'}
+                      </span>
+                      <span className="xs:hidden">
+                        {studyMode ? 'Exit' : 'Study'}
+                      </span>
+                    </div>
+                  </button>
+                </div>
                 <button
                   onClick={openNewQuestionModal}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm w-full sm:w-auto"
                 >
-                  <div className="flex items-center">
-                    <Plus className="h-4 w-4 mr-2" />
-                    New Question
+                  <div className="flex items-center justify-center">
+                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <span className="hidden xs:inline">New Question</span>
+                    <span className="xs:hidden">New</span>
                   </div>
                 </button>
               </div>
@@ -414,81 +429,82 @@ function QuestionsPageContent() {
           </div>
         </div>
 
-        <div className={`grid grid-cols-1 ${studyMode ? 'lg:grid-cols-1' : 'lg:grid-cols-4'} gap-6`}>
+        <div
+          className={`${
+            studyMode
+              ? 'grid grid-cols-1'
+              : 'space-y-4 lg:space-y-0 lg:grid lg:grid-cols-4 lg:gap-6'
+          }`}
+        >
           {/* Sidebar - Filters */}
           {!studyMode && (
-            <div className="lg:col-span-1 space-y-6">
-              {/* Search Container */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Search Questions
-                  </label>
-                  <div className="relative">
-                    <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
+            <div className="lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
+              {/* Search Container - Compact */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-2 sm:p-3 lg:p-4">
+                <div className="relative">
+                  <Search className="w-3 h-3 sm:w-4 sm:h-4 absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                  <input
+                    type="text"
+                    placeholder="Search questions..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-7 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  />
                 </div>
               </div>
 
-              {/* Type Filters Container */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div>
-                  <h3 className="font-medium text-gray-900 dark:text-white mb-3">
-                    Filter by Type
+              {/* Compact Filter Tabs */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-2 sm:p-3 lg:p-4">
+                {/* Type Filter - Horizontal Scroll */}
+                <div className="mb-3">
+                  <h3 className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Type
                   </h3>
-                  <div className="space-y-2">
+                  <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-hide">
                     {typesWithCounts.map((type) => (
                       <button
                         key={type.id}
                         onClick={() => setFilterType(type.id)}
-                        className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+                        className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg transition-colors text-xs ${
                           filterType === type.id
-                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
-                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
+                            : 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <type.icon className="w-4 h-4" />
-                          <span className="text-sm font-medium">{type.name}</span>
-                        </div>
-                        <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full">
+                        <type.icon className="w-3 h-3" />
+                        <span className="hidden sm:inline">{type.name}</span>
+                        <span className="sm:hidden">
+                          {type.name.split(' ')[0]}
+                        </span>
+                        <span className="bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-1 py-0.5 rounded text-xs ml-1">
                           {type.count}
                         </span>
                       </button>
                     ))}
                   </div>
                 </div>
-              </div>
 
-              {/* Programming Language Filters Container */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                {/* Language Filter - Horizontal Scroll */}
                 <div>
-                  <h3 className="font-medium text-gray-900 dark:text-white mb-3">
-                    Filter by Language
+                  <h3 className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Language
                   </h3>
-                  <div className="space-y-2">
+                  <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-hide">
                     {languagesWithCounts.map((language) => (
                       <button
                         key={language.id}
                         onClick={() => setFilterLanguage(language.id)}
-                        className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+                        className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg transition-colors text-xs ${
                           filterLanguage === language.id
-                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
-                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700'
+                            : 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <Code className="w-4 h-4" />
-                          <span className="text-sm font-medium">{language.name}</span>
-                        </div>
-                        <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full">
+                        <Code className="w-3 h-3" />
+                        <span className="truncate max-w-16 sm:max-w-none">
+                          {language.name}
+                        </span>
+                        <span className="bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-1 py-0.5 rounded text-xs ml-1">
                           {language.count}
                         </span>
                       </button>
@@ -503,30 +519,34 @@ function QuestionsPageContent() {
           <div className={studyMode ? 'col-span-1' : 'lg:col-span-3'}>
             {filteredQuestions.length > 0 || loading ? (
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <div className="p-6">
+                <div className="p-3 sm:p-4 lg:p-6">
                   {!loading && (
-                    <div className="mb-4 flex items-center justify-between">
-                      <h2 className="font-semibold text-gray-900 dark:text-white">
+                    <div className="mb-3 sm:mb-4 flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
+                      <h2 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
                         {filteredQuestions.length} Question
                         {filteredQuestions.length !== 1 ? 's' : ''}
                         {(filterType !== 'all' || filterLanguage !== 'all') && (
-                          <span className="text-sm font-normal text-gray-600 dark:text-gray-400 ml-2">
+                          <span className="text-xs sm:text-sm font-normal text-gray-600 dark:text-gray-400 ml-2 block sm:inline">
                             {filterType !== 'all' && (
                               <>
                                 in{' '}
                                 {
-                                  typesWithCounts.find((t) => t.id === filterType)
-                                    ?.name
+                                  typesWithCounts.find(
+                                    (t) => t.id === filterType
+                                  )?.name
                                 }
                               </>
                             )}
-                            {filterType !== 'all' && filterLanguage !== 'all' && ' • '}
+                            {filterType !== 'all' &&
+                              filterLanguage !== 'all' &&
+                              ' • '}
                             {filterLanguage !== 'all' && (
                               <>
                                 for{' '}
                                 {
-                                  languagesWithCounts.find((l) => l.id === filterLanguage)
-                                    ?.name
+                                  languagesWithCounts.find(
+                                    (l) => l.id === filterLanguage
+                                  )?.name
                                 }
                               </>
                             )}
@@ -540,7 +560,7 @@ function QuestionsPageContent() {
                               setFilterType('all');
                               setFilterLanguage('all');
                             }}
-                            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1"
+                            className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1"
                           >
                             Clear filters
                           </button>
@@ -558,27 +578,27 @@ function QuestionsPageContent() {
                 </div>
               </div>
             ) : (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
-                <div className="text-gray-400 dark:text-gray-500 mb-4">
-                  <HelpCircle className="w-16 h-16 mx-auto" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sm:p-8 lg:p-12 text-center">
+                <div className="text-gray-400 dark:text-gray-500 mb-3 sm:mb-4">
+                  <HelpCircle className="w-12 h-12 sm:w-16 sm:h-16 mx-auto" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
                   {searchQuery.trim() || filterType !== 'all'
                     ? 'No matching questions found'
                     : 'No questions yet'}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-4 sm:mb-6">
                   {searchQuery.trim() || filterType !== 'all'
                     ? 'Try adjusting your search or filter criteria.'
                     : "You haven't created any questions yet. Start building your question bank now!"}
                 </p>
-                <div className="flex gap-3 justify-center">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
                   <button
                     onClick={openNewQuestionModal}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm sm:text-base"
                   >
-                    <div className="flex items-center">
-                      <Plus className="w-4 h-4 mr-2" />
+                    <div className="flex items-center justify-center">
+                      <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                       Create First Question
                     </div>
                   </button>
@@ -588,7 +608,7 @@ function QuestionsPageContent() {
                         setSearchQuery('');
                         setFilterType('all');
                       }}
-                      className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                      className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2 px-3 sm:px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm sm:text-base"
                     >
                       Clear Filters
                     </button>
