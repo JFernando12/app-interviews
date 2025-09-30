@@ -8,6 +8,7 @@ import {
   QuestionTypeUtils,
 } from '@/types/enums';
 import { HelpCircle, Code, Users, Target, Zap, ArrowRight } from 'lucide-react';
+import PageHeader from '@/components/PageHeader';
 
 interface QuestionTypeDisplay {
   id: string;
@@ -141,14 +142,14 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-3 sm:py-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-3">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           {/* Header Skeleton */}
           <div className="mb-3 sm:mb-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4 lg:p-6 animate-pulse">
+            <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 p-3 sm:p-4 animate-pulse">
               <div className="text-center sm:text-left">
-                <div className="w-32 sm:w-48 h-6 sm:h-8 bg-gray-200 dark:bg-gray-600 rounded mb-2 mx-auto sm:mx-0"></div>
-                <div className="w-48 sm:w-96 h-4 sm:h-5 bg-gray-200 dark:bg-gray-600 rounded mx-auto sm:mx-0"></div>
+                <div className="w-32 sm:w-48 h-5 sm:h-6 bg-gray-200 dark:bg-gray-600 rounded mb-2 mx-auto sm:mx-0"></div>
+                <div className="w-48 sm:w-96 h-3 sm:h-4 bg-gray-200 dark:bg-gray-600 rounded mx-auto sm:mx-0"></div>
               </div>
             </div>
           </div>
@@ -192,8 +193,12 @@ export default function HomePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-6 sm:pt-8 lg:pt-10">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-3">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          <PageHeader
+            title="Error Loading Questions"
+            description="We encountered an issue while loading your questions."
+          />
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
             <div className="flex items-center justify-center">
               <div className="text-center">
@@ -221,22 +226,14 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-3 sm:py-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-3">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Header */}
-        <div className="mb-3 sm:mb-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4 lg:p-6">
-            <div className="text-center sm:text-left">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
-                Question Categories
-              </h1>
-              <p className="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-400">
-                Choose a category to practice interview questions or browse your
-                complete collection.
-              </p>
-            </div>
-          </div>
-        </div>
+        <PageHeader
+          title="Question Categories"
+          description="Choose a category to practice interview questions or browse your complete collection."
+        />
+
         {/* Question Types Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {questionTypes.map((type) => (

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Question } from '@/lib/dynamodb';
 import { QuestionType } from '@/types/enums';
+import PageHeader from '@/components/PageHeader';
 import {
   Code2,
   BookOpen,
@@ -660,19 +661,12 @@ export default function TechnicalPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-3">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Header */}
-        <div className="mb-3 sm:mb-4">
-          <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 p-3 sm:p-4">
-            <div className="text-center sm:text-left">
-              <h1 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                Technical Prep
-              </h1>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                Practice with {currentTech?.name || 'programming'} questions,
-                projects, and resources.
-              </p>
-            </div>
-          </div>
-        </div>
+        <PageHeader
+          title="Technical Prep"
+          description={`Practice with ${
+            currentTech?.name || 'programming'
+          } questions, projects, and resources.`}
+        />
 
         {/* Technology Filter */}
         <div className="mb-3 sm:mb-4">
