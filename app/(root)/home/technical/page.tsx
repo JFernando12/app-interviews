@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Question } from '@/lib/dynamodb';
 import { QuestionType } from '@/types/enums';
 import PageHeader from '@/components/PageHeader';
+import { FormattedAnswer } from '@/components/FormattedAnswer';
 import {
   Code2,
   BookOpen,
@@ -67,6 +68,25 @@ export default function TechnicalPage() {
   const [activeTab, setActiveTab] = useState<
     'questions' | 'projects' | 'resources'
   >('questions');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Detect dark mode
+  useEffect(() => {
+    const checkDarkMode = () => {
+      setIsDarkMode(document.documentElement.classList.contains('dark'));
+    };
+
+    checkDarkMode();
+
+    // Watch for changes in dark mode
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // Add custom scrollbar hiding styles
   const scrollbarHideStyle = {
@@ -145,163 +165,7 @@ export default function TechnicalPage() {
     },
   ];
 
-  // Mock data - will be replaced with API calls later
-  const mockQuestions: Record<string, Question[]> = {
-    javascript: [
-      {
-        id: '1',
-        question:
-          'Explain the difference between var, let, and const in JavaScript',
-        context: 'Variable declarations and scoping in modern JavaScript',
-        answer:
-          'var has function scope, let and const have block scope. const creates immutable bindings.',
-        type: QuestionType.TECHNICAL,
-        programming_language: 'javascript',
-        global: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: '2',
-        question: 'What is the event loop in JavaScript?',
-        context: 'Asynchronous programming and concurrency model',
-        answer:
-          'The event loop handles asynchronous operations by managing the call stack, callback queue, and web APIs.',
-        type: QuestionType.TECHNICAL,
-        programming_language: 'javascript',
-        global: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: '3',
-        question: 'How do closures work in JavaScript?',
-        context: 'Lexical scoping and closure patterns',
-        answer:
-          'Closures allow inner functions to access variables from outer functions even after the outer function returns.',
-        type: QuestionType.TECHNICAL,
-        programming_language: 'javascript',
-        global: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ],
-    python: [
-      {
-        id: '4',
-        question: 'Explain the difference between lists and tuples in Python',
-        context: 'Data structures and mutability',
-        answer:
-          'Lists are mutable and use [], tuples are immutable and use (). Tuples are more memory efficient.',
-        type: QuestionType.TECHNICAL,
-        programming_language: 'python',
-        global: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: '5',
-        question: 'What is the GIL in Python?',
-        context: 'Threading and concurrency limitations',
-        answer:
-          'Global Interpreter Lock prevents multiple threads from executing Python code simultaneously.',
-        type: QuestionType.TECHNICAL,
-        programming_language: 'python',
-        global: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ],
-    react: [
-      {
-        id: '6',
-        question: 'What are React hooks and why were they introduced?',
-        context: 'Modern React patterns and state management',
-        answer:
-          'Hooks allow using state and lifecycle methods in functional components, reducing complexity.',
-        type: QuestionType.TECHNICAL,
-        programming_language: 'react',
-        global: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ],
-    nodejs: [
-      {
-        id: '7',
-        question:
-          'What is the difference between process.nextTick() and setImmediate()?',
-        context: 'Node.js event loop and task scheduling',
-        answer:
-          'process.nextTick() executes before setImmediate(). nextTick has higher priority in the event loop.',
-        type: QuestionType.TECHNICAL,
-        programming_language: 'nodejs',
-        global: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ],
-    java: [
-      {
-        id: '8',
-        question:
-          'Explain the difference between abstract classes and interfaces in Java',
-        context: 'Object-oriented programming concepts',
-        answer:
-          'Abstract classes can have concrete methods and state, interfaces define contracts. Java 8+ allows default methods in interfaces.',
-        type: QuestionType.TECHNICAL,
-        programming_language: 'java',
-        global: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ],
-    csharp: [
-      {
-        id: '9',
-        question:
-          'What is the difference between value types and reference types in C#?',
-        context: 'Memory management and type system',
-        answer:
-          'Value types store data directly, reference types store references to data. Value types are on stack, reference types on heap.',
-        type: QuestionType.TECHNICAL,
-        programming_language: 'csharp',
-        global: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ],
-    php: [
-      {
-        id: '10',
-        question:
-          'Explain the difference between include, require, include_once, and require_once in PHP',
-        context: 'File inclusion and dependency management',
-        answer:
-          'require throws fatal error if file not found, include gives warning. _once variants prevent multiple inclusions.',
-        type: QuestionType.TECHNICAL,
-        programming_language: 'php',
-        global: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ],
-    go: [
-      {
-        id: '11',
-        question: 'How do goroutines work in Go?',
-        context: 'Concurrency model and lightweight threads',
-        answer:
-          'Goroutines are lightweight threads managed by Go runtime. They use cooperative scheduling and communicate via channels.',
-        type: QuestionType.TECHNICAL,
-        programming_language: 'go',
-        global: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ],
-  };
-
+  // Mock data for projects and resources - will be replaced with API calls later
   const mockProjectExamples: Record<string, ProjectExample[]> = {
     javascript: [
       {
@@ -643,14 +507,31 @@ export default function TechnicalPage() {
 
   // Load data based on selected technology
   useEffect(() => {
-    setLoading(true);
-    // Simulate API call delay
-    setTimeout(() => {
-      setQuestions(mockQuestions[selectedTechnology] || []);
+    const fetchQuestions = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `/api/questions?global=true&type=${QuestionType.TECHNICAL}&programming_language=${selectedTechnology}`
+        );
+        if (response.ok) {
+          const fetchedQuestions = await response.json();
+          setQuestions(fetchedQuestions);
+        } else {
+          console.error('Failed to fetch questions');
+          setQuestions([]);
+        }
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+        setQuestions([]);
+      }
+
+      // Keep mock data for projects and resources for now
       setProjectExamples(mockProjectExamples[selectedTechnology] || []);
       setResources(mockResources[selectedTechnology] || []);
       setLoading(false);
-    }, 300);
+    };
+
+    fetchQuestions();
   }, [selectedTechnology]);
 
   const currentTech = technologies.find(
@@ -815,9 +696,10 @@ export default function TechnicalPage() {
                           <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 transform group-open:rotate-180 transition-transform" />
                         </summary>
                         <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                          <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                            {question.answer}
-                          </p>
+                          <FormattedAnswer
+                            answer={question.answer}
+                            isDarkMode={isDarkMode}
+                          />
                         </div>
                       </details>
                     </div>

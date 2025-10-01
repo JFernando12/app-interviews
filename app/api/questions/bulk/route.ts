@@ -6,13 +6,18 @@ import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 // POST /api/questions/bulk - Create multiple questions
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body = await request.json();
-    const { questions, interview_id } = body;
+    const { questions, interview_id, global = false } = body;
+
+    // For global questions, no authentication required
+    // For user-specific questions, authentication is required
+    let session = null;
+    if (!global) {
+      session = await auth();
+      if (!session?.user?.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+    }
 
     // Validate required fields
     if (!questions || !Array.isArray(questions) || questions.length === 0) {
@@ -22,9 +27,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!interview_id) {
+    // Interview ID is only required for non-global questions
+    if (!global && !interview_id) {
       return NextResponse.json(
-        { error: 'Interview ID is required' },
+        { error: 'Interview ID is required for user-specific questions' },
         { status: 400 }
       );
     }
@@ -40,22 +46,35 @@ export async function POST(request: NextRequest) {
         programming_language,
       } = question;
 
-      if (!questionText || !answer || !context) {
+      if (!questionText || !answer) {
         validationErrors.push(
-          `Question ${
-            index + 1
-          }: Missing required fields (question, answer, context)`
+          `Question ${index + 1}: Missing required fields (question, answer)`
         );
       }
 
-      if (!type) {
-        validationErrors.push(`Question ${index + 1}: Type is required`);
-      }
-
-      if (!programming_language) {
-        validationErrors.push(
-          `Question ${index + 1}: Programming language is required`
-        );
+      // For non-global questions, validate additional fields
+      if (!global) {
+        if (!context) {
+          validationErrors.push(
+            `Question ${
+              index + 1
+            }: Context is required for user-specific questions`
+          );
+        }
+        if (!type) {
+          validationErrors.push(
+            `Question ${
+              index + 1
+            }: Type is required for user-specific questions`
+          );
+        }
+        if (!programming_language) {
+          validationErrors.push(
+            `Question ${
+              index + 1
+            }: Programming language is required for user-specific questions`
+          );
+        }
       }
     });
 
@@ -73,20 +92,40 @@ export async function POST(request: NextRequest) {
     for (let i = 0; i < questions.length; i++) {
       try {
         const questionData = questions[i];
-        // Normalize the type
-        const normalizedType =
-          QuestionTypeUtils.fromString(questionData.type) || QuestionType.OTHER;
+        // Normalize the type - use TECHNICAL as default for global questions
+        const normalizedType = questionData.type
+          ? QuestionTypeUtils.fromString(questionData.type) ||
+            QuestionType.TECHNICAL
+          : QuestionType.TECHNICAL;
 
-        const newQuestion = await questionsService.createQuestion({
-          question: questionData.question,
-          answer: questionData.answer,
-          context: questionData.context,
-          type: normalizedType,
-          programming_language: questionData.programming_language,
-          interview_id: interview_id,
-          user_id: session.user.id,
-          global: false, // Bulk questions are always user-specific
-        });
+        let questionPayload;
+        if (global) {
+          // Create global question
+          questionPayload = {
+            question: questionData.question,
+            answer: questionData.answer,
+            context: questionData.context || '',
+            type: normalizedType,
+            programming_language: questionData.programming_language || 'python',
+            global: true,
+          };
+        } else {
+          // Create user-specific question
+          questionPayload = {
+            question: questionData.question,
+            answer: questionData.answer,
+            context: questionData.context,
+            type: normalizedType,
+            programming_language: questionData.programming_language,
+            interview_id: interview_id,
+            user_id: session!.user.id,
+            global: false,
+          };
+        }
+
+        const newQuestion = await questionsService.createQuestion(
+          questionPayload
+        );
         createdQuestions.push(newQuestion);
       } catch (error) {
         console.error(`Error creating question ${i + 1}:`, error);
