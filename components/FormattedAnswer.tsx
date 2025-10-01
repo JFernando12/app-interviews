@@ -1,15 +1,99 @@
 import React from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface FormattedAnswerProps {
   answer: string;
   isDarkMode?: boolean;
 }
 
-export const FormattedAnswer: React.FC<FormattedAnswerProps> = ({ 
-  answer, 
-  isDarkMode = false 
+// Custom syntax highlighting styles with clean, minimal colors
+const customLightStyle = {
+  'code[class*="language-"]': {
+    color: '#2d3748',
+    fontFamily:
+      'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Menlo, "Liberation Mono", "Courier New", monospace',
+  },
+  'pre[class*="language-"]': {
+    color: '#2d3748',
+    fontFamily:
+      'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Menlo, "Liberation Mono", "Courier New", monospace',
+  },
+  comment: { color: '#888888', fontStyle: 'italic' },
+  prolog: { color: '#888888', fontStyle: 'italic' },
+  doctype: { color: '#888888', fontStyle: 'italic' },
+  cdata: { color: '#888888', fontStyle: 'italic' },
+  punctuation: { color: '#2d3748' },
+  property: { color: '#0088cc' },
+  tag: { color: '#0088cc' },
+  constant: { color: '#0088cc' },
+  symbol: { color: '#0088cc' },
+  deleted: { color: '#cc0000' },
+  boolean: { color: '#cc6600' },
+  number: { color: '#cc6600' },
+  selector: { color: '#008800' },
+  'attr-name': { color: '#008800' },
+  string: { color: '#008800' },
+  char: { color: '#008800' },
+  builtin: { color: '#0088cc' },
+  url: { color: '#008800' },
+  inserted: { color: '#008800' },
+  entity: { color: '#0088cc' },
+  atrule: { color: '#8800cc' },
+  'attr-value': { color: '#008800' },
+  function: { color: '#cc6600' },
+  'class-name': { color: '#0088cc' },
+  keyword: { color: '#8800cc', fontWeight: 'bold' },
+  regex: { color: '#008800' },
+  important: { color: '#cc0000', fontWeight: 'bold' },
+  variable: { color: '#0088cc' },
+  operator: { color: '#2d3748' },
+};
+
+const customDarkStyle = {
+  'code[class*="language-"]': {
+    color: '#e2e8f0',
+    fontFamily:
+      'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Menlo, "Liberation Mono", "Courier New", monospace',
+  },
+  'pre[class*="language-"]': {
+    color: '#e2e8f0',
+    fontFamily:
+      'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Menlo, "Liberation Mono", "Courier New", monospace',
+  },
+  comment: { color: '#999999', fontStyle: 'italic' },
+  prolog: { color: '#999999', fontStyle: 'italic' },
+  doctype: { color: '#999999', fontStyle: 'italic' },
+  cdata: { color: '#999999', fontStyle: 'italic' },
+  punctuation: { color: '#e2e8f0' },
+  property: { color: '#66ccff' },
+  tag: { color: '#66ccff' },
+  constant: { color: '#66ccff' },
+  symbol: { color: '#66ccff' },
+  deleted: { color: '#ff6666' },
+  boolean: { color: '#ffaa66' },
+  number: { color: '#ffaa66' },
+  selector: { color: '#66ff99' },
+  'attr-name': { color: '#66ff99' },
+  string: { color: '#66ff99' },
+  char: { color: '#66ff99' },
+  builtin: { color: '#66ccff' },
+  url: { color: '#66ff99' },
+  inserted: { color: '#66ff99' },
+  entity: { color: '#66ccff' },
+  atrule: { color: '#cc99ff' },
+  'attr-value': { color: '#66ff99' },
+  function: { color: '#ffaa66' },
+  'class-name': { color: '#66ccff' },
+  keyword: { color: '#cc99ff', fontWeight: 'bold' },
+  regex: { color: '#66ff99' },
+  important: { color: '#ff6666', fontWeight: 'bold' },
+  variable: { color: '#66ccff' },
+  operator: { color: '#e2e8f0' },
+};
+
+export const FormattedAnswer: React.FC<FormattedAnswerProps> = ({
+  answer,
+  isDarkMode = false,
 }) => {
   // Parse the answer text and split into text and code blocks
   const parseAnswer = (text: string) => {
@@ -50,7 +134,7 @@ export const FormattedAnswer: React.FC<FormattedAnswerProps> = ({
     // Handle inline code with backticks
     const inlineCodeRegex = /`([^`]+)`/g;
     const parts = text.split(inlineCodeRegex);
-    
+
     return parts.map((part, index) => {
       if (index % 2 === 1) {
         // This is inline code
@@ -82,14 +166,14 @@ export const FormattedAnswer: React.FC<FormattedAnswerProps> = ({
           return (
             <div key={index} className="relative">
               <div className="absolute top-2 right-2 z-10">
-                <span className="px-2 py-1 bg-black/20 backdrop-blur-sm text-xs text-white/80 rounded uppercase font-mono">
+                <span className="px-2 py-1 bg-gray-800/90 backdrop-blur-sm text-xs text-gray-300 rounded uppercase font-mono border border-gray-600">
                   {part.language}
                 </span>
               </div>
-              <div className="bg-gray-100 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500">
+              <div className="bg-black rounded-lg border border-gray-300 dark:border-gray-500">
                 <SyntaxHighlighter
                   language={part.language}
-                  style={isDarkMode ? vscDarkPlus : oneLight}
+                  style={customDarkStyle} // Always use dark style with black background
                   customStyle={{
                     margin: 0,
                     borderRadius: '0.5rem',
