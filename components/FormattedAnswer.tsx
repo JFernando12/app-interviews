@@ -170,7 +170,7 @@ export const FormattedAnswer: React.FC<FormattedAnswerProps> = ({
                   {part.language}
                 </span>
               </div>
-              <div className="bg-black rounded-lg border border-gray-300 dark:border-gray-500">
+              <div className="bg-black rounded-lg border border-gray-300 dark:border-gray-500 overflow-x-auto">
                 <SyntaxHighlighter
                   language={part.language}
                   style={customDarkStyle} // Always use dark style with black background
@@ -182,10 +182,13 @@ export const FormattedAnswer: React.FC<FormattedAnswerProps> = ({
                     background: 'transparent',
                     backgroundColor: 'transparent',
                     padding: '1rem',
+                    whiteSpace: 'pre',
+                    overflowX: 'auto',
+                    minWidth: 'fit-content',
                   }}
                   showLineNumbers={part.content.split('\n').length > 3}
-                  wrapLines={true}
-                  wrapLongLines={true}
+                  wrapLines={false}
+                  wrapLongLines={false}
                 >
                   {part.content}
                 </SyntaxHighlighter>
