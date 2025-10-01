@@ -1,0 +1,10 @@
+{
+  "id": "python-test",
+  "question": "¿Cuáles son las diferencias principales entre las palabras reservadas if, elif y else en Python?",
+  "answer": "Las palabras reservadas if, elif y else son fundamentales para el control de flujo en Python:\n\n**if Statement:**\n- Se usa para la condición principal\n- Debe ser la primera en la cadena de condiciones\n- Siempre requiere una expresión booleana\n- La palabra True o False pueden ser resultado de la evaluación\n\n**elif Statement:**\n- Significa else if en otros lenguajes\n- Se evalúa solo si las condiciones anteriores son False\n- Puedes tener múltiples elif en una cadena\n- Es más eficiente que múltiples if independientes\n\n**else Statement:**\n- Se ejecuta cuando todas las condiciones anteriores son False\n- Es opcional en la estructura\n- No requiere condición\n- Siempre debe ser la última en la cadena\n\nPalabras como None, True, False son valores especiales, mientras que and, or, not son operadores lógicos. También tenemos funciones como len(), type(), isinstance() que son muy comunes.\n\n```python\n# Ejemplo de uso\nvalue = input(\"Ingresa un número: \")\n\nif value.isdigit():\n    number = int(value)\n    if number > 0:\n        print(\"Número positivo\")\n    elif number < 0:\n        print(\"Número negativo\") \n    else:\n        print(\"Es cero\")\nelse:\n    print(\"No es un número válido\")\n```",
+  "context": "Control de flujo en Python",
+  "type": "TECHNICAL",
+  "programming_language": "python",
+  "difficulty": "beginner",
+  "tags": ["control-flow", "conditionals", "keywords"]
+}

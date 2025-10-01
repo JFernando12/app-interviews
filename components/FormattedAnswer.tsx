@@ -6,48 +6,33 @@ interface FormattedAnswerProps {
   isDarkMode?: boolean;
 }
 
-// Custom syntax highlighting styles with clean, minimal colors
-const customLightStyle = {
-  'code[class*="language-"]': {
-    color: '#2d3748',
-    fontFamily:
-      'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Menlo, "Liberation Mono", "Courier New", monospace',
-  },
-  'pre[class*="language-"]': {
-    color: '#2d3748',
-    fontFamily:
-      'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Menlo, "Liberation Mono", "Courier New", monospace',
-  },
-  comment: { color: '#888888', fontStyle: 'italic' },
-  prolog: { color: '#888888', fontStyle: 'italic' },
-  doctype: { color: '#888888', fontStyle: 'italic' },
-  cdata: { color: '#888888', fontStyle: 'italic' },
-  punctuation: { color: '#2d3748' },
-  property: { color: '#0088cc' },
-  tag: { color: '#0088cc' },
-  constant: { color: '#0088cc' },
-  symbol: { color: '#0088cc' },
-  deleted: { color: '#cc0000' },
-  boolean: { color: '#cc6600' },
-  number: { color: '#cc6600' },
-  selector: { color: '#008800' },
-  'attr-name': { color: '#008800' },
-  string: { color: '#008800' },
-  char: { color: '#008800' },
-  builtin: { color: '#0088cc' },
-  url: { color: '#008800' },
-  inserted: { color: '#008800' },
-  entity: { color: '#0088cc' },
-  atrule: { color: '#8800cc' },
-  'attr-value': { color: '#008800' },
-  function: { color: '#cc6600' },
-  'class-name': { color: '#0088cc' },
-  keyword: { color: '#8800cc', fontWeight: 'bold' },
-  regex: { color: '#008800' },
-  important: { color: '#cc0000', fontWeight: 'bold' },
-  variable: { color: '#0088cc' },
-  operator: { color: '#2d3748' },
-};
+// Python magic methods and special attributes
+const PYTHON_SPECIAL_METHODS = new Set([
+  '__init__', '__str__', '__repr__', '__len__', '__getitem__', '__setitem__',
+  '__delitem__', '__iter__', '__next__', '__contains__', '__add__', '__sub__',
+  '__mul__', '__div__', '__truediv__', '__floordiv__', '__mod__', '__pow__',
+  '__and__', '__or__', '__xor__', '__lshift__', '__rshift__', '__neg__',
+  '__pos__', '__abs__', '__invert__', '__lt__', '__le__', '__eq__', '__ne__',
+  '__gt__', '__ge__', '__hash__', '__bool__', '__call__', '__enter__', '__exit__',
+  '__new__', '__del__', '__getattr__', '__setattr__', '__delattr__', '__dir__',
+  '__class__', '__dict__', '__doc__', '__name__', '__module__', '__bases__',
+  '__mro__', '__subclasses__'
+]);
+
+// Python technical terms and concepts that should be formatted as code
+const PYTHON_TECHNICAL_TERMS = new Set([
+  'values', 'objects', 'object', 'identity', 'reference', 'references', 
+  'memory', 'address', 'bytecode', 'bytecodes', 'interpreter', 'thread', 'threads',
+  'process', 'processes', 'module', 'modules', 'namespace', 'scope', 'closure',
+  'iterator', 'iterable', 'generator', 'coroutine', 'async', 'await',
+  'decorator', 'metaclass', 'descriptor', 'property', 'method', 'function',
+  'class', 'instance', 'attribute', 'variable', 'parameter', 'argument',
+  'mutable', 'immutable', 'hashable', 'sequence', 'mapping', 'container',
+  'slice', 'index', 'key', 'value', 'item', 'element', 'node', 'tree',
+  'stack', 'queue', 'heap', 'array', 'list', 'tuple', 'dict', 'set',
+  'string', 'integer', 'float', 'boolean', 'bytes', 'unicode'
+]);
+
 
 const customDarkStyle = {
   'code[class*="language-"]': {
@@ -131,29 +116,132 @@ export const FormattedAnswer: React.FC<FormattedAnswerProps> = ({
   };
 
   const formatTextContent = (text: string) => {
-    // Handle inline code with backticks
+    // Handle inline code with backticks first
     const inlineCodeRegex = /`([^`]+)`/g;
     const parts = text.split(inlineCodeRegex);
 
     return parts.map((part, index) => {
       if (index % 2 === 1) {
-        // This is inline code
+        // This is inline code - prevent line breaks
         return (
           <code
             key={index}
-            className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded text-sm font-mono"
+            className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded text-sm font-mono whitespace-nowrap"
           >
             {part}
           </code>
         );
       }
-      // Regular text - preserve line breaks
-      return part.split('\n').map((line, lineIndex, lines) => (
-        <React.Fragment key={`${index}-${lineIndex}`}>
-          {line}
-          {lineIndex < lines.length - 1 && <br />}
-        </React.Fragment>
-      ));
+      // Regular text - handle bold, lists, and line breaks
+      return formatMarkdownText(part, index);
+    });
+  };
+
+  const formatMarkdownText = (text: string, keyPrefix: number) => {
+    const lines = text.split('\n');
+    const elements: React.ReactNode[] = [];
+    let currentListType: 'ordered' | 'unordered' | null = null;
+    let listItems: React.ReactNode[] = [];
+    
+    const flushCurrentList = () => {
+      if (currentListType && listItems.length > 0) {
+        const ListComponent = currentListType === 'ordered' ? 'ol' : 'ul';
+        elements.push(
+          <ListComponent 
+            key={`${keyPrefix}-list-${elements.length}`} 
+            className={`ml-4 space-y-1 ${currentListType === 'ordered' ? 'list-decimal' : 'list-disc'} list-inside`}
+          >
+            {listItems.map((item, itemIndex) => (
+              <li key={`${keyPrefix}-list-item-${itemIndex}`} className="leading-relaxed">
+                {item}
+              </li>
+            ))}
+          </ListComponent>
+        );
+        currentListType = null;
+        listItems = [];
+      }
+    };
+    
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      const line = lines[lineIndex];
+      
+      // Skip empty lines but add spacing for double line breaks
+      if (line.trim() === '') {
+        flushCurrentList();
+        // Only add spacing if this is between content (not at start/end)
+        if (lineIndex > 0 && lineIndex < lines.length - 1 && 
+            lines[lineIndex - 1].trim() !== '' && lines[lineIndex + 1].trim() !== '') {
+          elements.push(
+            <div key={`${keyPrefix}-space-${lineIndex}`} className="h-2"></div>
+          );
+        }
+        continue;
+      }
+      
+      // Check for list items
+      const unorderedListMatch = line.match(/^[\s]*[-*+]\s+(.+)$/);
+      const orderedListMatch = line.match(/^[\s]*\d+\.\s+(.+)$/);
+      
+      if (unorderedListMatch) {
+        // Handle unordered list item
+        if (currentListType !== 'unordered') {
+          flushCurrentList();
+          currentListType = 'unordered';
+        }
+        const content = formatLineContent(unorderedListMatch[1], keyPrefix, lineIndex);
+        listItems.push(content);
+        continue;
+      }
+      
+      if (orderedListMatch) {
+        // Handle ordered list item
+        if (currentListType !== 'ordered') {
+          flushCurrentList();
+          currentListType = 'ordered';
+        }
+        const content = formatLineContent(orderedListMatch[1], keyPrefix, lineIndex);
+        listItems.push(content);
+        continue;
+      }
+      
+      // Not a list item, flush any current list
+      flushCurrentList();
+      
+      // Handle regular text line
+      const formattedLine = formatLineContent(line, keyPrefix, lineIndex);
+      elements.push(
+        <div key={`${keyPrefix}-${lineIndex}`} className="leading-relaxed break-words">
+          {formattedLine}
+        </div>
+      );
+    }
+    
+    // Flush any remaining list
+    flushCurrentList();
+    
+    return elements;
+  };
+
+  const formatLineContent = (text: string, keyPrefix: number, lineIndex: number): React.ReactNode[] => {
+    // Handle bold text **text**
+    const boldRegex = /\*\*(.*?)\*\*/g;
+    const lineParts = text.split(boldRegex);
+    
+    return lineParts.map((linePart, partIndex) => {
+      if (partIndex % 2 === 1) {
+        // This is bold text
+        return (
+          <strong
+            key={`${keyPrefix}-${lineIndex}-${partIndex}`}
+            className="font-semibold text-gray-900 dark:text-white"
+          >
+            {linePart}
+          </strong>
+        );
+      }
+      // Regular text
+      return linePart;
     });
   };
 
@@ -199,7 +287,7 @@ export const FormattedAnswer: React.FC<FormattedAnswerProps> = ({
           return (
             <div
               key={index}
-              className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed"
+              className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 space-y-1 break-words"
             >
               {formatTextContent(part.content)}
             </div>
