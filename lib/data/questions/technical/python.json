@@ -2,7 +2,7 @@
   {
     "id": "python-1",
     "question": "What is the difference between a list and a tuple in Python?",
-    "answer": "Lists and tuples are both sequence types in Python, but they have key differences:\n\n**Lists:**\n- Mutable (can be modified after creation)\n- Use square brackets []\n- Support item assignment, append, remove operations\n- Slightly slower due to mutability overhead\n\n**Tuples:**\n- Immutable (cannot be modified after creation)\n- Use parentheses ()\n- Cannot change elements after creation\n- Faster and more memory efficient\n- Can be used as dictionary keys (hashable)\n\n```python\n# List example\nmy_list = [1, 2, 3]\nmy_list[0] = 10\nmy_list.append(4)\nprint(my_list)  # [10, 2, 3, 4]\n\n# Tuple example\nmy_tuple = (1, 2, 3)\n# my_tuple[0] = 10  # TypeError\ncoordinates = {(0, 0): 'origin', (1, 1): 'point'}\n```",
+    "answer": "Lists and tuples are both sequence types in Python, but they have key differences:\n\n**Lists:**\n- **Mutable** (can be modified after creation)\n- Use **square brackets** []\n- Support item assignment, **append()**, and **remove()** operations\n- Slightly slower due to mutability overhead\n\n**Tuples:**\n- **Immutable** (cannot be modified after creation)\n- Use **parentheses** ()\n- Cannot change elements after creation\n- Faster and more memory efficient\n- Can be used as **dictionary keys** (hashable)\n\n```python\n# List example\nmy_list = [1, 2, 3]\nmy_list[0] = 10\nmy_list.append(4)\nprint(my_list)  # [10, 2, 3, 4]\n\n# Tuple example\nmy_tuple = (1, 2, 3)\n# my_tuple[0] = 10  # TypeError: 'tuple' object does not support item assignment\ncoordinates = {(0, 0): 'origin', (1, 1): 'point'} # Tuple as a key\n```",
     "context": "Basic Python data structures",
     "type": "TECHNICAL",
     "programming_language": "python",
@@ -11,275 +11,492 @@
   },
   {
     "id": "python-2",
-    "question": "Explain the difference between '==' and 'is' operators in Python.",
-    "answer": "The == and is operators serve different purposes:\n\n**== (Equality operator):**\n- Compares the values of objects\n- Calls the __eq__ method\n- Returns True if values are equal\n\n**is (Identity operator):**\n- Compares the identity of objects (memory address)\n- Checks if both variables point to the same object\n- Uses id function internally\n\nThe difference is crucial: == checks if objects have the same value, while is checks if they are the same object in memory. Python caches small integers and some strings, so is might return True for small numbers but False for larger ones.\n\n```python\n# Values vs Identity\na = [1, 2, 3]\nb = [1, 2, 3]\nc = a\n\nprint(a == b)  # True (same values)\nprint(a is b)  # False (different objects)\nprint(a is c)  # True (same object)\n\n# Integer caching (-5 to 256)\nx = 5\ny = 5\nprint(x is y)  # True (cached)\n\nz = 1000\nw = 1000\nprint(z is w)  # False (not cached)\n\n# Always use 'is' with None\nvalue = None\nprint(value is None)  # Correct\n```",
-    "context": "Python operators and object comparison",
-    "type": "TECHNICAL",
-    "programming_language": "python",
-    "difficulty": "intermediate",
-    "tags": ["operators", "comparison", "identity", "memory"]
-  },
-  {
-    "id": "python-3",
-    "question": "What are Python decorators and how do they work?",
-    "answer": "Decorators are a powerful feature that allows you to modify or extend the behavior of functions or classes without permanently modifying their code. They use the @ syntax and are essentially functions that take another function as an argument.\n\n**How decorators work:**\n1. A decorator is a function that takes a function as input\n2. Returns a modified version of that function\n3. The @decorator_name syntax is syntactic sugar\n\n```python\n# Basic decorator\ndef my_decorator(func):\n    def wrapper(*args, **kwargs):\n        print(f\"Before {func.__name__}\")\n        result = func(*args, **kwargs)\n        print(f\"After {func.__name__}\")\n        return result\n    return wrapper\n\n@my_decorator\ndef greet(name):\n    print(f\"Hello, {name}!\")\n\ngreet(\"Alice\")\n# Output: Before greet, Hello Alice!, After greet\n\n# Decorator with parameters\ndef repeat(times):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(times):\n                result = func(*args, **kwargs)\n            return result\n        return wrapper\n    return decorator\n\n@repeat(3)\ndef say_hello():\n    print(\"Hello!\")\n\n# Built-in decorators\nclass MyClass:\n    @staticmethod\n    def static_method():\n        return \"Static method\"\n    \n    @property\n    def my_property(self):\n        return \"Property value\"\n```",
-    "context": "Python advanced features and design patterns",
-    "type": "TECHNICAL",
-    "programming_language": "python",
-    "difficulty": "intermediate",
-    "tags": ["decorators", "functions", "design-patterns", "metaprogramming"]
-  },
-  {
-    "id": "python-4",
-    "question": "Explain Python's Global Interpreter Lock (GIL). What are its implications?",
-    "answer": "The Global Interpreter Lock (GIL) is a mutex that protects access to Python objects, preventing multiple native threads from executing Python bytecodes simultaneously in a single process.\n\n**Key points about GIL:**\n- Only one thread can execute Python code at a time\n- Prevents race conditions with Python object reference counting\n- Makes single-threaded programs faster\n- Limits multi-threading effectiveness for CPU-bound tasks\n\n**Implications:**\n\n```python\nimport threading\nimport time\nfrom multiprocessing import Pool\nimport asyncio\n\n# CPU-bound task (limited by GIL)\ndef cpu_task():\n    return sum(i*i for i in range(1000000))\n\n# Threading won't help much for CPU-bound tasks\nstart = time.time()\nthreads = [threading.Thread(target=cpu_task) for _ in range(4)]\nfor t in threads: t.start()\nfor t in threads: t.join()\nprint(f\"Threading time: {time.time() - start:.2f}s\")\n\n# Solutions:\n# 1. Multiprocessing for CPU-bound\nwith Pool(4) as pool:\n    results = pool.map(cpu_task, range(4))\n\n# 2. asyncio for I/O-bound\nasync def io_task():\n    await asyncio.sleep(1)  # Simulates I/O\n\nasync def main():\n    await asyncio.gather(*[io_task() for _ in range(4)])\n```",
-    "context": "Python internals and concurrency",
-    "type": "TECHNICAL",
-    "programming_language": "python",
-    "difficulty": "advanced",
-    "tags": [
-      "GIL",
-      "threading",
-      "concurrency",
-      "performance",
-      "multiprocessing"
-    ]
-  },
-  {
-    "id": "python-5",
-    "question": "What are Python generators and how do they differ from regular functions?",
-    "answer": "Generators are special functions that return an iterator object and produce values on-demand using the yield keyword. They provide memory-efficient iteration over large datasets.\n\n**Key differences from regular functions:**\n- Use yield instead of return\n- Maintain state between calls\n- Return a generator object (iterator)\n- Lazy evaluation (values computed when needed)\n- Memory efficient for large datasets\n\n```python\n# Regular function vs Generator\ndef create_list(n):\n    return [i*i for i in range(n)]  # Creates all at once\n\ndef create_generator(n):\n    for i in range(n):\n        yield i*i  # Yields one at a time\n\n# Usage\nsquares_list = create_list(5)     # [0, 1, 4, 9, 16]\nsquares_gen = create_generator(5)  # <generator object>\nprint(list(squares_gen))          # [0, 1, 4, 9, 16]\n\n# State preservation\ndef countdown(n):\n    while n > 0:\n        yield n\n        n -= 1\n\ncounter = countdown(3)\nprint(next(counter))  # 3\nprint(next(counter))  # 2\nprint(next(counter))  # 1\n\n# Generator expressions\nsquares = (x*x for x in range(5))\n\n# Memory efficiency example\nimport sys\nlist_obj = [x for x in range(1000)]     # ~9KB\ngen_obj = (x for x in range(1000))      # ~128 bytes\n\n# yield from delegation\ndef sub_gen():\n    yield 1; yield 2\n\ndef main_gen():\n    yield 'start'\n    yield from sub_gen()\n    yield 'end'\n\nprint(list(main_gen()))  # ['start', 1, 2, 'end']\n```",
-    "context": "Python iterators and memory management",
-    "type": "TECHNICAL",
-    "programming_language": "python",
-    "difficulty": "intermediate",
-    "tags": [
-      "generators",
-      "iterators",
-      "yield",
-      "memory-efficiency",
-      "lazy-evaluation"
-    ]
-  },
-  {
-    "id": "python-6",
-    "question": "Explain the difference between *args and **kwargs in Python.",
-    "answer": "*args and **kwargs are used to handle variable-length arguments in Python functions, allowing functions to accept any number of positional and keyword arguments.\n\n***args (Variable Positional Arguments):**\n- Collects extra positional arguments into a tuple\n- The name 'args' is conventional, you can use any name\n- The * is what makes it special\n\n****kwargs (Variable Keyword Arguments):**\n- Collects extra keyword arguments into a dictionary\n- The name 'kwargs' is conventional\n- The ** is what makes it special\n\n```python\n# Basic usage\ndef sum_all(*args):\n    print(f\"args: {args}\")  # tuple\n    return sum(args)\n\nprint(sum_all(1, 2, 3, 4))  # args: (1, 2, 3, 4), result: 10\n\ndef print_info(**kwargs):\n    print(f\"kwargs: {kwargs}\")  # dict\n    for key, value in kwargs.items():\n        print(f\"{key}: {value}\")\n\nprint_info(name=\"Alice\", age=30)\n\n# Combined usage\ndef flexible_func(required, *args, **kwargs):\n    print(f\"Required: {required}\")\n    print(f\"Args: {args}\")\n    print(f\"Kwargs: {kwargs}\")\n\nflexible_func(\"Hello\", 1, 2, name=\"Bob\", age=25)\n\n# Unpacking arguments\ndef greet(first, last, age):\n    return f\"Hello {first} {last}, age {age}\"\n\nnames = [\"John\", \"Doe\", 30]\nprint(greet(*names))  # Unpacking list\n\nperson = {\"first\": \"Jane\", \"last\": \"Smith\", \"age\": 25}\nprint(greet(**person))  # Unpacking dict\n\n# Order matters: positional, *args, keyword-only, **kwargs\ndef complex_func(pos, *args, keyword_only, default=\"def\", **kwargs):\n    print(f\"pos: {pos}, args: {args}\")\n    print(f\"keyword_only: {keyword_only}, default: {default}\")\n    print(f\"kwargs: {kwargs}\")\n\ncomplex_func(1, 2, 3, keyword_only=\"required\", extra=\"value\")\n```",
-    "context": "Python function parameters and argument handling",
-    "type": "TECHNICAL",
-    "programming_language": "python",
-    "difficulty": "intermediate",
-    "tags": ["functions", "arguments", "args", "kwargs", "unpacking"]
-  },
-  {
-    "id": "python-7",
-    "question": "What are Python context managers and how do you implement them?",
-    "answer": "Context managers are objects that define methods to be used with the with statement. They ensure proper setup and cleanup of resources, even if exceptions occur.\n\n**Context Manager Protocol:**\n- __enter__(): Called when entering the with block\n- __exit__(): Called when exiting the with block (even on exceptions)\n\n**Implementation methods:**\n1. Class-based (implementing __enter__ and __exit__)\n2. Function-based using @contextmanager decorator\n\n```python\n# Class-based context manager\nclass FileManager:\n    def __init__(self, filename, mode):\n        self.filename = filename\n        self.mode = mode\n    \n    def __enter__(self):\n        self.file = open(self.filename, self.mode)\n        return self.file\n    \n    def __exit__(self, exc_type, exc_value, traceback):\n        self.file.close()\n        return False  # Don't suppress exceptions\n\nwith FileManager('test.txt', 'w') as f:\n    f.write('Hello!')\n# File automatically closed\n\n# Function-based with decorator\nfrom contextlib import contextmanager\nimport time\n\n@contextmanager\ndef timer():\n    start = time.time()\n    try:\n        yield start\n    finally:\n        print(f\"Elapsed: {time.time() - start:.2f}s\")\n\nwith timer():\n    time.sleep(1)  # Some operation\n\n# Built-in context managers\nimport threading\nlock = threading.Lock()\n\nwith lock:\n    print(\"Critical section\")  # Lock auto-released\n\n# Multiple context managers\nwith open('input.txt', 'r') as infile, \\\n     open('output.txt', 'w') as outfile:\n    outfile.write(infile.read().upper())\n```",
-    "context": "Python resource management and cleanup patterns",
-    "type": "TECHNICAL",
-    "programming_language": "python",
-    "difficulty": "intermediate",
-    "tags": [
-      "context-managers",
-      "with-statement",
-      "resource-management",
-      "cleanup",
-      "decorators"
-    ]
-  },
-  {
-    "id": "python-8",
-    "question": "Explain Python's memory management and garbage collection.",
-    "answer": "Python uses automatic memory management with reference counting as the primary mechanism, supplemented by a cyclic garbage collector for handling circular references.\n\n**Key Components:**\n1. **Reference Counting**: Tracks how many references point to an object\n2. **Garbage Collector**: Handles circular references\n3. **Memory Pools**: Optimizes allocation for small objects\n4. **Object Interning**: Reuses immutable objects\n\n```python\nimport sys\nimport gc\n\n# Reference counting\nclass MyClass:\n    def __init__(self, name):\n        self.name = name\n    def __del__(self):\n        print(f\"{self.name} destroyed\")\n\nobj = MyClass(\"test\")\nprint(f\"Refs: {sys.getrefcount(obj)}\")  # Usually 2\nobj_ref = obj  # Increases count\ndel obj_ref    # Decreases count\ndel obj        # Object destroyed\n\n# Circular reference problem\nclass Node:\n    def __init__(self, value):\n        self.value = value\n        self.parent = None\n        self.children = []\n    \n    def add_child(self, child):\n        child.parent = self  # Creates cycle\n        self.children.append(child)\n\nroot = Node(\"root\")\nchild = Node(\"child\")\nroot.add_child(child)\ndel root, child  # Objects not destroyed immediately\n\n# Force garbage collection\ncollected = gc.collect()\nprint(f\"Collected {collected} objects\")\n\n# Memory optimization tips\n# 1. Use __slots__ to reduce memory\nclass EfficientClass:\n    __slots__ = ['x', 'y']\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n\n# 2. Use generators for large datasets\ndef large_data():\n    for i in range(1000000):\n        yield i*i  # Memory efficient\n\n# 3. Weak references to avoid cycles\nimport weakref\n# child.parent = weakref.ref(root)  # Doesn't create strong ref\n```",
-    "context": "Python internals and performance optimization",
-    "type": "TECHNICAL",
-    "programming_language": "python",
-    "difficulty": "advanced",
-    "tags": [
-      "memory-management",
-      "garbage-collection",
-      "reference-counting",
-      "performance",
-      "optimization"
-    ]
-  },
-  {
-    "id": "python-9",
-    "question": "What is the difference between deep copy and shallow copy in Python?",
-    "answer": "Shallow copy and deep copy are two ways to copy objects in Python, differing in how they handle nested objects.\n\n**Shallow Copy:**\n- Creates a new object but inserts references to objects found in the original\n- Only copies the top-level object\n- Nested objects are shared between original and copy\n\n**Deep Copy:**\n- Creates a new object and recursively copies all nested objects\n- Creates completely independent copy\n- Changes to nested objects don't affect the original\n\n```python\nimport copy\n\n# Example with nested lists\noriginal = [[1, 2], [3, 4]]\n\n# Shallow copy methods\nshallow = original.copy()     # or original[:] or list(original)\ndeep = copy.deepcopy(original)\n\nprint(\"Before modification:\")\nprint(f\"Original: {original}\")\nprint(f\"Shallow: {shallow}\")\nprint(f\"Deep: {deep}\")\n\n# Check object identity\nprint(f\"Nested objects same (shallow): {original[0] is shallow[0]}\")  # True\nprint(f\"Nested objects same (deep): {original[0] is deep[0]}\")        # False\n\n# Modify nested object\noriginal[0][0] = 'CHANGED'\n\nprint(\"\\nAfter modifying original[0][0]:\")\nprint(f\"Original: {original}\")  # [['CHANGED', 2], [3, 4]]\nprint(f\"Shallow: {shallow}\")   # [['CHANGED', 2], [3, 4]] - affected!\nprint(f\"Deep: {deep}\")         # [[1, 2], [3, 4]] - not affected\n\n# With custom objects\nclass Person:\n    def __init__(self, name, hobbies):\n        self.name = name\n        self.hobbies = hobbies  # mutable list\n    \n    def __repr__(self):\n        return f\"Person('{self.name}', {self.hobbies})\"\n\noriginal_person = Person(\"Alice\", [\"reading\", \"swimming\"])\nshallow_person = copy.copy(original_person)\ndeep_person = copy.deepcopy(original_person)\n\n# Modify hobbies\noriginal_person.hobbies.append(\"cycling\")\noriginal_person.name = \"Alice Smith\"  # This won't affect copies\n\nprint(f\"\\nOriginal: {original_person}\")\nprint(f\"Shallow: {shallow_person}\")   # Hobbies affected\nprint(f\"Deep: {deep_person}\")         # Not affected\n```",
-    "context": "Python object copying and memory management",
-    "type": "TECHNICAL",
-    "programming_language": "python",
-    "difficulty": "intermediate",
-    "tags": [
-      "copy",
-      "shallow-copy",
-      "deep-copy",
-      "objects",
-      "memory",
-      "mutability"
-    ]
-  },
-  {
-    "id": "python-10",
-    "question": "Explain Python's duck typing and how it relates to polymorphism.",
-    "answer": "Duck typing is a concept in Python where the type or class of an object is less important than the methods it defines. The name comes from the phrase: \"If it looks like a duck, swims like a duck, and quacks like a duck, then it probably is a duck.\"\n\n**Key Principles:**\n- Objects are considered compatible if they implement the required methods\n- No need for explicit inheritance or interface declarations\n- Runtime checking of method availability\n- Promotes flexibility and code reusability\n\n```python\n# Duck typing example\nclass Duck:\n    def fly(self): return \"Duck flying\"\n    def quack(self): return \"Quack!\"\n\nclass Airplane:\n    def fly(self): return \"Airplane flying\"\n    def quack(self): return \"Plane can't quack\"\n\nclass Penguin:\n    def quack(self): return \"Penguin noise\"\n    # No fly method\n\ndef make_it_fly_and_quack(thing):\n    try:\n        print(thing.fly())\n        print(thing.quack())\n    except AttributeError as e:\n        print(f\"Error: {e}\")\n\n# All work despite different types\nmake_it_fly_and_quack(Duck())     # Works\nmake_it_fly_and_quack(Airplane()) # Works\nmake_it_fly_and_quack(Penguin())  # Error on fly()\n\n# File-like objects\nclass StringFile:\n    def __init__(self, content):\n        self.content = content\n        self.pos = 0\n    \n    def read(self):\n        result = self.content[self.pos:]\n        self.pos = len(self.content)\n        return result\n\ndef process_file(file_obj):\n    return f\"Read: {file_obj.read()}\"\n\n# Works with any file-like object\nfrom io import StringIO\nprint(process_file(StringIO(\"Hello StringIO\")))\nprint(process_file(StringFile(\"Hello StringFile\")))\n\n# Polymorphism with duck typing\nclass Rectangle:\n    def __init__(self, w, h): self.w, self.h = w, h\n    def area(self): return self.w * self.h\n\nclass Circle:\n    def __init__(self, r): self.r = r\n    def area(self): return 3.14 * self.r ** 2\n\ndef print_area(shape):\n    print(f\"Area: {shape.area()}\")\n\nshapes = [Rectangle(5, 3), Circle(4)]\nfor shape in shapes:\n    print_area(shape)  # Works with any shape\n\n# EAFP vs LBYL\ndef eafp_approach(obj):\n    try:\n        return obj.some_method()\n    except AttributeError:\n        return \"No method\"\n\ndef lbyl_approach(obj):\n    if hasattr(obj, 'some_method'):\n        return obj.some_method()\n    return \"No method\"\n\n# EAFP is more Pythonic\n```",
-    "context": "Python type system and design patterns",
-    "type": "TECHNICAL",
-    "programming_language": "python",
-    "difficulty": "intermediate",
-    "tags": [
-      "duck-typing",
-      "polymorphism",
-      "protocols",
-      "type-system",
-      "design-patterns"
-    ]
-  },
-  {
-    "id": "python-11",
-    "question": "What are Python lambda functions and when would you use them?",
-    "answer": "Lambda functions are small, anonymous functions that can have any number of arguments but can only have one expression. They are also known as anonymous functions because they don't have a name like regular functions defined with def.\n\n**Key characteristics:**\n- Single expression only (no statements)\n- Return value automatically (no return keyword needed)\n- Can be assigned to variables or used inline\n- Commonly used with map(), filter(), sort(), and other higher-order functions\n\n**When to use lambda functions:**\n- Short, simple operations that don't warrant a full function definition\n- As arguments to higher-order functions\n- When you need a function temporarily\n- Functional programming patterns\n\n```python\n# Basic lambda syntax\nsquare = lambda x: x ** 2\nprint(square(5))  # 25\n\n# Multiple arguments\naddition = lambda x, y: x + y\nprint(addition(3, 4))  # 7\n\n# With map()\nnumbers = [1, 2, 3, 4, 5]\nsquared = list(map(lambda x: x ** 2, numbers))\nprint(squared)  # [1, 4, 9, 16, 25]\n\n# With filter()\neven_numbers = list(filter(lambda x: x % 2 == 0, numbers))\nprint(even_numbers)  # [2, 4]\n\n# With sorted()\nstudents = [('Alice', 85), ('Bob', 90), ('Charlie', 78)]\nsorted_by_grade = sorted(students, key=lambda x: x[1])\nprint(sorted_by_grade)  # [('Charlie', 78), ('Alice', 85), ('Bob', 90)]\n\n# Alternative with regular function (for comparison)\ndef get_grade(student):\n    return student[1]\n\nsorted_students = sorted(students, key=get_grade)\n```",
-    "context": "Python functional programming and built-in functions",
+    "question": "What is a dictionary in Python and how do you access its elements?",
+    "answer": "A **dictionary** is an unordered collection of **key-value pairs**. It is **mutable** and is defined by enclosing items in **curly braces** {}. Keys must be unique and immutable (like strings, numbers, or tuples), while values can be any data type.\n\nYou access elements by their **key**, not by an index (since they are unordered):\n\n```python\nmy_dict = {\n    \"name\": \"Alice\", \n    \"age\": 30, \n    \"city\": \"New York\"\n}\n\n# Accessing an element\nprint(my_dict[\"name\"]) # Output: Alice\n\n# Accessing an element safely (preferred)\nprint(my_dict.get(\"age\")) # Output: 30\nprint(my_dict.get(\"country\", \"USA\")) # Output: USA (default value if key not found)\n\n# Adding or modifying an element\nmy_dict[\"city\"] = \"San Francisco\"\nmy_dict[\"job\"] = \"Engineer\"\nprint(my_dict)\n```",
+    "context": "Basic Python data structures",
     "type": "TECHNICAL",
     "programming_language": "python",
     "difficulty": "beginner",
-    "tags": [
-      "lambda",
-      "functional-programming",
-      "anonymous-functions",
-      "higher-order-functions"
-    ]
+    "tags": ["data-structures", "dictionaries", "key-value", "access"]
+  },
+  {
+    "id": "python-3",
+    "question": "Explain the difference between the '==' and 'is' operators in Python.",
+    "answer": "The **==** operator compares the **values** of two objects for equality.\n\nThe **is** operator compares the **identity** of two objects, checking if they refer to the **exact same object in memory**.\n\n```python\na = [1, 2, 3]\nb = [1, 2, 3]\nc = a\n\nprint(a == b)  # True, because the *values* are equal\nprint(a is b)  # False, because a and b are different *objects* in memory\n\nprint(a == c)  # True\nprint(a is c)  # True, because c is a reference to the same object as a\n\n# For small integers, Python often reuses objects (optimization)\nd1 = 10\nd2 = 10\nprint(d1 is d2) # Usually True\n```",
+    "context": "Basic Python operators and memory",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["operators", "identity", "equality", "memory"]
+  },
+  {
+    "id": "python-4",
+    "question": "What is an interpreted language?",
+    "answer": "An **interpreted language** is one where the program code is executed directly, line by line, by an **interpreter**. The code is not compiled into machine code beforehand (like C++ or Java).\n\n**Key Characteristics of Interpreted Languages:**\n- **Execution:** Code is executed at runtime.\n- **Portability:** Easier to run on different operating systems since the interpreter does the translation.\n\n**Python** is an interpreted language, although modern Python implementations (like CPython) first compile the source code into an intermediate format called **bytecode**, which is then executed by the Python Virtual Machine (PVM).",
+    "context": "Python fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["fundamentals", "interpreted", "compiled"]
+  },
+  {
+    "id": "python-5",
+    "question": "What are *args and **kwargs in Python function definitions?",
+    "answer": "These are special syntaxes that allow a function to accept a variable number of arguments.\n\n- **\\*args (non-keyword arguments):** Allows a function to take an arbitrary number of positional arguments. Inside the function, **args** will be a **tuple** of these arguments.\n- **\\*\\*kwargs (keyword arguments):** Allows a function to take an arbitrary number of keyword arguments. Inside the function, **kwargs** will be a **dictionary** of the argument names and their values.\n\n```python\n# Example function using *args and **kwargs\ndef display_info(required_arg, *args, **kwargs):\n    print(f\"Required Arg: {required_arg}\")\n    print(f\"*args (Tuple): {args}\")\n    print(f\"**kwargs (Dict): {kwargs}\")\n\n# Calling the function\ndisplay_info(\n    10, \n    'extra1', \n    'extra2', \n    name='Alex', \n    age=25\n)\n```",
+    "context": "Python functions",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["functions", "arguments", "args", "kwargs"]
+  },
+  {
+    "id": "python-6",
+    "question": "What is a decorator in Python?",
+    "answer": "A **decorator** is a design pattern in Python that allows a user to **modify or extend the functionality of a function or class** without explicitly modifying its source code. It is defined using the **@** symbol, placed immediately before the function definition.\n\nDecorators are essentially functions that take another function as an argument, add some functionality, and return the modified function.\n\n```python\n# Simple logging decorator\ndef log_call(func):\n    def wrapper(*args, **kwargs):\n        print(f\"Calling function: {func.__name__}\")\n        result = func(*args, **kwargs)\n        print(f\"Function {func.__name__} finished.\")\n        return result\n    return wrapper\n\n@log_call\ndef add(a, b):\n    return a + b\n\nresult = add(5, 3)\nprint(f\"Result: {result}\")\n```",
+    "context": "Python advanced concepts",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["decorators", "functions", "metaprogramming"]
+  },
+  {
+    "id": "python-7",
+    "question": "Explain the use of 'self' in Python classes.",
+    "answer": "**self** is the convention for the first parameter of an instance method in a Python class. It refers to the **instance of the class** itself.\n\n- It is a reference to the **newly created object** when the **__init__** constructor is called.\n- It is used to access **attributes** and **methods** of that specific instance within the class methods.\n- When a method is called on an object (e.g., `my_dog.bark()`), Python implicitly passes the instance reference to the **self** parameter.\n\n```python\nclass Dog:\n    # 'self' refers to the Dog instance being created\n    def __init__(self, name):\n        # 'self.name' creates an instance attribute 'name'\n        self.name = name \n\n    # 'self' refers to the Dog instance the method is called on\n    def bark(self):\n        print(f\"{self.name} says Woof!\")\n\nmy_dog = Dog(\"Buddy\")\nmy_dog.bark() # Output: Buddy says Woof!\n```",
+    "context": "Object-Oriented Programming (OOP)",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["oop", "classes", "self", "methods"]
+  },
+  {
+    "id": "python-8",
+    "question": "What is the Python 'with' statement designed for?",
+    "answer": "The **with** statement is primarily used for **resource management** and is associated with **context managers**. It simplifies resource handling by ensuring that cleanup code is executed automatically, regardless of whether the code block exits normally or due to an exception.\n\nThe context manager protocol requires two methods:\n\n1.  **__enter__(self):** Called when execution enters the context.\n2.  **__exit__(self, exc_type, exc_val, exc_tb):** Called when execution leaves the context, handling cleanup and potential exceptions.\n\nIt is most commonly used for file handling to ensure the file is closed automatically:\n\n```python\n# File handling example\nwith open('example.txt', 'w') as file:\n    file.write('Hello World')\n# The file is automatically closed here\n\n# This replaces a less safe try/finally block:\n# try:\n#     file = open('example.txt', 'w')\n#     file.write('Hello World')\n# finally:\n#     file.close()\n```",
+    "context": "Python advanced concepts",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["with-statement", "context-manager", "resource-management", "files"]
+  },
+  {
+    "id": "python-9",
+    "question": "What is a generator in Python?",
+    "answer": "A **generator** is a function that returns an **iterator** that can be iterated over but generates the values **lazily** (one at a time) instead of storing all of them in memory.\n\n- They are defined like normal functions but use the **yield** keyword instead of **return**.\n- This makes them highly memory efficient for iterating over very large or infinite sequences.\n\n```python\n# Generator function example\ndef count_up_to(max_num):\n    i = 1\n    while i <= max_num:\n        yield i # Pauses and returns 'i'\n        i += 1\n\n# Using the generator\ncounter = count_up_to(5)\nprint(next(counter)) # Output: 1\nprint(next(counter)) # Output: 2\n\n# Iterating with a for loop\nfor num in count_up_to(3):\n    print(num) \n# Output: 1, 2, 3\n```",
+    "context": "Python advanced concepts",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["generators", "iterators", "yield", "memory-efficiency", "lazy-evaluation"]
+  },
+  {
+    "id": "python-10",
+    "question": "Explain the concept of mutability and immutability in Python.",
+    "answer": "**Mutability** refers to the ability of an object to be **changed** after it is created. **Immutable** objects **cannot** be changed after creation.\n\n- When a mutable object is changed, its memory address (identity) remains the same.\n- When an immutable object is 'changed', a new object is created in memory.\n\n| Type | Mutability | Examples |\n| :--- | :--- | :--- |\n| **Mutable** | Can be changed | **List**, **Dictionary**, **Set** |\n| **Immutable** | Cannot be changed | **String**, **Tuple**, **Number** (int, float) |\n\n**Implications:** Immutable objects can be used as **dictionary keys** (they are hashable), which mutable objects cannot.\n\n```python\n# Mutable example (List)\nl = [1, 2]\nprint(id(l))\nl.append(3) \nprint(id(l)) # Same ID\n\n# Immutable example (Tuple)\nt = (1, 2)\nprint(id(t))\n# t.append(3) # TypeError\nt = t + (3,) # Creates a *new* tuple\nprint(id(t)) # Different ID\n```",
+    "context": "Basic Python data structures",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["mutability", "immutability", "data-structures", "memory"]
+  },
+  {
+    "id": "python-11",
+    "question": "What is list comprehension in Python?",
+    "answer": "**List comprehension** is a concise way to create a list based on an existing iterable. It offers a more readable and often faster alternative to using **for** loops with **list.append()**.\n\nThe general syntax is: **[expression for item in iterable if condition]**.\n\n```python\n# Example 1: Basic list creation\nsquares = [x**2 for x in range(1, 6)]\nprint(squares) # Output: [1, 4, 9, 16, 25]\n\n# Example 2: List creation with a conditional filter\neven_squares = [x**2 for x in range(10) if x % 2 == 0]\nprint(even_squares) # Output: [0, 4, 16, 36, 64]\n```",
+    "context": "Python advanced concepts",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["list-comprehension", "syntax", "lists", "iterables"]
   },
   {
     "id": "python-12",
-    "question": "Explain Python's exception handling mechanism (try, except, finally, else).",
-    "answer": "Python's exception handling allows you to gracefully handle errors and unexpected situations in your code without crashing the program.\n\n**Exception handling blocks:**\n- try: Code that might raise an exception\n- except: Code that runs when a specific exception occurs\n- else: Code that runs only if no exception occurred in try block\n- finally: Code that always runs, regardless of exceptions\n- raise: Manually raise an exception\n\n**Best practices:**\n- Catch specific exceptions rather than using bare except\n- Use finally for cleanup operations\n- Don't ignore exceptions silently\n- Use else block for code that should only run if no exceptions occurred\n\n```python\n# Basic exception handling\ntry:\n    result = 10 / 0\nexcept ZeroDivisionError:\n    print(\"Cannot divide by zero!\")\n    result = None\n\n# Multiple exception types\ntry:\n    number = int(input(\"Enter a number: \"))\n    result = 10 / number\nexcept ValueError:\n    print(\"Invalid input! Please enter a number.\")\nexcept ZeroDivisionError:\n    print(\"Cannot divide by zero!\")\nexcept Exception as e:\n    print(f\"Unexpected error: {e}\")\n\n# try-except-else-finally\ntry:\n    file = open(\"data.txt\", \"r\")\nexcept FileNotFoundError:\n    print(\"File not found!\")\nelse:\n    print(\"File opened successfully\")\n    content = file.read()\nfinally:\n    print(\"Cleanup operations\")\n    if 'file' in locals() and not file.closed:\n        file.close()\n\n# Custom exceptions\nclass InvalidAgeError(Exception):\n    def __init__(self, age):\n        self.age = age\n        super().__init__(f\"Invalid age: {age}. Age must be between 0 and 150.\")\n\ndef validate_age(age):\n    if age < 0 or age > 150:\n        raise InvalidAgeError(age)\n    return True\n\ntry:\n    validate_age(-5)\nexcept InvalidAgeError as e:\n    print(e)\n```",
-    "context": "Python error handling and program robustness",
+    "question": "How is memory managed in Python?",
+    "answer": "Memory management in Python is handled automatically by the **Python memory manager**.\n\n1.  **Private Heap:** Python uses a private heap space to store all objects.\n2.  **Reference Counting:** The core mechanism is **reference counting**. Each object keeps track of the number of references pointing to it. When the count drops to zero, the object's memory is automatically deallocated.\n3.  **Garbage Collector:** Python also has a **cyclic garbage collector** to handle objects that are part of a circular reference, preventing memory leaks in complex object graphs.\n\n```python\nimport sys\n\na = [1, 2, 3]\nprint(sys.getrefcount(a)) # Count includes temporary reference from function call\n\nb = a # Increment reference count\nprint(sys.getrefcount(a))\n\ndel b # Decrement reference count\n# When reference count drops to 0, memory is freed.\n```",
+    "context": "Python fundamentals",
     "type": "TECHNICAL",
     "programming_language": "python",
     "difficulty": "intermediate",
-    "tags": [
-      "exceptions",
-      "error-handling",
-      "try-except",
-      "finally",
-      "custom-exceptions"
-    ]
+    "tags": ["memory-management", "garbage-collection", "reference-counting", "heap"]
   },
   {
     "id": "python-13",
-    "question": "What is the difference between __str__ and __repr__ methods in Python?",
-    "answer": "Both __str__ and __repr__ are special methods (dunder methods) used to define string representations of objects, but they serve different purposes and audiences.\n\n**__str__ method:**\n- Intended for end users (human-readable)\n- Called by str() function and print()\n- Should return a nice, readable string\n- Informal string representation\n\n**__repr__ method:**\n- Intended for developers (unambiguous)\n- Called by repr() function and in interactive shell\n- Should return a string that could recreate the object\n- Official string representation\n- If __str__ is not defined, __repr__ is used as fallback\n\n**Best practice:** __repr__ should be unambiguous, __str__ should be readable.\n\n```python\nclass Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n    \n    def __str__(self):\n        return f\"{self.name}, {self.age} years old\"\n    \n    def __repr__(self):\n        return f\"Person('{self.name}', {self.age})\"\n\nperson = Person(\"Alice\", 30)\n\n# Different outputs\nprint(str(person))   # Alice, 30 years old\nprint(repr(person))  # Person('Alice', 30)\nprint(person)        # Alice, 30 years old (uses __str__)\n\n# In interactive shell or debugger\nperson               # Person('Alice', 30) (uses __repr__)\n\n# List representation uses __repr__ for elements\npeople = [Person(\"Bob\", 25), Person(\"Carol\", 35)]\nprint(people)        # [Person('Bob', 25), Person('Carol', 35)]\n\n# Class with only __repr__\nclass Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n    \n    def __repr__(self):\n        return f\"Point({self.x}, {self.y})\"\n\npoint = Point(3, 4)\nprint(str(point))    # Point(3, 4) (falls back to __repr__)\nprint(repr(point))   # Point(3, 4)\n```",
-    "context": "Python object representation and debugging",
+    "question": "What is PEP 8?",
+    "answer": "**PEP 8** (Python Enhancement Proposal 8) is the official style guide for Python code. It provides guidelines on how to format your code to maximize **readability** and **consistency**. Adherence to PEP 8 is considered a professional standard.\n\n**Key PEP 8 Guidelines:**\n\n- **Indentation:** Use **4 spaces** per indentation level.\n- **Maximum Line Length:** Limit all lines to a maximum of **79 characters**.\n- **Naming Conventions:** Functions, variables, and methods should use **snake_case** (e.g., my_variable), while Classes should use **PascalCase** (e.g., MyClass).\n\nTools like **flake8** and **black** are often used to automatically check and format code to comply with PEP 8.",
+    "context": "Python fundamentals",
     "type": "TECHNICAL",
     "programming_language": "python",
-    "difficulty": "intermediate",
-    "tags": [
-      "dunder-methods",
-      "string-representation",
-      "debugging",
-      "object-oriented"
-    ]
+    "difficulty": "beginner",
+    "tags": ["pep-8", "style-guide", "readability", "standards"]
   },
   {
     "id": "python-14",
-    "question": "Explain Python's method resolution order (MRO) and multiple inheritance.",
-    "answer": "Method Resolution Order (MRO) determines the order in which Python searches for methods in a class hierarchy, especially important in multiple inheritance scenarios.\n\n**Key concepts:**\n- Python uses C3 linearization algorithm for MRO\n- Ensures consistent method lookup order\n- Prevents issues like diamond problem\n- Can be viewed using ClassName.__mro__ or ClassName.mro()\n- super() function respects MRO\n\n**Multiple inheritance:**\n- A class can inherit from multiple parent classes\n- Method calls follow MRO to resolve conflicts\n- Left-to-right order in class definition affects MRO\n\n```python\n# Multiple inheritance example\nclass A:\n    def method(self):\n        print(\"Method from A\")\n\nclass B(A):\n    def method(self):\n        print(\"Method from B\")\n        super().method()\n\nclass C(A):\n    def method(self):\n        print(\"Method from C\")\n        super().method()\n\nclass D(B, C):\n    def method(self):\n        print(\"Method from D\")\n        super().method()\n\n# Check MRO\nprint(D.__mro__)\n# (<class 'D'>, <class 'B'>, <class 'C'>, <class 'A'>, <class 'object'>)\n\nd = D()\nd.method()\n# Output:\n# Method from D\n# Method from B\n# Method from C\n# Method from A\n\n# Diamond inheritance example\nclass Vehicle:\n    def start(self):\n        print(\"Vehicle starting\")\n\nclass Car(Vehicle):\n    def start(self):\n        print(\"Car starting\")\n        super().start()\n\nclass Electric(Vehicle):\n    def start(self):\n        print(\"Electric starting\")\n        super().start()\n\nclass ElectricCar(Car, Electric):\n    def start(self):\n        print(\"ElectricCar starting\")\n        super().start()\n\nprint(ElectricCar.mro())\nec = ElectricCar()\nec.start()\n# ElectricCar starting\n# Car starting\n# Electric starting\n# Vehicle starting\n```",
-    "context": "Python object-oriented programming and inheritance",
+    "question": "What is the difference between an iterator and a generator?",
+    "answer": "**Iterator:**\n- An object that represents a **stream of data** and has two main methods: **__iter__()** and **__next__()**.\n- It is a **design pattern** used to traverse a container.\n- Can be created from any iterable using the built-in **iter()** function.\n\n**Generator:**\n- A **specific type of iterator** created by a function using the **yield** keyword.\n- It **produces values lazily** (on demand) and doesn't store the entire sequence in memory.\n- **Generators are iterators**, but not all iterators are generators.\n\n```python\n# Generator example (produces values lazily)\ndef simple_generator():\n    yield 1\n    yield 2\n\n# Iterator example (works on existing data)\nmy_list = [1, 2]\nmy_iterator = iter(my_list)\n\nprint(next(my_iterator)) \nprint(next(simple_generator())) \n```",
+    "context": "Python advanced concepts",
     "type": "TECHNICAL",
     "programming_language": "python",
-    "difficulty": "advanced",
-    "tags": [
-      "inheritance",
-      "MRO",
-      "multiple-inheritance",
-      "super",
-      "object-oriented"
-    ]
+    "difficulty": "intermediate",
+    "tags": ["iterators", "generators", "yield", "lazy-evaluation"]
   },
   {
     "id": "python-15",
-    "question": "What are Python descriptors and how do they work?",
-    "answer": "Descriptors are a powerful feature that allows you to customize attribute access (getting, setting, and deleting) on objects. They are the mechanism behind properties, methods, static methods, and class methods.\n\n**Descriptor protocol methods:**\n- __get__(self, obj, objtype=None): Called when accessing the attribute\n- __set__(self, obj, value): Called when setting the attribute\n- __delete__(self, obj): Called when deleting the attribute\n\n**Types of descriptors:**\n- Data descriptors: Define __get__ and (__set__ or __delete__)\n- Non-data descriptors: Only define __get__\n- Data descriptors have higher priority than instance dictionary\n\n```python\n# Basic descriptor example\nclass Validator:\n    def __init__(self, min_value=0, max_value=100):\n        self.min_value = min_value\n        self.max_value = max_value\n    \n    def __get__(self, obj, objtype=None):\n        if obj is None:\n            return self\n        return obj.__dict__.get(self.name, None)\n    \n    def __set__(self, obj, value):\n        if not self.min_value <= value <= self.max_value:\n            raise ValueError(f\"Value must be between {self.min_value} and {self.max_value}\")\n        obj.__dict__[self.name] = value\n    \n    def __set_name__(self, owner, name):\n        self.name = name\n\nclass Student:\n    grade = Validator(0, 100)\n    \n    def __init__(self, name, grade):\n        self.name = name\n        self.grade = grade\n\nstudent = Student(\"Alice\", 85)\nprint(student.grade)  # 85\n\ntry:\n    student.grade = 150  # ValueError\nexcept ValueError as e:\n    print(e)\n\n# Property decorator (built on descriptors)\nclass Temperature:\n    def __init__(self, celsius=0):\n        self._celsius = celsius\n    \n    @property\n    def celsius(self):\n        return self._celsius\n    \n    @celsius.setter\n    def celsius(self, value):\n        if value < -273.15:\n            raise ValueError(\"Temperature below absolute zero\")\n        self._celsius = value\n    \n    @property\n    def fahrenheit(self):\n        return (self._celsius * 9/5) + 32\n\ntemp = Temperature(25)\nprint(temp.fahrenheit)  # 77.0\ntemp.celsius = 30\nprint(temp.fahrenheit)  # 86.0\n```",
-    "context": "Python advanced object-oriented programming",
+    "question": "How does Python handle 'pass by value' or 'pass by reference' for function arguments?",
+    "answer": "Python uses a mechanism best described as **'Pass by Object Reference'** or **'Pass by Assignment'**.\n\n- When an argument is passed, the function parameter receives a **copy of the reference** to the object.\n\n- **If the object is mutable (e.g., list, dict):** The function can change the object's contents via the copied reference, and the change will be visible outside the function.\n\n- **If the object is immutable (e.g., int, string, tuple):** The function cannot change the object. If the function tries to reassign the parameter, it just changes the local reference to point to a new object, leaving the original object unaffected.\n\n```python\n# Mutable (List) Example: Change is visible outside\ndef modify_list(lst):\n    lst.append(4) \n    \nmy_list = [1, 2, 3]\nmodify_list(my_list)\nprint(my_list) # Output: [1, 2, 3, 4] (Modified)\n\n# Immutable (Int) Example: Change is not visible outside\ndef modify_int(i):\n    i = i + 1 # Creates a NEW int object\n    \nmy_int = 10\nmodify_int(my_int)\nprint(my_int) # Output: 10 (Not modified)\n```",
+    "context": "Python functions",
     "type": "TECHNICAL",
     "programming_language": "python",
-    "difficulty": "advanced",
-    "tags": ["descriptors", "properties", "attribute-access", "advanced-oop"]
+    "difficulty": "intermediate",
+    "tags": ["functions", "arguments", "pass-by-reference", "mutability"]
   },
   {
     "id": "python-16",
-    "question": "Explain the difference between classmethod, staticmethod, and instance methods.",
-    "answer": "Python provides three types of methods in classes, each with different purposes and access patterns.\n\n**Instance methods:**\n- Most common type of method\n- First parameter is always self (the instance)\n- Can access and modify instance and class attributes\n- Called on instances of the class\n\n**Class methods (@classmethod):**\n- First parameter is cls (the class itself)\n- Can access class attributes but not instance attributes\n- Often used for alternative constructors\n- Called on class or instances\n\n**Static methods (@staticmethod):**\n- No special first parameter\n- Cannot access instance or class attributes directly\n- Behaves like a regular function but belongs to the class namespace\n- Used for utility functions related to the class\n\n```python\nclass Person:\n    species = \"Homo sapiens\"  # Class attribute\n    \n    def __init__(self, name, age):\n        self.name = name  # Instance attribute\n        self.age = age\n    \n    # Instance method\n    def introduce(self):\n        return f\"Hi, I'm {self.name} and I'm {self.age} years old\"\n    \n    # Class method - alternative constructor\n    @classmethod\n    def from_birth_year(cls, name, birth_year):\n        age = 2024 - birth_year\n        return cls(name, age)  # Creates new instance\n    \n    @classmethod\n    def get_species(cls):\n        return cls.species\n    \n    # Static method - utility function\n    @staticmethod\n    def is_adult(age):\n        return age >= 18\n    \n    @staticmethod\n    def validate_age(age):\n        return 0 <= age <= 150\n\n# Instance method usage\nperson1 = Person(\"Alice\", 30)\nprint(person1.introduce())  # Hi, I'm Alice and I'm 30 years old\n\n# Class method usage - alternative constructor\nperson2 = Person.from_birth_year(\"Bob\", 1990)\nprint(person2.introduce())  # Hi, I'm Bob and I'm 34 years old\n\n# Class method - accessing class attributes\nprint(Person.get_species())  # Homo sapiens\n\n# Static method usage\nprint(Person.is_adult(25))     # True\nprint(Person.is_adult(15))     # False\nprint(Person.validate_age(30)) # True\n\n# Static methods can also be called on instances\nprint(person1.is_adult(20))    # True\n\n# Comparison of access capabilities\nclass Example:\n    class_var = \"I'm a class variable\"\n    \n    def __init__(self):\n        self.instance_var = \"I'm an instance variable\"\n    \n    def instance_method(self):\n        return f\"Instance: {self.instance_var}, Class: {self.class_var}\"\n    \n    @classmethod\n    def class_method(cls):\n        return f\"Class: {cls.class_var}\"\n        # Cannot access self.instance_var here\n    \n    @staticmethod\n    def static_method():\n        return \"I'm a static method with no special access\"\n        # Cannot access class_var or instance_var directly\n```",
-    "context": "Python object-oriented programming and method types",
+    "question": "What is the Global Interpreter Lock (GIL) in Python?",
+    "answer": "The **Global Interpreter Lock (GIL)** is a mutex (a lock) that protects access to Python objects, preventing multiple native threads from executing Python **bytecodes** at once.\n\n- **Impact:** It means that on multi-core processors, a standard CPython process can only execute one Python thread at a time, limiting true **parallelism** for CPU-bound tasks.\n- **Benefit:** It makes the CPython interpreter simpler to implement and makes single-threaded code faster by avoiding the overhead of fine-grained locking.\n\n**Workaround:** For CPU-bound tasks, the recommended approach to achieve parallelism is to use the **multiprocessing** module, which uses separate processes, each having its own Python interpreter and GIL.",
+    "context": "Concurrency and performance",
     "type": "TECHNICAL",
     "programming_language": "python",
-    "difficulty": "intermediate",
-    "tags": [
-      "methods",
-      "classmethod",
-      "staticmethod",
-      "instance-methods",
-      "decorators"
-    ]
+    "difficulty": "advanced",
+    "tags": ["gil", "threads", "concurrency", "performance"]
   },
   {
     "id": "python-17",
-    "question": "What are Python metaclasses and when would you use them?",
-    "answer": "Metaclasses are classes whose instances are classes themselves. They define how classes are created and can be thought of as the class of a class. In Python, classes are objects too, and metaclasses are what create these class objects.\n\n**Key concepts:**\n- A metaclass is a class that creates classes\n- type is the default metaclass in Python\n- Metaclasses control class creation process\n- They intercept class creation and can modify class behavior\n- Follow the principle: Use metaclasses only when you really need them\n\n**When to use metaclasses:**\n- API frameworks (like Django ORM)\n- Design patterns requiring class modification\n- Automatic registration of classes\n- Validation of class definitions\n- Adding methods or attributes to classes automatically\n\n```python\n# Understanding type as metaclass\nclass MyClass:\n    pass\n\nprint(type(MyClass))        # <class 'type'>\nprint(type(type(MyClass)))  # <class 'type'>\n\n# Creating class with type() function\nDynamicClass = type('DynamicClass', (), {'attr': 'value'})\nprint(DynamicClass.attr)    # value\n\n# Custom metaclass example\nclass SingletonMeta(type):\n    _instances = {}\n    \n    def __call__(cls, *args, **kwargs):\n        if cls not in cls._instances:\n            cls._instances[cls] = super().__call__(*args, **kwargs)\n        return cls._instances[cls]\n\nclass Singleton(metaclass=SingletonMeta):\n    def __init__(self, value):\n        self.value = value\n\n# Testing singleton behavior\nobj1 = Singleton(\"first\")\nobj2 = Singleton(\"second\")\nprint(obj1 is obj2)     # True\nprint(obj1.value)       # first (not changed)\n\n# Metaclass for automatic method registration\nclass RegisteredMeta(type):\n    registry = {}\n    \n    def __new__(mcs, name, bases, attrs):\n        cls = super().__new__(mcs, name, bases, attrs)\n        if name != 'RegisteredBase':  # Skip base class\n            mcs.registry[name] = cls\n        return cls\n\nclass RegisteredBase(metaclass=RegisteredMeta):\n    pass\n\nclass PluginA(RegisteredBase):\n    def execute(self):\n        return \"Plugin A executed\"\n\nclass PluginB(RegisteredBase):\n    def execute(self):\n        return \"Plugin B executed\"\n\nprint(RegisteredMeta.registry)\n# {'PluginA': <class 'PluginA'>, 'PluginB': <class 'PluginB'>}\n\n# Using registered plugins\nfor name, plugin_class in RegisteredMeta.registry.items():\n    plugin = plugin_class()\n    print(f\"{name}: {plugin.execute()}\")\n\n# Validation metaclass\nclass ValidatedMeta(type):\n    def __new__(mcs, name, bases, attrs):\n        # Validate that required methods exist\n        required_methods = ['validate', 'process']\n        for method in required_methods:\n            if method not in attrs:\n                raise TypeError(f\"Class {name} must implement {method} method\")\n        return super().__new__(mcs, name, bases, attrs)\n\nclass DataProcessor(metaclass=ValidatedMeta):\n    def validate(self, data):\n        return True\n    \n    def process(self, data):\n        return data.upper()\n\n# This would raise TypeError:\n# class InvalidProcessor(metaclass=ValidatedMeta):\n#     pass\n```",
-    "context": "Python advanced metaprogramming and class creation",
+    "question": "What is polymorphism in Python?",
+    "answer": "**Polymorphism** (meaning \"many forms\") is an OOP concept where an entity (like a function or an operator) can take on **multiple forms** or work with different data types/classes.\n\nPython primarily achieves polymorphism through **Duck Typing**:\n\n- **Duck Typing:** Python doesn't care about an object's explicit type, only that it has the necessary methods or attributes. (\"If it walks like a duck and quacks like a duck, then it is a duck.\")\n\n```python\n# Example of Polymorphism via Duck Typing\nclass Dog:\n    def speak(self):\n        return \"Woof!\"\n\nclass Cat:\n    def speak(self):\n        return \"Meow!\"\n\ndef make_sound(animal):\n    return animal.speak()\n\nprint(make_sound(Dog())) # Output: Woof!\nprint(make_sound(Cat())) # Output: Meow!\n# The 'make_sound' function is polymorphic; it works with any object that has a 'speak' method.\n```",
+    "context": "Object-Oriented Programming (OOP)",
     "type": "TECHNICAL",
     "programming_language": "python",
-    "difficulty": "advanced",
-    "tags": [
-      "metaclasses",
-      "metaprogramming",
-      "class-creation",
-      "design-patterns",
-      "advanced"
-    ]
+    "difficulty": "intermediate",
+    "tags": ["oop", "polymorphism", "duck-typing", "inheritance"]
   },
   {
     "id": "python-18",
-    "question": "Explain Python's asyncio and asynchronous programming concepts.",
-    "answer": "Asyncio is Python's library for writing concurrent code using the async/await syntax. It's particularly useful for I/O-bound and high-level structured network code.\n\n**Key concepts:**\n- Asynchronous programming allows code to run concurrently\n- Event loop manages and executes asynchronous tasks\n- Coroutines are functions defined with async def\n- await keyword pauses execution until awaited operation completes\n- Non-blocking I/O operations improve performance\n\n**When to use async/await:**\n- I/O-bound operations (file reading, network requests)\n- Multiple concurrent operations\n- Web scraping, API calls\n- Real-time applications\n\n**Not suitable for:**\n- CPU-bound tasks (use multiprocessing instead)\n- Simple sequential operations\n\n```python\nimport asyncio\nimport aiohttp\nimport time\n\n# Basic async function\nasync def greet(name, delay):\n    print(f\"Hello {name}!\")\n    await asyncio.sleep(delay)  # Non-blocking sleep\n    print(f\"Goodbye {name}!\")\n\n# Running async function\nasync def main():\n    await greet(\"Alice\", 1)\n\n# Multiple concurrent tasks\nasync def concurrent_greetings():\n    tasks = [\n        greet(\"Alice\", 2),\n        greet(\"Bob\", 1),\n        greet(\"Charlie\", 3)\n    ]\n    await asyncio.gather(*tasks)  # Run concurrently\n\n# Async with context manager\nasync def fetch_url(session, url):\n    async with session.get(url) as response:\n        return await response.text()\n\nasync def fetch_multiple_urls():\n    urls = [\n        \"https://httpbin.org/delay/1\",\n        \"https://httpbin.org/delay/2\",\n        \"https://httpbin.org/delay/1\"\n    ]\n    \n    async with aiohttp.ClientSession() as session:\n        tasks = [fetch_url(session, url) for url in urls]\n        results = await asyncio.gather(*tasks)\n    return results\n\n# Async generator\nasync def async_range(start, stop):\n    for i in range(start, stop):\n        await asyncio.sleep(0.1)\n        yield i\n\nasync def consume_async_generator():\n    async for number in async_range(1, 5):\n        print(f\"Generated: {number}\")\n\n# Performance comparison\ndef sync_sleep(duration):\n    time.sleep(duration)\n    return f\"Slept for {duration} seconds\"\n\nasync def async_sleep(duration):\n    await asyncio.sleep(duration)\n    return f\"Async slept for {duration} seconds\"\n\nasync def compare_performance():\n    # Synchronous version\n    start = time.time()\n    results_sync = [sync_sleep(1) for _ in range(3)]\n    sync_time = time.time() - start\n    print(f\"Sync time: {sync_time:.2f} seconds\")\n    \n    # Asynchronous version\n    start = time.time()\n    tasks = [async_sleep(1) for _ in range(3)]\n    results_async = await asyncio.gather(*tasks)\n    async_time = time.time() - start\n    print(f\"Async time: {async_time:.2f} seconds\")\n\n# Running the examples\nif __name__ == \"__main__\":\n    # asyncio.run(main())\n    # asyncio.run(concurrent_greetings())\n    # asyncio.run(consume_async_generator())\n    asyncio.run(compare_performance())\n```",
-    "context": "Python asynchronous programming and concurrency",
+    "question": "What is the difference between a module and a package in Python?",
+    "answer": "**Module:**\n- A single file containing Python code.\n- The file name is the module name with the **.py** extension (e.g., **my_module.py**).\n- Imported using the **import** statement (e.g., **import my_module**).\n\n**Package:**\n- A directory that contains multiple Python **modules** and typically a special file named **__init__.py** (though modern Python 3.3+ allows for implicit namespace packages without it).\n- Packages are a way of structuring modules into a namespace hierarchy using **dot notation** (e.g., **import package.module**).\n\n**In short:** A module is a single file; a package is a directory structure of modules.",
+    "context": "Python structure and organization",
     "type": "TECHNICAL",
     "programming_language": "python",
-    "difficulty": "advanced",
-    "tags": [
-      "asyncio",
-      "async-await",
-      "concurrency",
-      "coroutines",
-      "event-loop"
-    ]
+    "difficulty": "beginner",
+    "tags": ["modules", "packages", "imports", "organization"]
   },
   {
     "id": "python-19",
-    "question": "What are Python comprehensions and what types are available?",
-    "answer": "Comprehensions provide a concise way to create collections (lists, dictionaries, sets) and generators in Python. They offer a more readable and efficient alternative to traditional loops for creating collections.\n\n**Types of comprehensions:**\n- List comprehensions: Create lists\n- Dictionary comprehensions: Create dictionaries\n- Set comprehensions: Create sets\n- Generator expressions: Create generators (not technically comprehensions)\n\n**Benefits:**\n- More readable and concise than equivalent loops\n- Often faster than traditional loops\n- Functional programming style\n- Can include filtering and transformation in one expression\n\n**Syntax pattern:** [expression for item in iterable if condition]\n\n```python\n# List comprehensions\nnumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\n# Basic list comprehension\nsquares = [x**2 for x in numbers]\nprint(squares)  # [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\n\n# With condition (filtering)\neven_squares = [x**2 for x in numbers if x % 2 == 0]\nprint(even_squares)  # [4, 16, 36, 64, 100]\n\n# Nested loops\nmatrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nflattened = [num for row in matrix for num in row]\nprint(flattened)  # [1, 2, 3, 4, 5, 6, 7, 8, 9]\n\n# Dictionary comprehensions\nwords = ['hello', 'world', 'python', 'programming']\nword_lengths = {word: len(word) for word in words}\nprint(word_lengths)  # {'hello': 5, 'world': 5, 'python': 6, 'programming': 11}\n\n# Dictionary with condition\nlong_words = {word: len(word) for word in words if len(word) > 5}\nprint(long_words)  # {'python': 6, 'programming': 11}\n\n# Set comprehensions\nunique_lengths = {len(word) for word in words}\nprint(unique_lengths)  # {5, 6, 11}\n\n# Generator expressions (memory efficient)\nsquares_gen = (x**2 for x in numbers)\nprint(type(squares_gen))  # <class 'generator'>\nprint(list(squares_gen))  # [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\n\n# Complex example with multiple conditions\nstudents = [\n    {'name': 'Alice', 'grade': 85, 'subject': 'Math'},\n    {'name': 'Bob', 'grade': 92, 'subject': 'Science'},\n    {'name': 'Charlie', 'grade': 78, 'subject': 'Math'},\n    {'name': 'Diana', 'grade': 96, 'subject': 'Science'}\n]\n\n# High achievers in Science\nhigh_science = [s['name'] for s in students \n               if s['subject'] == 'Science' and s['grade'] > 90]\nprint(high_science)  # ['Bob', 'Diana']\n\n# Grade mapping\ngrade_map = {s['name']: 'A' if s['grade'] >= 90 else 'B' if s['grade'] >= 80 else 'C' \n             for s in students}\nprint(grade_map)  # {'Alice': 'B', 'Bob': 'A', 'Charlie': 'C', 'Diana': 'A'}\n\n# Conditional expressions in comprehensions\nresults = [x if x > 0 else 0 for x in [-2, -1, 0, 1, 2]]\nprint(results)  # [0, 0, 0, 1, 2]\n\n# Performance comparison with traditional loops\nimport time\n\n# Traditional loop\nstart = time.time()\ntraditional = []\nfor i in range(1000000):\n    if i % 2 == 0:\n        traditional.append(i**2)\nloop_time = time.time() - start\n\n# List comprehension\nstart = time.time()\ncomprehension = [i**2 for i in range(1000000) if i % 2 == 0]\ncomp_time = time.time() - start\n\nprint(f\"Loop time: {loop_time:.4f}s\")\nprint(f\"Comprehension time: {comp_time:.4f}s\")\n```",
-    "context": "Python data structures and functional programming",
+    "question": "What is a lambda function in Python?",
+    "answer": "A **lambda function** (or anonymous function) is a small, single-expression function that is typically used for short, throwaway operations.\n\n- **Syntax:** **lambda arguments: expression**\n- **Limitation:** It is restricted to a single expression whose result is implicitly returned.\n\nLambda functions are often used as arguments to higher-order functions like **map()**, **filter()**, and **sorted()**.\n\n```python\n# Example 1: Simple lambda function for addition\nadd = lambda a, b: a + b\nprint(add(5, 3)) # Output: 8\n\n# Example 2: Using lambda with sorted()\nstudents = [('Alice', 20), ('Bob', 25), ('Charlie', 18)]\n# Sort by age (the second element in the tuple)\nsorted_students = sorted(students, key=lambda student: student[1])\nprint(sorted_students)\n```",
+    "context": "Python functions",
     "type": "TECHNICAL",
     "programming_language": "python",
     "difficulty": "intermediate",
-    "tags": [
-      "comprehensions",
-      "list-comprehension",
-      "dict-comprehension",
-      "generators",
-      "functional-programming"
-    ]
+    "tags": ["lambda", "anonymous-function", "functions", "sorted"]
   },
   {
     "id": "python-20",
-    "question": "Explain Python's import system and different ways to import modules.",
-    "answer": "Python's import system allows you to use code from other modules and packages in your program. Understanding the different import methods and their implications is crucial for writing maintainable code.\n\n**Types of imports:**\n- import module: Imports entire module\n- from module import name: Imports specific names\n- from module import *: Imports all public names (discouraged)\n- import module as alias: Imports with custom name\n- Relative imports: Used within packages\n\n**Import process:**\n1. Python checks sys.modules cache\n2. Searches for module in sys.path\n3. Loads and executes module code\n4. Creates module object and adds to sys.modules\n\n**Best practices:**\n- Use specific imports when possible\n- Avoid wildcard imports (from module import *)\n- Group imports: standard library, third-party, local\n- Use absolute imports over relative imports\n\n```python\n# Different import methods\n\n# 1. Basic import\nimport math\nprint(math.pi)  # 3.141592653589793\nprint(math.sqrt(16))  # 4.0\n\n# 2. Import with alias\nimport numpy as np\n# arr = np.array([1, 2, 3])\n\n# 3. Import specific functions/classes\nfrom math import pi, sqrt, sin\nprint(pi)  # 3.141592653589793\nprint(sqrt(25))  # 5.0\n\n# 4. Import with alias for specific items\nfrom datetime import datetime as dt\nnow = dt.now()\nprint(now)\n\n# 5. Multiple imports from same module\nfrom os import path, environ, getcwd\nprint(getcwd())\n\n# 6. Import all (not recommended)\n# from math import *  # Pollutes namespace\n\n# 7. Conditional imports\ntry:\n    import matplotlib.pyplot as plt\n    HAS_MATPLOTLIB = True\nexcept ImportError:\n    HAS_MATPLOTLIB = False\n    print(\"Matplotlib not available\")\n\n# 8. Dynamic imports\nimport importlib\n\nmodule_name = \"json\"\nmodule = importlib.import_module(module_name)\ndata = module.loads('{\"key\": \"value\"}')\nprint(data)  # {'key': 'value'}\n\n# 9. Import from packages\n# from mypackage.submodule import MyClass\n# from mypackage import submodule\n\n# 10. Relative imports (within packages)\n# from . import sibling_module\n# from .. import parent_module\n# from ..sibling_package import module\n\n# Understanding sys.path and module search\nimport sys\nprint(\"Python path:\")\nfor path in sys.path[:3]:  # Show first 3 paths\n    print(f\"  {path}\")\n\n# Check loaded modules\nimport sys\nprint(f\"Number of loaded modules: {len(sys.modules)}\")\nprint(\"Some loaded modules:\", list(sys.modules.keys())[:5])\n\n# Module introspection\nimport inspect\nprint(f\"Math module file: {inspect.getfile(math)}\")\nprint(f\"Math module members: {len(inspect.getmembers(math))}\")\n\n# Creating and importing custom module programmatically\nimport types\n\n# Create a module object\ncustom_module = types.ModuleType(\"custom\")\ncustom_module.greeting = \"Hello from custom module!\"\ncustom_module.add = lambda x, y: x + y\n\n# Add to sys.modules\nsys.modules[\"custom\"] = custom_module\n\n# Now we can import it\nimport custom\nprint(custom.greeting)  # Hello from custom module!\nprint(custom.add(3, 4))  # 7\n\n# Import best practices example\n# Standard library imports\nimport os\nimport sys\nfrom datetime import datetime, timedelta\n\n# Third-party imports\n# import requests\n# import numpy as np\n# import pandas as pd\n\n# Local application imports\n# from myapp.models import User\n# from myapp.utils import helper_function\n```",
-    "context": "Python module system and code organization",
+    "question": "How do you handle exceptions in Python?",
+    "answer": "Exceptions are handled using the **try...except...else...finally** block structure.\n\n- **try:** The code that might raise an exception is placed here.\n- **except ExceptionType as e:** Catches a specific exception type. The code here executes if an exception occurs in the **try** block.\n- **else:** (Optional) Executes **only** if the **try** block completes successfully (i.e., no exception was raised).\n- **finally:** (Optional) Executes **always**, regardless of whether an exception occurred or not. Used for cleanup actions.\n\n```python\ntry:\n    result = 10 / 0 # This will raise a ZeroDivisionError\nexcept ZeroDivisionError as e:\n    print(f\"Caught an error: {e}\")\nexcept Exception as e: \n    print(\"Caught a general error\")\nelse:\n    print(\"Division successful\")\nfinally:\n    print(\"Execution finished\")\n```",
+    "context": "Python fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["exceptions", "error-handling", "try-except", "finally"]
+  },
+  {
+    "id": "python-21",
+    "question": "What is method resolution order (MRO) in Python?",
+    "answer": "The **Method Resolution Order (MRO)** is the order in which Python searches for a method or attribute in a class hierarchy, particularly in the case of **multiple inheritance**.\n\nPython uses the **C3 linearisation algorithm** to determine the MRO. This algorithm ensures that a class is always searched before its parents, and the inheritance order in the class definition is preserved.\n\nYou can view the MRO of a class using the **.__mro__** attribute or the **help()** function.\n\n```python\nclass A: pass\nclass B(A): pass\nclass C(A): pass\nclass D(B, C): pass\n\nprint(D.__mro__)\n# Output: \n# (<class '__main__.D'>, <class '__main__.B'>, <class '__main__.C'>, <class '__main__.A'>, <class 'object'>)\n# The search order is D -> B -> C -> A -> object\n```",
+    "context": "Object-Oriented Programming (OOP)",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "advanced",
+    "tags": ["oop", "mro", "inheritance", "multiple-inheritance", "c3-linearization"]
+  },
+  {
+    "id": "python-22",
+    "question": "What is encapsulation in Python?",
+    "answer": "**Encapsulation** is an OOP principle that involves bundling the **data (attributes)** and the **methods (functions)** that operate on that data into a single unit (the **class**).\n\nIt also refers to **data hiding**. Python does not have strict 'private' keywords, but uses conventions:\n\n- **Protected Members:** Prefixed with a **single underscore** (e.g., **_attribute**). Access is discouraged but possible.\n- **Private Members (Name Mangling):** Prefixed with **two underscores** (e.g., **__attribute**). Python automatically rewrites the name to **_ClassName__attribute**, making direct access harder.\n\n```python\nclass Car:\n    def __init__(self, speed):\n        self.__max_speed = speed # 'Private' using name mangling\n\n    def drive(self):\n        print(f\"Driving at max speed: {self.__max_speed}\")\n\nmy_car = Car(200)\nmy_car.drive() # Output: Driving at max speed: 200\n\n# Accessing via mangled name (possible but discouraged)\nprint(my_car._Car__max_speed) # Output: 200\n```",
+    "context": "Object-Oriented Programming (OOP)",
     "type": "TECHNICAL",
     "programming_language": "python",
     "difficulty": "intermediate",
-    "tags": ["imports", "modules", "packages", "namespace", "code-organization"]
+    "tags": ["oop", "encapsulation", "data-hiding", "classes"]
+  },
+  {
+    "id": "python-23",
+    "question": "What is the purpose of '__init__' in Python classes?",
+    "answer": "**__init__** is a special method (dunder method) known as the **constructor**. It is automatically called when a new instance (object) of the class is created.\n\n- **Purpose:** Its main purpose is to **initialize the object's attributes** (set the initial state) using the values passed during instantiation.\n- **The self parameter:** The first parameter is always **self**, which refers to the newly created instance.\n\n```python\nclass Person:\n    # The constructor method\n    def __init__(self, name, age):\n        # Initialize instance attributes\n        self.name = name \n        self.age = age\n\n    def greet(self):\n        print(f\"Hello, my name is {self.name} and I am {self.age}.\")\n\n# When this line runs, __init__ is automatically called\np1 = Person(\"Sara\", 22)\np1.greet() # Output: Hello, my name is Sara and I am 22.\n```",
+    "context": "Object-Oriented Programming (OOP)",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["oop", "classes", "init", "constructor", "self"]
+  },
+  {
+    "id": "python-24",
+    "question": "What is a Set in Python, and when would you use it over a list or tuple?",
+    "answer": "A **Set** is an unordered collection of **unique** and immutable elements. It is **mutable** itself (you can add/remove items), but the elements it holds must be hashable.\n\n**When to use a Set:**\n\n1.  **Removing Duplicates:** Sets automatically eliminate duplicates. This is the fastest way to get all unique elements from a list.\n2.  **Membership Testing (Fast Lookup):** Checking for an item's presence (**item in my_set**) is very fast (O(1) average time complexity), much faster than in a list (O(N)).\n3.  **Mathematical Set Operations:** Performing **union** (|), **intersection** (&), and **difference** (-) operations.\n\n```python\n# Example of removing duplicates and set operations\nmy_list = [1, 2, 2, 3, 4, 4, 5]\nunique_set = set(my_list)\nprint(unique_set) # Output: {1, 2, 3, 4, 5}\n\nset_a = {1, 2, 3}\nset_b = {3, 4, 5}\nprint(set_a & set_b) # Intersection: {3}\nprint(2 in unique_set) # Fast membership check: True\n```",
+    "context": "Basic Python data structures",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["data-structures", "sets", "unique", "performance"]
+  },
+  {
+    "id": "python-25",
+    "question": "What is a docstring in Python and why is it important?",
+    "answer": "A **docstring** (documentation string) is a string literal that occurs as the first statement in a Python **module, function, class, or method** definition. It provides a concise summary of the code block's purpose and usage.\n\n- **Syntax:** Docstrings are typically enclosed in **triple quotes** (**\"\"\"Docstring goes here\"\"\"**).\n- **Access:** They can be accessed programmatically at runtime using the **__doc__** attribute of the object.\n\n**Importance:** Docstrings are crucial for documentation; they are used by the built-in **help()** function and automated documentation generation tools (like Sphinx).\n\n```python\ndef square_number(num):\n    \"\"\"Calculates the square of the input number.\n\n    Args:\n        num (int or float): The number to be squared.\n\n    Returns:\n        (int or float): The squared value of the input number.\n    \"\"\"\n    return num * num\n\nprint(square_number.__doc__)\n```",
+    "context": "Python fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["docstrings", "documentation", "pep-257", "help-function"]
+  },
+  {
+    "id": "python-26",
+    "question": "What is slicing in Python?",
+    "answer": "**Slicing** is a mechanism used to extract a subset of elements from a sequence (like a string, list, or tuple). It creates a new sequence without modifying the original.\n\nThe basic syntax is: **[start:stop:step]**\n\n- **start:** The starting index (inclusive). Defaults to 0.\n- **stop:** The ending index (exclusive). Defaults to the length of the sequence.\n- **step:** The increment between indices. Defaults to 1.\n\n**Negative indices** can be used to count from the end, where -1 is the last element.\n\n```python\nmy_list = [10, 20, 30, 40, 50, 60]\n\n# Basic slice (from index 1 up to but not including 4)\nprint(my_list[1:4])  # Output: [20, 30, 40]\n\n# Slicing with a step (every other element)\nprint(my_list[::2])  # Output: [10, 30, 50]\n\n# Reverse the list using a negative step\nprint(my_list[::-1]) # Output: [60, 50, 40, 30, 20, 10]\n```",
+    "context": "Basic Python data structures",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["slicing", "lists", "strings", "tuples"]
+  },
+  {
+    "id": "python-27",
+    "question": "How do you copy an object in Python?",
+    "answer": "Copying objects in Python involves two main types, which differ based on how they handle nested mutable objects:\n\n1.  **Shallow Copy:** Creates a new container object, but populates it with **references** to the objects found in the original. Modifying a nested mutable object in the copy **will affect** the original.\n    - **Methods:** Slicing (**[:]**), **list()**, **dict()**, or the **copy.copy()** function.\n\n2.  **Deep Copy:** Creates a new container object and **recursively** inserts copies of all objects found in the original. Modifying the copy **will NOT affect** the original.\n    - **Method:** The **copy.deepcopy()** function (requires importing the **copy** module).\n\n```python\nimport copy\noriginal = [1, [2, 3]]\n\n# Shallow Copy\nshallow_copy = original[:]\nshallow_copy[1].append(4) # Affects original's nested list\nprint(original) # Output: [1, [2, 3, 4]]\n\n# Deep Copy\ndeep_copy = copy.deepcopy(original)\ndeep_copy[1].append(5) # Does NOT affect original\nprint(deep_copy) # Output: [1, [2, 3, 4, 5]]\n```",
+    "context": "Python memory and object operations",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["copy", "deep-copy", "shallow-copy", "mutability", "copy-module"]
+  },
+  {
+    "id": "python-28",
+    "question": "What is Python's 'zip()' function used for?",
+    "answer": "The built-in **zip()** function is used to **aggregate elements from two or more iterables** (like lists, tuples, or strings) into a single iterator of tuples.\n\n- It returns an **iterator** where the *i*-th tuple contains the *i*-th element from each of the input iterables.\n- The iterator stops when the **shortest input iterable** is exhausted.\n\n```python\nnames = [\"Alice\", \"Bob\", \"Charlie\"]\nages = [25, 30, 22]\n\n# Zipping two lists together\nzipped_data = list(zip(names, ages))\nprint(zipped_data)\n# Output: [('Alice', 25), ('Bob', 30), ('Charlie', 22)]\n\n# Unzipping (using zip() with '*')\nnames_unzipped, ages_unzipped = zip(*zipped_data)\nprint(list(names_unzipped)) \n# Output: ['Alice', 'Bob', 'Charlie']\n```",
+    "context": "Python functions",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["functions", "zip", "iterators", "lists"]
+  },
+  {
+    "id": "python-29",
+    "question": "What is an abstract base class (ABC) and why is it used?",
+    "answer": "An **Abstract Base Class (ABC)** is a class that **cannot be instantiated** on its own and is designed to define a common interface (a contract) for a set of subclasses.\n\n- **Purpose:** To enforce that subclasses implement specific methods, known as **abstract methods**.\n- **Implementation:** You use the **abc module** and the **@abstractmethod** decorator for methods that must be overridden in the subclasses.\n\nAttempting to instantiate a concrete class that inherits from an ABC without implementing all abstract methods will raise a **TypeError**.\n\n```python\nfrom abc import ABC, abstractmethod\n\nclass Vehicle(ABC):\n    @abstractmethod\n    def start_engine(self):\n        pass # Must be implemented\n\nclass Car(Vehicle):\n    # Must implement start_engine or it will error on instantiation\n    def start_engine(self):\n        return \"Car engine started!\"\n\n# vehicle = Vehicle() # TypeError\nmy_car = Car()\nprint(my_car.start_engine()) # Output: Car engine started!\n```",
+    "context": "Object-Oriented Programming (OOP)",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "advanced",
+    "tags": ["oop", "abc", "abstract-class", "inheritance", "interface"]
+  },
+  {
+    "id": "python-30",
+    "question": "What is name mangling in Python?",
+    "answer": "**Name Mangling** is a mechanism used by Python to make a class attribute effectively **\"private\"** when it is prefixed with **two leading underscores** (e.g., **__attribute**).\n\n- **How it works:** Python automatically rewrites (mangles) the attribute name to include the class name, using the format **_ClassName__attribute**.\n- **Goal:** To help avoid name collisions in subclasses and serves as a strong convention that the attribute should not be accessed directly from outside the class.\n\n```python\nclass Example:\n    def __init__(self):\n        self.__private_data = 10\n\ninstance = Example()\n# print(instance.__private_data) # AttributeError: '__private_data' not found\n\n# Accessing the mangled name (technically possible)\nprint(instance._Example__private_data) # Output: 10\n```",
+    "context": "Object-Oriented Programming (OOP)",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["oop", "name-mangling", "private", "encapsulation"]
+  },
+  {
+    "id": "python-31",
+    "question": "What is the 'super()' function used for in Python?",
+    "answer": "The **super()** function is used to provide access to methods of the **parent or sibling classes** in an inheritance hierarchy, especially when implementing inheritance with method overriding.\n\n- **Common Use:** Calling the parent class's **__init__** method from a child class's **__init__** method to ensure the parent class is correctly initialized.\n- **Mechanism:** It correctly determines the **Method Resolution Order (MRO)** to find the correct method to call.\n\n**Syntax:** **super().method_name(arguments)**\n\n```python\nclass Parent:\n    def __init__(self, value):\n        self.value = value\n\nclass Child(Parent):\n    def __init__(self, value, extra):\n        # Calls the Parent's __init__ method\n        super().__init__(value)\n        self.extra = extra\n\n    def describe(self):\n        print(f\"Value: {self.value}, Extra: {self.extra}\")\n\nchild_obj = Child(100, \"Data\")\nchild_obj.describe() # Output: Value: 100, Extra: Data\n```",
+    "context": "Object-Oriented Programming (OOP)",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["oop", "super", "inheritance", "mro", "init"]
+  },
+  {
+    "id": "python-32",
+    "question": "Explain Python namespaces and scope.",
+    "answer": "**Namespace:** A **namespace** is a mapping from names (variables, functions, classes, etc.) to corresponding objects. It ensures that names are unique and do not conflict (e.g., the global namespace and the local namespace of a function).\n\n**Scope:** The **scope** is the part of the code where a particular namespace is directly accessible.\n\nPython follows the **LEGB rule** for resolving names:\n\n1.  **L (Local):** Names assigned inside the current function.\n2.  **E (Enclosing):** Names in the local scope of any enclosing functions (for nested functions).\n3.  **G (Global):** Names assigned at the top level of a module.\n4.  **B (Built-in):** Names preassigned in Python (like **print** or **len**).\n\n```python\nglobal_var = \"Global\"\n\ndef outer_func():\n    enclosing_var = \"Enclosing\"\n\n    def inner_func():\n        local_var = \"Local\" \n        print(local_var) # Local scope\n        print(enclosing_var) # Enclosing scope\n        print(global_var) # Global scope\n    \n    inner_func()\n\nouter_func()\n```",
+    "context": "Python fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["namespaces", "scope", "legb-rule", "variables"]
+  },
+  {
+    "id": "python-33",
+    "question": "How do you use the 'map()', 'filter()', and 'reduce()' functions?",
+    "answer": "These are built-in functions used in functional programming:\n\n1.  **map(function, iterable):** Applies a **function** to every item in an **iterable** and returns an iterator of the results.\n2.  **filter(function, iterable):** Constructs an iterator from elements of an **iterable** for which a **function** returns **True**.\n3.  **reduce(function, iterable, initializer):** (Requires **from functools import reduce**) Applies a **function** cumulatively to the items of an iterable, reducing the iterable to a single value.\n\n```python\nfrom functools import reduce\n\nnumbers = [1, 2, 3, 4, 5]\n\n# map: square every number\nsquared = list(map(lambda x: x**2, numbers))\nprint(squared) # Output: [1, 4, 9, 16, 25]\n\n# filter: keep only even numbers\neven = list(filter(lambda x: x % 2 == 0, numbers))\nprint(even) # Output: [2, 4]\n\n# reduce: sum all numbers\nsum_all = reduce(lambda x, y: x + y, numbers)\nprint(sum_all) # Output: 15\n```",
+    "context": "Python functions",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["map", "filter", "reduce", "functional-programming", "lambda"]
+  },
+  {
+    "id": "python-34",
+    "question": "What is the difference between 'range()' and 'xrange()' (Python 2 vs 3)?",
+    "answer": "This question tests the understanding of memory efficiency, relating to the difference between Python 2 and Python 3's range implementation.\n\n| Feature | Python 2: range() | Python 2: xrange() / Python 3: range() |\n| :--- | :--- | :--- |\n| **Return Type** | Returns a **list** (stores all values) | Returns a **range object** (a lazy iterator) |\n| **Memory** | **Inefficient** for large ranges (stores all values in memory). | **Highly efficient** for large ranges (generates numbers on demand). |\n\nIn **Python 3**, the old **xrange()** has been removed, and the built-in **range()** function now behaves lazily like **xrange()**. Therefore, in modern Python 3, **range()** is always the memory-efficient choice.\n\n```python\n# Python 3 code\n# range(1000000) is memory efficient because it's lazy\nfor i in range(5): \n    print(i, end=\" \") \n# Output: 0 1 2 3 4 \n```",
+    "context": "Python 2 vs 3, performance",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["range", "xrange", "python-2-vs-3", "performance", "memory-efficiency"]
+  },
+  {
+    "id": "python-35",
+    "question": "What is the purpose of the 'yield' keyword?",
+    "answer": "The **yield** keyword is used in a function to make it a **generator function**. When **yield** is encountered, the function returns the value, but **pauses** its execution and saves its local state.\n\n- **Resumption:** When the next value is requested (via **next()** or a **for** loop), execution **resumes** from where it last yielded.\n- **Benefit:** It allows for the creation of sequences without storing the entire sequence in memory, which is essential for working with very large or infinite streams of data.\n- **Contrast:** Unlike **return**, which terminates the function entirely, **yield** temporarily suspends it.\n\n```python\n# Generator function\ndef fibonacci_sequence(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a \n        a, b = b, a + b\n\n# The function pauses after each value is yielded\nfor num in fibonacci_sequence(5):\n    print(num, end=\" \") \n# Output: 0 1 1 2 3 \n```",
+    "context": "Python advanced concepts",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["yield", "generators", "iterators", "lazy-evaluation"]
+  },
+  {
+    "id": "python-36",
+    "question": "Explain the difference between 'isinstance()' and 'type()'.",
+    "answer": "Both functions check the type of an object, but they differ in how they handle inheritance.\n\n- **type(object):** Returns the **exact class** of the object. It does not consider inheritance.\n- **isinstance(object, classinfo):** Returns **True** if the object is an instance of the class specified by **classinfo** or an instance of a **subclass** derived from that class. It **respects inheritance**.\n\n**Best Practice:** **isinstance()** is generally preferred because it aligns with OOP principles of polymorphism.\n\n```python\nclass Parent: pass\nclass Child(Parent): pass\n\nobj = Child()\n\n# type() checks for exact class\nprint(type(obj) == Parent) # False\n\n# isinstance() checks for class or any parent class\nprint(isinstance(obj, Parent)) # True (because Child inherits from Parent)\n```",
+    "context": "Object-Oriented Programming (OOP)",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["type", "isinstance", "oop", "inheritance"]
+  },
+  {
+    "id": "python-37",
+    "question": "What is unit testing in Python and which framework is commonly used?",
+    "answer": "**Unit Testing** is a software testing method where individual units (components or functions) of a source code are tested to verify they are working correctly.\n\n**Common Frameworks:**\n\n1.  **unittest:** Python's built-in unit testing framework (xUnit-style).\n2.  **pytest:** A widely popular external library known for its simpler syntax, less boilerplate code, and powerful features.\n\n**Key Concepts:**\n\n- **Test Case:** A single unit of testing that checks for a specific response to a particular input.\n- **Assertions:** Methods (like **assertEqual**, **assertTrue**) used to check if a condition is met.\n\n```python\nimport unittest\n\ndef add(a, b):\n    return a + b\n\nclass TestAddFunction(unittest.TestCase):\n    def test_add_positive(self):\n        self.assertEqual(add(1, 2), 3)\n    \n    def test_add_negative(self):\n        self.assertEqual(add(-1, 1), 0)\n\n# To run: unittest.main() \n```",
+    "context": "Software testing",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["unit-testing", "testing", "unittest", "pytest"]
+  },
+  {
+    "id": "python-38",
+    "question": "How do you create a function in Python that is not immediately executed (a closure)?",
+    "answer": "A **closure** is a function that retains access to the variables of an **enclosing scope** even after the enclosing function has finished executing. This is created by defining a **nested function** that references a variable from its parent function.\n\n- **Mechanism:** The nested function \"remembers\" the environment (or scope) it was created in.\n- **Use Cases:** Implementing decorators, creating factory functions, and partially applying arguments (currying).\n\n```python\n# The enclosing function is a 'factory' for greeting functions\ndef make_greeter(greeting):\n    # 'greeting' is the free variable captured by the closure\n    def greet(name):\n        return f\"{greeting}, {name}!\"\n    return greet\n\n# 'hello' is a closure that remembers 'Hello'\nhello = make_greeter(\"Hello\")\n\n# 'greetings' is a closure that remembers 'Greetings'\ngreetings = make_greeter(\"Greetings\")\n\nprint(hello(\"Alice\")) # Output: Hello, Alice!\n```",
+    "context": "Python functions",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "advanced",
+    "tags": ["closure", "nested-functions", "scope", "functions"]
+  },
+  {
+    "id": "python-39",
+    "question": "What is serialization and deserialization (pickling/unpickling) in Python?",
+    "answer": "**Serialization** (or **pickling**) is the process of converting a Python object (list, dictionary, or class instance) into a **byte stream** so that it can be stored in a file or transmitted over a network.\n\n**Deserialization** (or **unpickling**) is the reverse process: taking the byte stream and converting it back into a usable Python object.\n\n- **Module:** The standard Python module used for this is **pickle**.\n- **Alternative:** For cross-language data exchange (like in web APIs), **JSON** (using the **json** module) is preferred, as it is language-agnostic, though less powerful for complex Python objects.\n\n```python\nimport pickle\n\ndata = {'a': 1, 'b': 2}\n\n# Serialization (Pickling)\npickled_data = pickle.dumps(data)\n\n# Deserialization (Unpickling)\nunpickled_data = pickle.loads(pickled_data)\nprint(unpickled_data) # Output: {'a': 1, 'b': 2}\n```",
+    "context": "Python I/O and data handling",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["serialization", "deserialization", "pickle", "json", "data-handling"]
+  },
+  {
+    "id": "python-40",
+    "question": "Explain how Python imports work, and what is PYTHONPATH.",
+    "answer": "When an **import** statement is executed, Python searches for the module's file in a specific order defined by **sys.path**.\n\n**sys.path** is a list of directories that the Python interpreter searches for modules. It typically includes:\n\n1.  The directory containing the input script (or the current working directory).\n2.  The directories in the **PYTHONPATH** environment variable.\n3.  The standard library directories.\n\n**PYTHONPATH Environment Variable:**\n- **PYTHONPATH** is an environment variable that a user can set to **tell the Python interpreter where to look for modules and packages** in addition to the standard locations.\n- It is a list of directories that is prepended to **sys.path**.\n\n```python\nimport sys\n# print(sys.path) # Shows the list of directories searched for modules\n```",
+    "context": "Python structure and organization",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["imports", "modules", "packages", "pythonpath", "sys.path"]
+  },
+  {
+    "id": "python-41",
+    "question": "What is the difference between shallow and deep copy?",
+    "answer": "The difference between shallow and deep copy is only relevant when a composite object (like a list or dictionary) contains **other mutable objects**.\n\n| Type | Behavior | Effect on Nested Mutable Objects |\n| :--- | :--- | :--- |\n| **Shallow Copy** | Creates a new container, but populates it with **references** to the same objects found in the original. | Changing a nested object in the copy **will affect** the original. |\n| **Deep Copy** | Creates a new container and recursively inserts **copies** of all objects found in the original. | Changing a nested object in the copy **will NOT affect** the original. |\n\n**Tools:**\n- **Shallow:** **list[:]**, **dict.copy()**, **copy.copy()**\n- **Deep:** **copy.deepcopy()**\n\n```python\nimport copy\noriginal = [1, [2, 3]]\n\n# Shallow Copy\nshallow = original[:]\nshallow[1].append(4) \nprint(original) # Output: [1, [2, 3, 4]] (Original is changed)\n```",
+    "context": "Python memory and object operations",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["copy", "deep-copy", "shallow-copy", "mutability", "copy-module"]
+  },
+  {
+    "id": "python-42",
+    "question": "How can you implement an LRU Cache in Python?",
+    "answer": "An **LRU (Least Recently Used) Cache** is a cache replacement policy that discards the least recently used items first when the cache is full. An efficient implementation requires two data structures for $O(1)$ average time complexity for both get and put operations:\n\n1.  **Dictionary (Hash Map):** Stores the key-value pairs for fast lookup.\n2.  **Doubly Linked List:** Stores the keys in order of usage. Moving a key to the front (most recently used) or removing the key from the back (least recently used) is $O(1)$.\n\nThe most Pythonic way to implement this is using **collections.OrderedDict** from the standard library, which is a dictionary that remembers insertion order and can be easily manipulated to move/pop items.\n\n```python\nfrom collections import OrderedDict\n\nclass LRUCache:\n    def __init__(self, capacity):\n        self.capacity = capacity\n        self.cache = OrderedDict()\n\n    def get(self, key):\n        if key not in self.cache:\n            return -1\n        # Move accessed item to the end (MRU)\n        value = self.cache.pop(key)\n        self.cache[key] = value\n        return value\n\n    def put(self, key, value):\n        if key in self.cache:\n            self.cache.pop(key)\n        elif len(self.cache) >= self.capacity:\n            # Remove the first item (LRU)\n            self.cache.popitem(last=False)\n            \n        self.cache[key] = value\n```",
+    "context": "Algorithms and data structures",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "advanced",
+    "tags": ["lru-cache", "ordereddict", "algorithms", "data-structures"]
+  },
+  {
+    "id": "python-43",
+    "question": "What is the difference between '__str__' and '__repr__' methods in Python?",
+    "answer": "Both **__str__** and **__repr__** (representation) are special methods used to define an object's string representation, but they serve different audiences and purposes.\n\n| Method | Purpose | Audience | Goal |\n| :--- | :--- | :--- | :--- |\n| **__str__** | Called by **str(object)** or **print(object)** | **Humans** | To return a **readable** string representation. |\n| **__repr__** | Called by **repr(object)** or in the interpreter | **Developers** | To return an **unambiguous** string representation, typically one that could be used to recreate the object. |\n\n**Best Practice:** Always define **__repr__**. If **__str__** is not defined, Python falls back to using **__repr__** when **str()** is called.\n\n```python\nclass Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __repr__(self):\n        return f\"Point(x={self.x}, y={self.y})\"\n\n    def __str__(self):\n        return f\"({self.x}, {self.y})\"\n\np = Point(1, 2)\n\nprint(p)      # Calls __str__ Output: (1, 2)\nprint(repr(p)) # Calls __repr__ Output: Point(x=1, y=2)\n```",
+    "context": "Object-Oriented Programming (OOP)",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["oop", "dunder-methods", "str", "repr"]
+  },
+  {
+    "id": "python-44",
+    "question": "What are class methods, static methods, and instance methods?",
+    "answer": "These are the three types of methods in a Python class, distinguished by their first argument and purpose:\n\n1.  **Instance Methods (Default):**\n    - **First Argument:** **self** (the instance of the class).\n    - **Purpose:** Operate on the instance's state (access or modify instance attributes).\n\n2.  **Class Methods:**\n    - **Decorator:** **@classmethod**\n    - **First Argument:** **cls** (the class itself).\n    - **Purpose:** Operate on the class state. Often used as **factory methods**.\n\n3.  **Static Methods:**\n    - **Decorator:** **@staticmethod**\n    - **First Argument:** None (no **self** or **cls**).\n    - **Purpose:** Have no access to the instance or class state. They are essentially regular functions logically grouped within a class.\n\n```python\nclass Example:\n    class_var = 0\n\n    def instance_method(self):\n        print(\"Instance method called\")\n\n    @classmethod\n    def class_method(cls):\n        cls.class_var += 1\n\n    @staticmethod\n    def static_method(x):\n        return x * 2\n\nobj = Example()\nobj.instance_method()\nExample.class_method() \nprint(Example.static_method(5)) # Output: 10\n```",
+    "context": "Object-Oriented Programming (OOP)",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": ["oop", "methods", "class-method", "static-method", "instance-method"]
+  },
+  {
+    "id": "python-45",
+    "question": "What are Python metaclasses?",
+    "answer": "A **metaclass** is the **class of a class**. Just as an object is an instance of a class, a class is an instance of a metaclass.\n\n- **Default Metaclass:** The built-in metaclass in Python is **type**.\n- **Purpose:** Metaclasses are used to **control the creation of classes** themselves. They allow you to automatically modify classes when they are created, for example, by adding methods, implementing patterns, or checking for adherence to an interface.\n- **Use Cases:** Used in advanced frameworks (like Django) and in the implementation of **Abstract Base Classes (ABCs)** via **abc.ABCMeta**.\n\n**Note:** This is an advanced feature rarely needed outside of complex library or framework development.\n\n```python\n# Creating a class using the 'type' metaclass (standard way)\n# This is equivalent to 'class MyClass: pass'\nMyClass = type('MyClass', (object,), {'x': 10})\n\nprint(type(MyClass)) # Output: <class 'type'> \n# MyClass is an instance of 'type'\n```",
+    "context": "Python advanced concepts",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "expert",
+    "tags": ["metaclasses", "type", "oop", "advanced"]
+  },
+  {
+    "id": "python-46",
+    "question": "What is monkey patching in Python?",
+    "answer": "**Monkey Patching** is a technique that allows you to **dynamically modify a class or module at runtime** (i.e., changing it after it has been defined and loaded). You can replace methods, attributes, or even entire classes from a module with new ones.\n\n- **How it works:** Python's objects are mutable, allowing you to reassign an attribute or method to point to a new function.\n- **Use Cases:** Often used in **testing** to mock out external dependencies, or to fix/extend the behavior of third-party libraries without modifying their source code.\n- **Caution:** It is discouraged in production code because it can make the program's behavior unpredictable and debugging difficult.\n\n```python\n# Original class\nclass MyClass:\n    def get_data(self):\n        return \"Original Data\"\n\n# Patch function to replace the original method\ndef new_get_data(self):\n    return \"Patched Data!\"\n\n# Perform the monkey patch by reassigning the method\nMyClass.get_data = new_get_data\n\nobj = MyClass()\nprint(obj.get_data()) # Output: Patched Data!\n```",
+    "context": "Python advanced concepts",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "advanced",
+    "tags": ["monkey-patching", "dynamic", "testing", "advanced"]
+  },
+  {
+    "id": "python-47",
+    "question": "How do you implement a ternary operator in Python?",
+    "answer": "Python does not use the traditional ternary operator (**? :**) seen in languages like C++ or Java. Instead, it uses a **conditional expression** in a unique format:\n\n**Syntax:** **value_if_true if condition else value_if_false**\n\nThis expression allows for concise inline conditional logic and is far more Pythonic than using nested **if/else** blocks for simple assignments.\n\n```python\nage = 20\n\n# Ternary Operator Equivalent\nis_adult = \"Adult\" if age >= 18 else \"Minor\"\nprint(is_adult) # Output: Adult\n\n# Without ternary (less concise)\n# if age >= 18:\n#     is_adult_block = \"Adult\"\n# else:\n#     is_adult_block = \"Minor\"\n```",
+    "context": "Python syntax and operators",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["ternary-operator", "syntax", "conditional-expression"]
+  },
+  {
+    "id": "python-48",
+    "question": "What is the difference between '__new__' and '__init__?'",
+    "answer": "Both are special methods involved in object creation, but they are called sequentially and have different roles:\n\n1.  **__new__(cls, *args, **kwargs)** (The Constructor):\n    - **Called First:** It is the method that actually **creates** the new instance of the class (allocates memory).\n    - **Purpose:** Must return the newly created object (or another object to replace it).\n    - **Use Case:** Rarely overridden unless you are creating immutable types or custom metaclasses.\n\n2.  **__init__(self, *args, **kwargs)** (The Initializer):\n    - **Called Second:** It is called *after* **__new__** has created the instance.\n    - **Purpose:** To **initialize** the attributes of the newly created object (set the initial state).\n    - **Use Case:** Overridden in almost every class to set up instance-specific variables.\n\n```python\nclass MyClass:\n    def __new__(cls, *args, **kwargs):\n        print(\"1. __new__ called: creating the instance\")\n        instance = super().__new__(cls) \n        return instance\n\n    def __init__(self, value):\n        print(\"2. __init__ called: initializing attributes\")\n        self.value = value\n\nobj = MyClass(10)\n```",
+    "context": "Object-Oriented Programming (OOP)",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "advanced",
+    "tags": ["oop", "new", "init", "dunder-methods", "constructor"]
+  },
+  {
+    "id": "python-49",
+    "question": "What is a virtual environment in Python and why is it important?",
+    "answer": "A **virtual environment** is a self-contained directory tree that contains a specific Python interpreter, all the necessary libraries, and scripts required for a single project.\n\n**Importance:**\n\n1.  **Dependency Isolation:** It ensures that dependencies for one project do not interfere with another project. Each project can use different versions of the same library without conflict.\n2.  **Reproducibility:** It makes it easy to share the exact dependencies for a project (usually via a **requirements.txt** file), ensuring consistent behavior across different machines.\n3.  **Cleanliness:** It keeps global site-packages clean, preventing dependency clutter in the system-wide Python installation.\n\n**Common Tool:** The **venv** module (standard library) is the most common tool used to create virtual environments.\n\n```bash\n# Create a new environment \npython -m venv my_env\n\n# Activate the environment (Example for Linux/macOS)\nsource my_env/bin/activate\n```",
+    "context": "Python tooling and workflow",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["virtual-environment", "venv", "dependencies", "workflow"]
+  },
+  {
+    "id": "python-50",
+    "question": "How do you check if a string is a palindrome in Python?",
+    "answer": "A **palindrome** is a sequence that reads the same backward as forward. The most Pythonic and concise way to check for a string palindrome is to compare the string with its reversed version, which is easily obtained using slicing with a step of -1 (**[::-1]**).\n\nFor a robust solution, you should first normalize the string (convert to lowercase and remove spaces/punctuation).\n\n```python\nimport re\n\ndef is_palindrome(s):\n    # 1. Normalize the string: remove non-alphanumeric chars and convert to lower\n    s_normalized = re.sub(r'[^a-z0-9]', '', s.lower())\n\n    # 2. Compare the normalized string to its reverse using slicing [::-1]\n    return s_normalized == s_normalized[::-1]\n\n# Test Cases\nprint(is_palindrome(\"madam\")) # Output: True\nprint(is_palindrome(\"A man, a plan, a canal: Panama\")) # Output: True\nprint(is_palindrome(\"python\")) # Output: False\n```",
+    "context": "Coding challenges and algorithms",
+    "type": "TECHNICAL",
+    "programming_language": "python",
+    "difficulty": "beginner",
+    "tags": ["coding-challenge", "algorithms", "strings", "slicing", "palindrome"]
   }
 ]
