@@ -1,0 +1,502 @@
+[
+  {
+    "id": "react-1",
+    "question": "Explain the concept of the Virtual DOM (VDOM) in React.",
+    "answer": "The **Virtual DOM (VDOM)** is a programming concept where a virtual representation of a UI is kept in memory and synchronized with the 'real' DOM. It is essentially an object representation of the actual DOM.\n\n1.  **State Change:** When state changes, React creates a new VDOM tree.\n2.  **Diffing:** It compares the new VDOM tree with the previous one (the process is called **diffing**) to find the exact elements that have changed.\n3.  **Reconciliation:** It updates only those specific, changed nodes in the 'real' DOM, minimizing direct DOM manipulation which is generally slow. This optimization is what makes React fast and efficient.",
+    "context": "React Fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["vdom", "reconciliation", "performance", "diffing"]
+  },
+  {
+    "id": "react-2",
+    "question": "What is JSX and why is it used in React?",
+    "answer": "**JSX (JavaScript XML)** is a syntax extension for JavaScript recommended by React. It allows you to write HTML-like structures directly within your JavaScript code.\n\n- **Purpose:** It makes component structure definition more intuitive and readable, as it visually represents the structure of the UI.\n- **Compilation:** JSX is **not** valid JavaScript; it must be compiled (transpiled) into standard JavaScript function calls (like React.createElement) by a tool like **Babel** before the browser can understand it.\n\n```javascript\n// JSX example\nconst element = <h1>Hello, {name}</h1>;\n\n// How Babel compiles it\nconst element = React.createElement(\n  'h1', \n  null, \n  'Hello, ',\n  name\n);\n```",
+    "context": "React Fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["jsx", "babel", "syntax", "fundamentals"]
+  },
+  {
+    "id": "react-3",
+    "question": "What is the difference between state and props in React?",
+    "answer": "Both state and props are plain JavaScript objects that hold information, but they differ in control and mutability:\n\n| Feature | Props | State |\n| :--- | :--- | :--- |\n| **Control** | Passed from a parent component to a child component. | Managed and controlled by the component itself. |\n| **Mutability** | **Immutable** (Read-only) for the receiving component. | **Mutable** (Can be changed) via **useState** (Hooks) or **setState** (Classes). |\n| **Data Flow** | Used for communication **downwards** (parent to child). | Used for tracking internal changes over time. |\n\n**Analogy:** **Props** are like arguments passed to a function; **State** is like local variables declared inside the function.",
+    "context": "React Fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["state", "props", "data-flow", "mutability"]
+  },
+  {
+    "id": "react-4",
+    "question": "What are the Rules of Hooks and why do they exist?",
+    "answer": "The two primary Rules of Hooks are essential for React to manage the state and effects correctly across multiple renders:\n\n1.  **Only Call Hooks at the Top Level:** Do not call Hooks inside loops, conditions, or nested functions. This ensures Hooks are called in the exact same order on every render.\n2.  **Only Call Hooks from React Functions:** Call them from Functional Components or custom Hooks, not from regular JavaScript functions.\n\n**Reasoning:** React relies on the **order of Hook calls** to associate local state (managed by useState) with the correct component instance and state value during reconciliation. Violating these rules leads to unexpected bugs.",
+    "context": "React Hooks",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["hooks", "rules", "useState", "useEffect"]
+  },
+  {
+    "id": "react-5",
+    "question": "Explain the purpose and usage of the useEffect Hook.",
+    "answer": "The **useEffect** Hook allows you to perform **side effects** (data fetching, subscriptions, manually changing the DOM) in functional components.\n\nIt runs **after every render** by default, but its behavior can be controlled by the **dependency array** (the second argument):\n\n| Dependency Array | When the effect runs |\n| :--- | :--- |\n| **Absent** | After every render (State, Props changes) |\n| **[] (Empty Array)** | Only after the **first render** (like `componentDidMount`) |\n| **[dep1, dep2]** | After the first render and whenever one of the dependencies changes |\n\n```javascript\nimport React, { useState, useEffect } from 'react';\n\nfunction DataFetcher({ id }) {\n  const [data, setData] = useState(null);\n  \n  // Runs when 'id' changes (data fetching)\n  useEffect(() => {\n    fetchData(id).then(setData);\n    // Cleanup function runs when component unmounts or before re-running the effect\n    return () => { \n      // Cleanup code (e.g., unsubscribe, abort request)\n    };\n  }, [id]); // Dependency Array\n  \n  return <div>{data ? data.name : 'Loading...'}</div>;\n}\n```",
+    "context": "React Hooks",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["hooks", "useEffect", "side-effects", "lifecycle"]
+  },
+  {
+    "id": "react-6",
+    "question": "How do you conditionally render components in React?",
+    "answer": "Conditional rendering means rendering different elements or components based on a condition (e.g., user is logged in, data is loaded).\n\nCommon methods include:\n\n1.  **if/else statements:** Used outside JSX, usually within the function body.\n2.  **Ternary Operator:** Concise way for simple conditions inside JSX.\n3.  **Logical && Operator:** If you only need to render something when a condition is true, React short-circuits the expression (renders the element if the left side is truthy, otherwise renders nothing).\n\n```javascript\nfunction Greeting({ isLoggedIn }) {\n  // 1. If/else\n  if (!isLoggedIn) {\n    return <LoginButton />;\n  }\n\n  // 2. Ternary Operator\n  const message = isLoggedIn ? 'Welcome Back!' : 'Please log in.';\n\n  return (\n    <div>\n      <h2>{message}</h2>\n      \n      {/* 3. Logical && Operator */}\n      {isLoggedIn && <LogoutButton />}\n    </div>\n  );\n}\n```",
+    "context": "React Fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["conditional-rendering", "jsx", "operators"]
+  },
+  {
+    "id": "react-7",
+    "question": "Explain 'lifting state up' in React.",
+    "answer": "**Lifting state up** is a pattern for sharing state between two sibling components (components that need to communicate or synchronize data).\n\n- **Mechanism:** Instead of managing the shared state in either sibling, the state is 'lifted' to their closest common parent component.\n- **Data Flow:** The parent component holds the state and passes the data **down** to the siblings via **props**. It also passes a function (a **callback prop**) down to the sibling that needs to *change* the state.\n- **Benefit:** It ensures a single source of truth for the shared data, maintaining consistency across the application.",
+    "context": "State Management",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["state-management", "data-flow", "props", "parent-child"]
+  },
+  {
+    "id": "react-8",
+    "question": "What are Keys in React lists and why are they important?",
+    "answer": "**Keys** are a special string attribute you must include when creating lists of elements in React (e.g., when mapping an array to JSX elements).\n\n- **Purpose:** Keys give React a stable identity for each item in the list. This helps React identify which items have been changed, added, or removed during the VDOM diffing process.\n- **Importance:** Using stable, unique keys (like IDs from a database) is crucial for **performance** and **correctness** (especially with mutable components like form inputs). Using array index as a key is only acceptable if the list is static and never changes order.\n\n```javascript\nconst items = [\n  { id: 1, name: 'A' }, \n  { id: 2, name: 'B' }\n];\n\nconst listItems = items.map((item) => (\n  // 'item.id' is the stable, unique key\n  <li key={item.id}>\n    {item.name}\n  </li>\n));\n```",
+    "context": "React Fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["keys", "lists", "performance", "vdom"]
+  },
+  {
+    "id": "react-9",
+    "question": "What is a Higher-Order Component (HOC)?",
+    "answer": "A **Higher-Order Component (HOC)** is an advanced React technique that is a function that **takes a component as an argument** and **returns a new component** with enhanced functionality.\n\n- **Purpose:** HOCs are used for **code reuse, logic abstraction, and state manipulation** across multiple components (e.g., authentication checks, data fetching, logging).\n- **Contrast:** While widely used in older React, modern practice often favors **Custom Hooks** for logic reuse because they don't introduce extra layers into the component tree.\n\n```javascript\n// HOC Definition\nfunction withLogger(WrappedComponent) {\n  return function LoggedComponent(props) {\n    console.log(`Component rendered: ${WrappedComponent.name}`);\n    return <WrappedComponent {...props} />;\n  };\n}\n\n// Usage\nconst EnhancedButton = withLogger(MyButton);\n```",
+    "context": "React Patterns",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["hoc", "patterns", "code-reuse", "advanced"]
+  },
+  {
+    "id": "react-10",
+    "question": "Explain the difference between Functional Components and Class Components.",
+    "answer": "Functional Components (FC) and Class Components (CC) are the two primary ways to define a React component, but FCs are the modern standard:\n\n| Feature | Functional Components (Hooks Era) | Class Components (Legacy) |\n| :--- | :--- | :--- |\n| **Syntax** | JavaScript function that returns JSX. | ES6 class extending React.Component. |\n| **State/Lifecycle** | Uses **Hooks** (useState, useEffect) for state and side-effects. | Uses **this.state** and lifecycle methods (componentDidMount). |\n| **'this' keyword** | Does not use **this** (simpler to write). | Requires binding **this** for event handlers. |\n| **Adoption** | **Preferred** for all new code. | Generally considered **legacy**.",
+    "context": "React Fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["functional-component", "class-component", "hooks", "lifecycle"]
+  },
+  {
+    "id": "react-11",
+    "question": "What is the purpose of the 'dependency array' in useEffect?",
+    "answer": "The dependency array (the second argument of **useEffect**) controls **when** the side effect function runs.\n\n- **Functionality:** React compares the values in the dependency array between renders. If any value has changed (based on reference equality for objects/arrays, or value equality for primitives), the effect is re-run.\n- **Avoiding Bugs:** It ensures that the effect function has access to the most recent version of props and state it uses, preventing bugs where stale closures might capture outdated values. If you omit a dependency that is used inside the effect, the linter will warn about it (the **exhaustive-deps** rule).",
+    "context": "React Hooks",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["useEffect", "hooks", "dependencies", "performance"]
+  },
+  {
+    "id": "react-12",
+    "question": "When should you use the useMemo Hook?",
+    "answer": "The **useMemo** Hook is used for **memoization** of a value (e.g., the result of an expensive calculation) so that the function that calculates it is only re-run when one of its dependencies changes.\n\n- **Purpose:** To prevent expensive calculations from running on every single render, thereby optimizing **performance**.\n- **Usage:** Wrap the expensive calculation in **useMemo** and provide a dependency array. If dependencies are unchanged, it returns the previously computed value instead of executing the function.\n\n```javascript\nconst expensiveValue = useMemo(() => {\n  return calculateValue(propA, propB); // Expensive function\n}, [propA, propB]); // Dependencies\n\n// 'expensiveValue' only re-calculates when propA or propB changes\n```",
+    "context": "React Hooks and Performance",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["useMemo", "memoization", "performance", "hooks"]
+  },
+  {
+    "id": "react-13",
+    "question": "What is the primary function of the useState Hook?",
+    "answer": "The **useState** Hook is the fundamental way to add **state** to functional components.\n\n- **Functionality:** It returns a pair of values: the **current state value** and a **state setter function** to update it.\n- **Usage:** Calling the setter function (e.g., **setCount(newVal)**) triggers a **re-render** of the component with the new state value. State updates are asynchronous and batched by React for performance.\n\n```javascript\nimport React, { useState } from 'react';\n\nfunction Counter() {\n  // [currentState, stateUpdaterFunction] = useState(initialValue)\n  const [count, setCount] = useState(0);\n  \n  return (\n    <button onClick={() => setCount(count + 1)}>\n      Count: {count}\n    </button>\n  );\n}\n```",
+    "context": "React Hooks",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["useState", "hooks", "state"]
+  },
+  {
+    "id": "react-14",
+    "question": "How does the useCallback Hook differ from useMemo?",
+    "answer": "Both Hooks are used for memoization, but they target different types of values:\n\n- **useMemo:** Memoizes a **value** (the result of a computation). It prevents the recalculation of a value.\n\n- **useCallback:** Memoizes a **function instance**. It returns the same function reference across re-renders unless its dependencies change.\n\n**Primary Use Case for useCallback:** Passing memoized functions as props to **child components that are optimized with React.memo** (or shouldComponentUpdate in classes). This prevents the child component from unnecessarily re-rendering because the prop function reference remains stable.\n\n```javascript\nconst handleSave = useCallback(() => {\n  // logic\n}, [itemId]); \n// 'handleSave' function only changes when 'itemId' changes\n```",
+    "context": "React Hooks and Performance",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["useCallback", "useMemo", "memoization", "performance"]
+  },
+  {
+    "id": "react-15",
+    "question": "What is the Context API and when should it be used?",
+    "answer": "The **Context API** provides a way to pass data through the component tree without having to manually pass props down at every level (known as **prop drilling**).\n\n- **Components:** It involves a **Provider** (which makes the value available) and a **Consumer** (or the **useContext** Hook) that reads the value.\n- **Use Case:** Best suited for **global data** that is considered \"static\" or rarely updated, such as: user authentication status, theme (light/dark mode), preferred language, or global configurations.\n- **Limitation:** It is not a replacement for large-scale state management (like Redux/Zustand) if the state changes frequently, as any change in context value re-renders all consuming components below it.",
+    "context": "State Management",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["context-api", "state-management", "prop-drilling", "useContext"]
+  },
+  {
+    "id": "react-16",
+    "question": "How do you handle asynchronous operations (like data fetching) with Hooks?",
+    "answer": "Asynchronous operations are primarily handled inside the **useEffect** Hook.\n\n- **Steps:**\n    1.  Use `useState` to hold the data, loading state, and error state.\n    2.  Define an asynchronous function (e.g., using `async/await`) inside the `useEffect` callback.\n    3.  Call the function and use the setter functions to update the state once the promise resolves or rejects.\n    4.  Implement a **cleanup function** to prevent setting state on an unmounted component (a common source of memory leaks).\n\n```javascript\nuseEffect(() => {\n  let isMounted = true; // Flag for cleanup\n  const fetchData = async () => {\n    const response = await fetch('/api/data');\n    const result = await response.json();\n    if (isMounted) {\n      setData(result);\n    }\n  };\n  fetchData();\n  \n  return () => { isMounted = false; }; // Cleanup\n}, []);\n```",
+    "context": "React Hooks",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["useEffect", "async", "data-fetching", "cleanup"]
+  },
+  {
+    "id": "react-17",
+    "question": "What is the useReducer Hook and when should it be preferred over useState?",
+    "answer": "The **useReducer** Hook is an alternative to **useState** for managing complex state logic.\n\n- **Mechanism:** It accepts a **reducer** function (similar to Redux) and an initial state. It returns the current state and a **dispatch** function.\n- **Reducer Function:** Takes the current state and an **action** object, and returns the *new* state.\n- **When to Use:** Preferred for state logic that involves **multiple sub-values** or when the next state depends on the **previous state** in a complex way. It also aids performance when deeply updating component state, as you only pass the `dispatch` function down, which is stable across renders.",
+    "context": "React Hooks and State Management",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["useReducer", "state-management", "reducer", "hooks"]
+  },
+  {
+    "id": "react-18",
+    "question": "What is reconciliation and how does React's diffing algorithm work?",
+    "answer": "**Reconciliation** is the process by which React updates the actual DOM to match the components' current state and props. The **Diffing Algorithm** is the set of heuristics React uses to perform this update efficiently.\n\n**Key Heuristics:**\n\n1.  **Element Type:** If the root elements have different types (e.g., `<div>` changes to `<span>`), React discards the old tree entirely and builds the new one from scratch.\n2.  **Attributes:** If types are the same, React compares only the attributes and updates the changed ones.\n3.  **Keys (Lists):** For list elements, the key prop is used to match children elements in the original list with children elements in the new list, ensuring efficient updates (see question 8).",
+    "context": "React Advanced Concepts",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["reconciliation", "vdom", "diffing", "performance"]
+  },
+  {
+    "id": "react-19",
+    "question": "What are React Fragments and why are they used?",
+    "answer": "**React Fragments** (represented by `<React.Fragment>` or the shorthand `<></>`) allow you to group a list of children elements without adding an extra node to the real DOM.\n\n- **Requirement:** Components must return a single element (the 'one root element' rule).\n- **Problem Solved:** Before Fragments, developers often had to wrap children in unnecessary `<div>` elements, which could break flexbox/grid layouts and add overhead to the DOM structure.\n- **Benefit:** Fragments solve this by allowing the grouping without the extra DOM node, resulting in a cleaner and potentially faster DOM structure.\n\n```javascript\nfunction Column() {\n  return (\n    <>\n      <td>Hello</td>\n      <td>World</td>\n    </>\n  );\n}\n```",
+    "context": "React Fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["fragments", "jsx", "dom-structure"]
+  },
+  {
+    "id": "react-20",
+    "question": "Explain the concept of uncontrolled components and controlled components.",
+    "answer": "This distinction refers to how form input data is handled in React:\n\n| Type | State Management | Data Source | Usage |\n| :--- | :--- | :--- | :--- |\n| **Controlled** | State is managed by React (using **useState**). | The **value** of the input element is controlled by the React state. | Every state change is handled via an **onChange** event handler. **Preferred** method in React. |\n| **Uncontrolled** | State is managed by the DOM itself. | The value is accessed when needed, typically via a **Ref** (using **useRef**). | Simpler for simple inputs, but harder to validate in real-time. |\n\n```javascript\n// Controlled Component Example\nfunction ControlledInput() {\n  const [value, setValue] = useState('');\n  return (\n    <input type=\"text\" value={value} onChange={e => setValue(e.target.value)} />\n  );\n}\n```",
+    "context": "Forms and State Management",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["forms", "controlled", "uncontrolled", "state"]
+  },
+  {
+    "id": "react-21",
+    "question": "What is React.memo() and when should it be used?",
+    "answer": "**React.memo()** is a **Higher-Order Component (HOC)** used to optimize the rendering of **functional components**.\n\n- **Functionality:** It memoizes the component's rendered output. React skips rendering the component and reuses the last rendered result if the props passed to the component have not changed (performs a shallow comparison).\n- **When to Use:** Only use it for components that:\n    1.  Render the same output given the same props.\n    2.  Have a noticeable performance cost when re-rendering.\n- **Caution:** The shallow comparison can be tricky with object/array props; often, you need to use **useCallback** and **useMemo** to ensure prop stability when passing functions/objects to a memoized component.",
+    "context": "React Performance",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["memo", "performance", "optimization", "hoc"]
+  },
+  {
+    "id": "react-22",
+    "question": "Describe the purpose of the useRef Hook.",
+    "answer": "The **useRef** Hook serves two main purposes in a functional component:\n\n1.  **Accessing the DOM:** It is the primary way to access an underlying DOM element or React component instance directly (equivalent to class component Refs).\n2.  **Mutable Storage:** It holds a **mutable value** that **will not cause a re-render** when updated. This is useful for storing arbitrary values that need to persist across renders without triggering a new render cycle (e.g., timer IDs, previous state values, expensive objects).\n\n**Note:** It returns an object with a single property: **{ current: initialValue }**.\n\n```javascript\nfunction TextInput() {\n  const inputRef = useRef(null);\n  \n  const focusInput = () => {\n    inputRef.current.focus(); // Accessing the DOM\n  };\n\n  return (\n    <>\n      <input ref={inputRef} type=\"text\" />\n      <button onClick={focusInput}>Focus</button>\n    </>\n  );\n}\n```",
+    "context": "React Hooks",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["useRef", "hooks", "dom-access", "mutable-storage"]
+  },
+  {
+    "id": "react-23",
+    "question": "What is an Error Boundary and how do you implement one?",
+    "answer": "An **Error Boundary** is a React component that **catches JavaScript errors** anywhere in its child component tree, logs those errors, and displays a fallback UI instead of crashing the entire application.\n\n- **Limitation:** Error Boundaries **must be Class Components** because they rely on two specific lifecycle methods:\n    1.  `static getDerivedStateFromError(error)`: Used to update state to show the fallback UI.\n    2.  `componentDidCatch(error, info)`: Used to log the error information.\n- **Scope:** They **do not** catch errors inside event handlers, asynchronous code, or in the Error Boundary component itself.\n\n```javascript\nclass ErrorBoundary extends React.Component {\n  state = { hasError: false };\n\n  static getDerivedStateFromError(error) {\n    return { hasError: true };\n  }\n\n  render() {\n    if (this.state.hasError) {\n      return <h1>Something went wrong.</h1>; \n    }\n    return this.props.children;\n  }\n}\n```",
+    "context": "React Advanced Concepts",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["error-boundary", "error-handling", "lifecycle", "advanced"]
+  },
+  {
+    "id": "react-24",
+    "question": "Explain React Portals and their use case.",
+    "answer": "A **Portal** provides a way to render children into a DOM node that exists **outside the DOM hierarchy of the parent component**.\n\n- **Mechanism:** You use **ReactDOM.createPortal(child, domNode)**.\n- **Use Case:** They are essential for situations where the child component's styling (e.g., z-index, overflow) needs to break out of its parent's container. The most common examples are:\n    - **Modals**\n    - **Tooltips**\n    - **Popovers**\n- **Key Note:** Although the component is rendered elsewhere in the DOM tree, it still exists within the **React component tree**. This means it retains its Context, state, and event handling capabilities as if it were rendered normally.",
+    "context": "React Advanced Concepts",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "advanced",
+    "tags": ["portals", "dom", "modals", "advanced"]
+  },
+  {
+    "id": "react-25",
+    "question": "What is the primary difference between a 'container' component and a 'presentational' component?",
+    "answer": "This is a classical pattern (often associated with Redux) used to separate concerns:\n\n| Type | Purpose | Key Role |\n| :--- | :--- | :--- |\n| **Container (Smart)** | Deals with **how** things work (logic). | Data fetching, state management, connecting to Redux/Context, and passing data as props to children. |\n| **Presentational (Dumb)** | Deals with **how** things look (UI). | Receiving data/callbacks via **props** and rendering the UI. They usually have no state or effects themselves (unless dealing with UI state like toggles). |\n\n**Modern React (Hooks):** This pattern is less strictly enforced, as Hooks allow Functional Components to manage both state and presentation. However, the **separation of concerns** remains a key design principle.",
+    "context": "React Patterns",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["patterns", "separation-of-concerns", "container", "presentational"]
+  },
+  {
+    "id": "react-26",
+    "question": "What is the 'key' property used for in React when iterating over lists?",
+    "answer": "Keys are crucial for optimization and correctness when rendering lists. They provide React with a way to uniquely identify each element in a list, allowing it to accurately track changes during the **reconciliation** process.\n\n- **Scenario:** If you add or remove an item in the middle of a list, React uses the keys to determine exactly *which* item changed, rather than re-rendering or mutating all subsequent elements.\n- **Recommendation:** Keys must be stable, unique identifiers (e.g., database IDs). Using the array index is discouraged if the list items can be reordered, added, or removed, as this will lead to performance issues and potential state bugs (e.g., incorrect input values).",
+    "context": "React Fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["keys", "lists", "reconciliation", "optimization"]
+  },
+  {
+    "id": "react-27",
+    "question": "Explain the concept of prop drilling and how to avoid it.",
+    "answer": "**Prop drilling** (or threading) is the process of passing data through multiple layers of nested components, where the intermediate components have no need for the data themselves but only serve to forward it down to the final child component.\n\n- **Problem:** It makes code harder to maintain and refactor, as changes to the data source or destination require updating every component in the chain.\n- **Solutions (to avoid prop drilling):**\n    1.  **Context API:** Use the Context API for application-wide or global state (e.g., theme, auth).\n    2.  **State Management Libraries:** Use dedicated libraries like Redux, Zustand, or Recoil for complex, frequently changing state.\n    3.  **Component Composition:** Restructure components to pass the final consumer component as a prop (slot pattern) to the parent, shortening the data path.",
+    "context": "State Management",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["prop-drilling", "context-api", "state-management", "patterns"]
+  },
+  {
+    "id": "react-28",
+    "question": "How do you handle routing in a single-page application (SPA) using React?",
+    "answer": "Routing in React SPAs is typically managed using a third-party library, most commonly **React Router**.\n\n- **Mechanism:** React Router uses the **Browser History API** (specifically the **History API** in the browser, using a `BrowserRouter`) to change the URL without forcing a full page reload.\n- **Key Components:**\n    - `<BrowserRouter>`: Wraps the application to enable routing.\n    - `<Routes>`: Defines the area where route matching occurs.\n    - `<Route>`: Defines a mapping between a URL path and a component.\n    - `<Link>`: Used instead of `<a>` tags to navigate without a full page refresh.\n\n**Hooks:** Modern React Router (v6) uses Hooks like **useNavigate**, **useParams**, and **useLocation** to programmatically interact with the router.",
+    "context": "React Ecosystem",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["react-router", "spa", "routing", "hooks"]
+  },
+  {
+    "id": "react-29",
+    "question": "What is the use of the 'useLayoutEffect' Hook, and how does it differ from 'useEffect'?",
+    "answer": "**useLayoutEffect** is a version of `useEffect` that runs **synchronously immediately after the DOM mutations but before the browser paints** the updated screen.\n\n| Feature | useEffect | useLayoutEffect |\n| :--- | :--- | :--- |\n| **Timing** | Runs **asynchronously** after render and painting. | Runs **synchronously** after render but before painting. |\n| **Primary Use** | Data fetching, setting up subscriptions, general side effects. | Reading DOM layout, measuring elements, or making synchronous DOM changes (e.g., repositioning a tooltip based on its size). |\n| **Performance** | Non-blocking (better performance). | **Blocking** (can visually block the user interface if the task is expensive). |\n\n**Rule:** Start with `useEffect`. Only use `useLayoutEffect` if you need to read the DOM layout and perform a state update that prevents the user from seeing an intermediate, visually inconsistent state (a 'flicker').",
+    "context": "React Hooks",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "advanced",
+    "tags": ["useLayoutEffect", "useEffect", "hooks", "dom"]
+  },
+  {
+    "id": "react-30",
+    "question": "Describe the main role of Redux (or similar global state management libraries like Zustand).",
+    "answer": "Redux is a predictable state container designed to manage global application state consistently. It enforces a strict **unidirectional data flow** via three core principles:\n\n1.  **Single Source of Truth (Store):** The global state is stored as a single JavaScript object in a centralized **Store**.\n2.  **State is Read-Only:** The only way to change the state is by emitting an **Action** (a plain JavaScript object describing *what* happened).\n3.  **Changes are made with Pure Functions (Reducers):** To specify how the state is transformed, you write **Reducers** that take the current state and the action, and return the *new* state.\n\n- **Benefit:** Predictability, debuggability, and easy state synchronization, especially in large-scale applications with complex interactions.",
+    "context": "State Management",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["redux", "zustand", "state-management", "flux", "unidirectional-flow"]
+  },
+  {
+    "id": "react-31",
+    "question": "What are the common lifecycle methods in Class Components (before Hooks)?",
+    "answer": "Before Hooks, Class Components managed side effects and state transitions using lifecycle methods. Key phases and methods were:\n\n1.  **Mounting (Initial Render):**\n    - `constructor()`: Initialization.\n    - `render()`: Returns JSX (required).\n    - `componentDidMount()`: Run once after the first render (ideal for data fetching, subscriptions).\n2.  **Updating (Re-render):**\n    - `shouldComponentUpdate(nextProps, nextState)`: Used for performance optimization (returns boolean).\n    - `render()`\n    - `componentDidUpdate(prevProps, prevState)`: Runs after re-render (ideal for fetching data based on prop changes).\n3.  **Unmounting (Removal):**\n    - `componentWillUnmount()`: Run right before removal (ideal for cleanup, like clearing timers or subscriptions).",
+    "context": "React Fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["lifecycle", "class-component", "componentDidMount", "componentWillUnmount"]
+  },
+  {
+    "id": "react-32",
+    "question": "How do you implement the logic equivalent to 'componentDidMount' using Hooks?",
+    "answer": "The logic for running code **only once after the initial render** (the role of `componentDidMount`) is achieved using the **useEffect** Hook with an **empty dependency array**.\n\n- **Effect:** The effect function will run once after the component mounts.\n- **Cleanup:** If the effect returns a function, that function serves as the `componentWillUnmount` equivalent and runs when the component is removed.\n\n```javascript\nimport React, { useEffect } from 'react';\n\nfunction ComponentDidMountEquivalent() {\n  useEffect(() => {\n    // This code runs only once after the first render\n    console.log('Component Mounted. Start API call or setup subscription.');\n    \n    return () => {\n      // This code runs when the component is unmounted (cleanup)\n      console.log('Component Unmounted. Clear subscription/timer.');\n    };\n  }, []); // Empty dependency array is the key\n  \n  return <div>Component Content</div>;\n}\n```",
+    "context": "React Hooks",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["useEffect", "lifecycle", "componentDidMount", "hooks"]
+  },
+  {
+    "id": "react-33",
+    "question": "What is server-side rendering (SSR) in React, and what are its benefits?",
+    "answer": "**Server-Side Rendering (SSR)** is a technique where the initial rendering of a React component is performed on the server, generating the final HTML content before sending it to the client's browser.\n\n- **Contrast:** **Client-Side Rendering (CSR)** renders the final HTML in the browser using JavaScript.\n- **Benefits:**\n    1.  **Better SEO:** Search engines can easily crawl the fully rendered page content.\n    2.  **Faster Time-to-Content (TTI):** Users see the content faster, as the browser receives pre-rendered HTML immediately, improving the user experience.\n\n- **Implementation:** Frameworks like **Next.js** or **Gatsby** (Static Site Generation) abstract away the complexities of SSR implementation.",
+    "context": "React Ecosystem and Performance",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["ssr", "csr", "performance", "seo", "nextjs"]
+  },
+  {
+    "id": "react-34",
+    "question": "What is the purpose of 'forwardRef'?",
+    "answer": "**forwardRef** is a React utility used to allow a parent component to pass a **ref** down to one of its children's underlying DOM elements or React component instances.\n\n- **Problem Solved:** Refs are not automatically passed down like regular props. Attempting to pass a ref via a standard prop like `myRef={ref}` would pass the ref object, not link it to the DOM element.\n- **Mechanism:** It wraps a functional component and takes `props` and `ref` as arguments, allowing the component to explicitly attach the `ref` to a specific child element.\n\n```javascript\nimport React, { forwardRef } from 'react';\n\n// Component receives props and the ref argument\nconst CustomInput = forwardRef((props, ref) => (\n  // The ref is attached to the DOM element\n  <input ref={ref} type=\"text\" {...props} />\n));\n\n// Parent component usage\nconst parentRef = useRef();\n// <CustomInput ref={parentRef} /> \n```",
+    "context": "React Advanced Concepts",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "advanced",
+    "tags": ["forwardRef", "refs", "hooks", "dom-access"]
+  },
+  {
+    "id": "react-35",
+    "question": "What is a Custom Hook, and how do you create one?",
+    "answer": "A **Custom Hook** is a JavaScript function whose name starts with **'use'** (e.g., `useFetch`, `useLocalStorage`) and may call other Hooks (like `useState`, `useEffect`, `useContext`).\n\n- **Purpose:** To extract component logic (especially stateful logic) into reusable functions, making components simpler and promoting code reuse across the application.\n- **Key Rule:** A Custom Hook does not return JSX; it returns data or functions (or both) that the consuming component can use to build its UI.\n\n```javascript\n// Custom Hook Example\nfunction useCounter(initialCount = 0) {\n  const [count, setCount] = useState(initialCount);\n\n  const increment = () => setCount(c => c + 1);\n  const decrement = () => setCount(c => c - 1);\n\n  // Returns the state and the updater functions\n  return { count, increment, decrement };\n}\n\n// Usage in component\n// const { count, increment } = useCounter(10);\n```",
+    "context": "React Hooks",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["custom-hooks", "code-reuse", "hooks", "patterns"]
+  },
+  {
+    "id": "react-36",
+    "question": "How would you prevent unnecessary re-renders in a functional component?",
+    "answer": "Preventing unnecessary re-renders is crucial for performance. The main techniques in functional components are:\n\n1.  **React.memo():** Use this HOC to wrap a component and prevent it from re-rendering if its props are the same as the previous render (shallow comparison).\n2.  **useCallback() and useMemo():** Use these Hooks to memoize function definitions and expensive values, ensuring that the references passed as props to child components (especially `React.memo` components) remain stable and do not trigger a re-render.\n3.  **State Colocation:** Keep state as close as possible to where it is needed. Don't put component-specific state in the global store or a high-level parent if only one component uses it.\n4.  **Optimized Context/State:** When using Context, consider splitting the context into multiple contexts (e.g., one for state, one for dispatch) or using libraries (like Redux/Zustand) that offer built-in optimizations to connect only to the needed state slice.",
+    "context": "React Performance",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["performance", "optimization", "memo", "useCallback", "useMemo"]
+  },
+  {
+    "id": "react-37",
+    "question": "What is the difference between a shallow and a full rendering test?",
+    "answer": "Testing in React often involves different rendering methods, typically implemented via libraries like Enzyme or React Testing Library (RTL):\n\n| Type | Method | Description | Library Focus |\n| :--- | :--- | :--- | :--- |\n| **Shallow Rendering** | Renders only the component **one level deep**, without rendering its children components. | Focuses on testing the component's internal logic, event handlers, and JSX structure in isolation. | Enzyme's `shallow` method. |\n| **Full Rendering** | Renders the component and **all of its children**, often mounting them to the DOM (virtual or actual). | Tests the full component tree, lifecycle/Hooks interactions, and integration with the real DOM. | Enzyme's `mount` or **RTL's** `render` (RTL is generally full rendering). |\n\n**Modern Trend:** React Testing Library (RTL) encourages full rendering and testing components the way a user interacts with them.",
+    "context": "React Testing",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["testing", "rtl", "enzyme", "shallow-rendering", "full-rendering"]
+  },
+  {
+    "id": "react-38",
+    "question": "What are React custom events (synthetic events)?",
+    "answer": "React uses a **Synthetic Event System** to normalize event handling across different browsers and ensure consistency.\n\n- **Normalization:** It wraps the browser's native events, providing a consistent API for event objects across various browser implementations (e.g., Internet Explorer, Chrome).\n- **Pooling:** React often reuses synthetic event objects for performance. If you need to access event properties asynchronously (outside the event handler scope), you must call **event.persist()** or simply copy the values you need (which is safer).\n\n```javascript\nfunction MyButton() {\n  const handleClick = (e) => {\n    // e is a SyntheticEvent, not the native browser event\n    console.log(e.target.value); \n  };\n  return <button onClick={handleClick}>Click</button>;\n}\n```",
+    "context": "React Fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["synthetic-events", "events", "dom", "browser"]
+  },
+  {
+    "id": "react-39",
+    "question": "How do you implement code splitting and lazy loading in React?",
+    "answer": "Code splitting and lazy loading are techniques to load parts of the application only when they are needed, reducing the initial bundle size and improving the application's load time.\n\n- **Mechanism:** React uses two main utilities for this:\n    1.  **React.lazy():** A function that lets you render a dynamic import as a regular component (it takes a function that must call `import()`).\n    2.  **Suspense:** A component that wraps the lazy-loaded component and provides a **fallback UI** (e.g., a loading spinner) while the lazy component is being downloaded.\n\n```javascript\nimport React, { lazy, Suspense } from 'react';\n\n// 1. Lazy loading the component\nconst LazyComponent = lazy(() => import('./DetailComponent'));\n\nfunction App() {\n  return (\n    <div>\n      {/* 2. Suspense provides the fallback UI while loading */}\n      <Suspense fallback={<div>Loading...</div>}>\n        <LazyComponent />\n      </Suspense>\n    </div>\n  );\n}\n```",
+    "context": "React Performance",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["lazy-loading", "suspense", "performance", "code-splitting"]
+  },
+  {
+    "id": "react-40",
+    "question": "What is the difference between 'default' and 'named' imports/exports in JavaScript and React?",
+    "answer": "This is a core ES6/JavaScript concept crucial for React organization:\n\n| Feature | Default Import/Export | Named Import/Export |\n| :--- | :--- | :--- |\n| **Quantity** | **One** default export per module. | **Multiple** named exports per module. |\n| **Naming** | Can be imported with **any name** in the consuming file. | Must be imported using the **exact name** they were exported with (and surrounded by `{}`). |\n| **Use Case** | Used for the module's main item (e.g., the main React component). | Used for utility functions, constants, or auxiliary components.\n\n```javascript\n// In a file: 'module.js'\nexport default MyComponent; // Default\nexport const utilityFn = () => {}; // Named\n\n// In another file: 'App.js'\nimport MyComponent from './module'; // Can rename 'MyComponent' if needed\nimport { utilityFn } from './module'; // Must use exact name\n```",
+    "context": "JavaScript & React Fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "beginner",
+    "tags": ["es6", "imports", "exports", "javascript"]
+  },
+  {
+    "id": "react-41",
+    "question": "How do you use TypeScript with React Hooks (e.g., useState)?",
+    "answer": "TypeScript is strongly recommended for large React applications. When using Hooks, you specify types using generics (`<>`):\n\n1.  **useState:** The type is usually inferred from the initial value, but can be explicitly defined. If the state can be null/undefined initially, use a union type.\n2.  **useReducer:** You must explicitly define the types for the `State` and the `Action` interface.\n3.  **Props:** Props are defined using an `interface` or `type`.\n\n```typescript\nimport React, { useState } from 'react';\n\n// Props Interface\ninterface MyProps { \n  initialCount: number; \n}\n\nfunction Counter({ initialCount }: MyProps) {\n  // State definition (explicitly allows number or null)\n  const [count, setCount] = useState<number | null>(initialCount);\n\n  return (\n    <button onClick={() => setCount(count ? count + 1 : 1)}>\n      Count: {count}\n    </button>\n  );\n}\n```",
+    "context": "React Ecosystem",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["typescript", "hooks", "useState", "typing"]
+  },
+  {
+    "id": "react-42",
+    "question": "Explain the difference between useEffect with and without a cleanup function.",
+    "answer": "The cleanup function returned by `useEffect` is crucial for preventing memory leaks and managing side-effects that persist outside the component's lifecycle.\n\n| Feature | useEffect (No Cleanup) | useEffect (With Cleanup) |\n| :--- | :--- | :--- |\n| **Cleanup Function** | Returns nothing. | Returns a function. |\n| **When it Runs** | After the first render, and after every re-render (if dependencies change). | Cleanup function runs **before** the component unmounts, and **before** the effect is re-run (if dependencies change). |\n| **Use Case** | Data fetching, simple logging, updating the DOM. | Clearing timers (`clearInterval`), removing event listeners (`removeEventListener`), canceling API requests (using `AbortController`), and unsubscribing from external data sources. |",
+    "context": "React Hooks",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["useEffect", "cleanup", "memory-leaks", "side-effects"]
+  },
+  {
+    "id": "react-43",
+    "question": "When defining state in Hooks, why should you use the functional update form (e.g., setCount(prev => prev + 1))?",
+    "answer": "The **functional update form** is necessary when the new state depends on the **previous state** value. This is the recommended practice because state updates are **asynchronous** and often **batched** by React for performance.\n\n- **Problem (Stale Closure):** If you use `setCount(count + 1)` in a context where `count` might be outdated (a 'stale closure'), the update might be based on an old value, leading to race conditions or incorrect results.\n- **Solution (Functional Update):** `setCount(prevCount => prevCount + 1)` passes a guaranteed-to-be-correct previous state value to the function, ensuring the update is based on the latest state, even if updates are batched.",
+    "context": "React Hooks and State Management",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["useState", "functional-update", "state", "asynchronous"]
+  },
+  {
+    "id": "react-44",
+    "question": "What is the primary motivation for using a Custom Hook instead of an HOC?",
+    "answer": "The primary motivation is to solve the issues of complexity and boilerplate code often associated with HOCs, particularly the **Wrapper Hell** or **Component Tree Fragmentation**.\n\n- **HOC:** Wraps a component, adding an extra layer (e.g., `<WithData><MyComponent/></WithData>`) to the component tree, making debugging harder.\n- **Custom Hook:** Simply extracts and reuses stateful logic **inside** the functional component (e.g., `const { data } = useData()`). It is simpler, cleaner, and avoids modifying the component hierarchy, aligning better with the philosophy of functional components.",
+    "context": "React Patterns",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["custom-hooks", "hoc", "patterns", "code-reuse"]
+  },
+  {
+    "id": "react-45",
+    "question": "What is the use of the 'memo' in React.memo? How is it different from useMemo?",
+    "answer": "The term **memo** refers to **memoization**, which is caching a computed result based on the inputs.\n\n- **React.memo (HOC):** Caches the **rendered output of an entire component** (based on a shallow comparison of props). It determines whether the component should re-render.\n- **useMemo (Hook):** Caches a **specific, calculated value** *within* a functional component. It determines whether a value needs to be recalculated.\n\n**Analogy:** `React.memo` is about caching the final pizza (the component's output). `useMemo` is about caching the expensive ingredients (the calculated values) used to make the pizza.",
+    "context": "React Performance",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "advanced",
+    "tags": ["memoization", "React.memo", "useMemo", "performance"]
+  },
+  {
+    "id": "react-46",
+    "question": "What are React Profiler tools used for?",
+    "answer": "The **React Profiler** (available in the React DevTools) is used to measure the **rendering performance** of an application.\n\n- **Functionality:** It records *when* components render and *why* they render. It highlights components that take a long time to render or re-render more frequently than expected.\n- **Purpose:** To help developers identify performance bottlenecks, such as unnecessary re-renders or expensive calculations, and guide the application of optimizations like **React.memo**, **useMemo**, and **useCallback**.",
+    "context": "React Tooling and Performance",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["profiler", "performance", "devtools", "optimization"]
+  },
+  {
+    "id": "react-47",
+    "question": "Describe the concept of Immutability in React state management.",
+    "answer": "React (and Redux/Zustand) strongly rely on **immutability** when updating state. This means state should **never be modified directly** (mutated).\n\n- **Why:** React uses shallow comparison of state objects to determine if a component needs to re-render during reconciliation. If you mutate an object or array (e.g., `state.list.push(item)`), the object reference remains the same, and React's shallow comparison will incorrectly conclude that the state has **not** changed, skipping the necessary re-render.\n- **Solution:** Always create a **new object** or **new array** when updating complex state, leveraging methods like the spread operator (`...`), `map()`, `filter()`, or `Object.assign()`.\n\n```javascript\n// INCORRECT (Mutation)\nconst handleAddIncorrect = () => {\n  list.push('new');\n  setList(list); // Ref is the same, render might be skipped\n};\n\n// CORRECT (Immutability)\nconst handleAddCorrect = () => {\n  setList(prevList => [...prevList, 'new']); // Creates a new array\n};\n```",
+    "context": "State Management",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["immutability", "state", "reconciliation", "mutation"]
+  },
+  {
+    "id": "react-48",
+    "question": "What is Hydration in the context of Server-Side Rendering (SSR)?",
+    "answer": "**Hydration** is the process used in SSR applications (like those built with Next.js) where the client-side JavaScript takes over the server-rendered static HTML and converts it into a fully interactive application.\n\n- **Steps:**\n    1.  The server sends the initial rendered HTML and the JavaScript bundle to the browser.\n    2.  The browser displays the HTML immediately (fast content display).\n    3.  Once the JavaScript loads, React attaches event listeners and state to the server-rendered HTML structure, effectively 'hydrating' it.\n- **Benefit:** It combines the SEO and performance benefits of SSR (quick initial content) with the interactivity of a Client-Side Rendered application.",
+    "context": "React Ecosystem and Performance",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "advanced",
+    "tags": ["ssr", "hydration", "nextjs", "performance"]
+  },
+  {
+    "id": "react-49",
+    "question": "How do you implement unit testing for a component that uses Hooks like useState and useEffect?",
+    "answer": "Modern React unit testing is typically done using **React Testing Library (RTL)** because it focuses on testing components from the user's perspective, which naturally accounts for Hooks usage.\n\n- **RTL's Approach:** Instead of testing internal state (`useState`), you test the **output** of the component. For example:\n    1.  **State Change (useState):** Simulate a user click (`fireEvent.click`) and assert that the text content of the component has changed (`expect(screen.getByText('Count: 1')).toBeInTheDocument()`).\n    2.  **Side Effects (useEffect):** Use `jest.mock` to mock API calls or use `waitFor` to wait for asynchronous updates triggered by `useEffect` to complete before making assertions.\n\n- **Key Point:** Avoid testing the Hooks directly; test the resulting user behavior or rendered output.",
+    "context": "React Testing",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "intermediate",
+    "tags": ["testing", "rtl", "hooks", "jest", "unit-testing"]
+  },
+  {
+    "id": "react-50",
+    "question": "What is the concept of a 'Stale Closure' when working with React Hooks?",
+    "answer": "A **Stale Closure** occurs when a function (often created within a `useEffect`, `useCallback`, or event handler) 'captures' or 'closes over' an old, outdated value of a prop or state variable from a previous render.\n\n- **Mechanism:** The inner function maintains a reference to the values that existed when it was defined, even if the component re-rendered and those values have been updated.\n- **Prevention (The two main ways):**\n    1.  **Dependency Array:** Ensure all external variables used inside `useEffect` or `useCallback` are included in the dependency array. React will re-create the function when the dependencies change, capturing the fresh values.\n    2.  **Functional Updates/Refs:** When updating state based on the previous state, use the functional form (`setCount(prev => prev + 1)`). For truly constant values needed in a closure, use `useRef` to store the latest value.",
+    "context": "React Hooks",
+    "type": "TECHNICAL",
+    "programming_language": "react",
+    "difficulty": "advanced",
+    "tags": ["hooks", "stale-closure", "useEffect", "useCallback", "bugs"]
+  }
+]
