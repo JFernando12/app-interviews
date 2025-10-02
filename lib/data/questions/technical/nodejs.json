@@ -52,7 +52,7 @@
   {
     "id": "nodejs-6",
     "question": "What is the purpose of the 'require' function and 'module.exports'?",
-    "answer": "These are part of the **CommonJS module system** (used by default in Node.js) for organizing code into reusable files.\n\n**require(path):** Used to import modules (files, libraries) into the current file. It synchronously loads the module and returns the value of its `module.exports`.\n\n**module.exports:** An object used to define what a module exposes (makes available) to other files when they use `require()`. Anything assigned to `module.exports` will be the return value of `require()`.\n\n**Example (Exporting a function):**\n\n```javascript\n// In file: math.js\nfunction add(a, b) {\n  return a + b;\n}\nmodule.exports = add;\n\n// In file: app.js\nconst addFunction = require('./math.js');\nconsole.log(addFunction(2, 3)); // Output: 5\n```",
+    "answer": "These are part of the **CommonJS module system** (used by default in Node.js) for organizing code into reusable files.\n\n**require(path):** Used to import modules (files, libraries) into the current file. It synchronously loads the module and returns the value of its module.exports.\n\n**module.exports:** An object used to define what a module exposes (makes available) to other files when they use require(). Anything assigned to module.exports will be the return value of require().\n\n**Example (Exporting a function):**\n\n```javascript\n// In file: math.js\nfunction add(a, b) {\n  return a + b;\n}\nmodule.exports = add;\n\n// In file: app.js\nconst addFunction = require('./math.js');\nconsole.log(addFunction(2, 3)); // Output: 5\n```",
     "context": "Module system and imports/exports",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -72,7 +72,7 @@
   {
     "id": "nodejs-8",
     "question": "What is middleware in Express.js?",
-    "answer": "**Middleware** functions are functions that have access to the **request** object (`req`), the **response** object (`res`), and the **next** middleware function in the application's request-response cycle. They can:\n\n1. Execute any code (e.g., logging).\n2. Make changes to the request and response objects.\n3. End the request-response cycle.\n4. Call the next middleware function in the stack (`next()`).\n\n**Example (Simple Logger Middleware):**\n\n```javascript\nconst express = require('express');\nconst app = express();\n\nconst logger = (req, res, next) => {\n  console.log('Request received at:', new Date().toISOString());\n  next(); // Pass control to the next handler\n};\n\napp.use(logger);\n\napp.get('/', (req, res) => {\n  res.send('Hello');\n});\n```",
+    "answer": "**Middleware** functions are functions that have access to the **request** object (req), the **response** object (res), and the **next** middleware function in the application's request-response cycle. They can:\n\n1. Execute any code (e.g., logging).\n2. Make changes to the request and response objects.\n3. End the request-response cycle.\n4. Call the next middleware function in the stack (next()).\n\n**Example (Simple Logger Middleware):**\n\n```javascript\nconst express = require('express');\nconst app = express();\n\nconst logger = (req, res, next) => {\n  console.log('Request received at:', new Date().toISOString());\n  next(); // Pass control to the next handler\n};\n\napp.use(logger);\n\napp.get('/', (req, res) => {\n  res.send('Hello');\n});\n```",
     "context": "Express.js framework and architecture",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -82,7 +82,7 @@
   {
     "id": "nodejs-9",
     "question": "How do 'process.nextTick()' and 'setImmediate()' differ in the Event Loop?",
-    "answer": "Both schedule functions for asynchronous execution, but they operate in different phases of the Event Loop:\n\n**process.nextTick():** Schedules a callback to be executed **immediately after the current phase of the Event Loop is completed**, but **before** the Event Loop proceeds to the next phase. It runs even before 'setImmediate', timers, and I/O callbacks.\n\n**setImmediate():** Schedules a callback to be executed in the **'check' phase** of the Event Loop, which is **after** the 'poll' phase (I/O callbacks) and **before** the 'close' callbacks. It's conceptually similar to 'setTimeout(fn, 0)' but guarantees execution in a specific phase.\n\n**Rule of thumb:** `process.nextTick` executes first, then I/O callbacks, then `setImmediate`.",
+    "answer": "Both schedule functions for asynchronous execution, but they operate in different phases of the Event Loop:\n\n**process.nextTick():** Schedules a callback to be executed **immediately after the current phase of the Event Loop is completed**, but **before** the Event Loop proceeds to the next phase. It runs even before 'setImmediate', timers, and I/O callbacks.\n\n**setImmediate():** Schedules a callback to be executed in the **'check' phase** of the Event Loop, which is **after** the 'poll' phase (I/O callbacks) and **before** the 'close' callbacks. It's conceptually similar to 'setTimeout(fn, 0)' but guarantees execution in a specific phase.\n\n**Rule of thumb:** process.nextTick executes first, then I/O callbacks, then setImmediate.",
     "context": "Advanced Event Loop and scheduling",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -102,7 +102,7 @@
   {
     "id": "nodejs-11",
     "question": "What is the difference between ES Modules (ESM) and CommonJS (CJS)?",
-    "answer": "Node.js supports two main module systems:\n\n**CommonJS (CJS):**\n- Uses `require()` for imports and `module.exports` or `exports` for exports.\n- Synchronous loading.\n- Default for Node.js projects (using `.js` extension, or `.cjs`).\n\n**ES Modules (ESM):**\n- Uses `import` and `export` statements.\n- Asynchronous loading (allows tree-shaking).\n- Standard for JavaScript (using `.mjs` extension or setting `\"type\": \"module\"` in `package.json`).\n\n**Example (ESM Syntax):**\n\n```javascript\n// In module.mjs\nexport const greet = (name) => 'Hello, ' + name;\n\n// In app.mjs\nimport { greet } from './module.mjs';\nconsole.log(greet('Node Developer'));\n```",
+    "answer": "Node.js supports two main module systems:\n\n**CommonJS (CJS):**\n- Uses require() for imports and module.exports or exports for exports.\n- Synchronous loading.\n- Default for Node.js projects (using .js extension, or .cjs).\n\n**ES Modules (ESM):**\n- Uses import and export statements.\n- Asynchronous loading (allows tree-shaking).\n- Standard for JavaScript (using .mjs extension or setting \"type\": \"module\" in package.json).\n\n**Example (ESM Syntax):**\n\n```javascript\n// In module.mjs\nexport const greet = (name) => 'Hello, ' + name;\n\n// In app.mjs\nimport { greet } from './module.mjs';\nconsole.log(greet('Node Developer'));\n```",
     "context": "Module systems",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -112,7 +112,7 @@
   {
     "id": "nodejs-12",
     "question": "Explain the concept of 'Callback Hell' and how to avoid it.",
-    "answer": "**Callback Hell** (or the 'Pyramid of Doom') is a pattern of deeply nested, unreadable code that results from using multiple asynchronous callbacks chained together. It makes error handling difficult and logic hard to follow.\n\n**How to Avoid:**\n1. **Promises:** Flatten the structure using `.then()` chains.\n2. **Async/Await:** Use the modern JavaScript syntax to write asynchronous code that looks and behaves synchronously, making it the cleanest solution.\n3. **Modularization:** Break callbacks into smaller, reusable functions.\n\n**Example (Avoiding with Async/Await):**\n\n```javascript\nasync function processData() {\n  try {\n    const user = await fetchUser(1);\n    const orders = await fetchOrders(user.id);\n    await logActivity(user.id);\n    return orders;\n  } catch (error) {\n    console.error('Operation failed:', error);\n  }\n}\n```",
+    "answer": "**Callback Hell** (or the 'Pyramid of Doom') is a pattern of deeply nested, unreadable code that results from using multiple asynchronous callbacks chained together. It makes error handling difficult and logic hard to follow.\n\n**How to Avoid:**\n1. **Promises:** Flatten the structure using .then() chains.\n2. **Async/Await:** Use the modern JavaScript syntax to write asynchronous code that looks and behaves synchronously, making it the cleanest solution.\n3. **Modularization:** Break callbacks into smaller, reusable functions.\n\n**Example (Avoiding with Async/Await):**\n\n```javascript\nasync function processData() {\n  try {\n    const user = await fetchUser(1);\n    const orders = await fetchOrders(user.id);\n    await logActivity(user.id);\n    return orders;\n  } catch (error) {\n    console.error('Operation failed:', error);\n  }\n}\n```",
     "context": "Asynchronous programming pitfalls",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -122,7 +122,7 @@
   {
     "id": "nodejs-13",
     "question": "What are Environment Variables and how are they used in Node.js?",
-    "answer": "**Environment Variables** are global variables injected into a running process. They are used in Node.js to store configuration settings (like API keys, database credentials, port numbers, or environment type) separately from the source code. This is a core principle of the **12 Factor App** methodology.\n\nThey are accessed via the global `process.env` object.\n\n**Example (Accessing a Variable):**\n\n```javascript\n// Set variable (e.g., in Linux/macOS):\n// export PORT=3000\n\n// In app.js:\nconst port = process.env.PORT || 8080;\nconst dbUser = process.env.DB_USERNAME;\n\nconsole.log('Server running on port: ' + port);\n```",
+    "answer": "**Environment Variables** are global variables injected into a running process. They are used in Node.js to store configuration settings (like API keys, database credentials, port numbers, or environment type) separately from the source code. This is a core principle of the **12 Factor App** methodology.\n\nThey are accessed via the global process.env object.\n\n**Example (Accessing a Variable):**\n\n```javascript\n// Set variable (e.g., in Linux/macOS):\n// export PORT=3000\n\n// In app.js:\nconst port = process.env.PORT || 8080;\nconst dbUser = process.env.DB_USERNAME;\n\nconsole.log('Server running on port: ' + port);\n```",
     "context": "Configuration and security",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -152,7 +152,7 @@
   {
     "id": "nodejs-16",
     "question": "How do you handle errors in asynchronous code using async/await?",
-    "answer": "The recommended way to handle errors with `async/await` is by wrapping the asynchronous code in a standard JavaScript **`try...catch`** block. This allows you to catch errors (rejections) from Promises that are awaited, treating them like synchronous exceptions.\n\n**Example (Using try...catch):**\n\n```javascript\nasync function getUserData(id) {\n  try {\n    const user = await db.findOne({ id: id });\n    if (!user) {\n      throw new Error('User not found');\n    }\n    return user;\n  } catch (error) {\n    // Log or handle the error gracefully\n    console.error('Error fetching user:', error.message);\n    // Re-throw if necessary or return a safe default\n    return null;\n  }\n}\n\ngetUserData(99);\n```",
+    "answer": "The recommended way to handle errors with async/await is by wrapping the asynchronous code in a standard JavaScript **try...catch** block. This allows you to catch errors (rejections) from Promises that are awaited, treating them like synchronous exceptions.\n\n**Example (Using try...catch):**\n\n```javascript\nasync function getUserData(id) {\n  try {\n    const user = await db.findOne({ id: id });\n    if (!user) {\n      throw new Error('User not found');\n    }\n    return user;\n  } catch (error) {\n    // Log or handle the error gracefully\n    console.error('Error fetching user:', error.message);\n    // Re-throw if necessary or return a safe default\n    return null;\n  }\n}\n\ngetUserData(99);\n```",
     "context": "Error handling and Promises",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -172,7 +172,7 @@
   {
     "id": "nodejs-18",
     "question": "What is the purpose of the 'package.json' file?",
-    "answer": "The **`package.json`** file is the manifest for a Node.js project. It holds essential metadata about the project and is critical for managing dependencies and project scripts. Key fields include:\n\n1. **`name`** and **`version`** (project identity).\n2. **`main`** (entry point file).\n3. **`scripts`** (custom commands for automation).\n4. **`dependencies`** (packages required for production).\n5. **`devDependencies`** (packages required for development/testing).\n\n**Example (Script Definition):**\n\n```javascript\n\"scripts\": {\n  \"start\": \"node app.js\",\n  \"dev\": \"nodemon app.js\",\n  \"test\": \"jest\"\n},\n\n// Running the dev script:\n// npm run dev\n```",
+    "answer": "The **package.json** file is the manifest for a Node.js project. It holds essential metadata about the project and is critical for managing dependencies and project scripts. Key fields include:\n\n1. **name** and **version** (project identity).\n2. **main** (entry point file).\n3. **scripts** (custom commands for automation).\n4. **dependencies** (packages required for production).\n5. **devDependencies** (packages required for development/testing).\n\n**Example (Script Definition):**\n\n```javascript\n\"scripts\": {\n  \"start\": \"node app.js\",\n  \"dev\": \"nodemon app.js\",\n  \"test\": \"jest\"\n},\n\n// Running the dev script:\n// npm run dev\n```",
     "context": "Project structure and dependency management",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -182,7 +182,7 @@
   {
     "id": "nodejs-19",
     "question": "Differentiate between Global and Local installation of NPM packages.",
-    "answer": "**Local Installation:**\n- Default behavior (`npm install <package>`).\n- Installs packages into the project's **`node_modules`** directory.\n- The package is only available to the specific project.\n- Dependencies are listed in `package.json`.\n\n**Global Installation:**\n- Use the `-g` flag (`npm install -g <package>`).\n- Installs packages into a single, central directory on your system.\n- Packages are usually command-line tools (CLIs) that you want to run from any directory (e.g., `nodemon`, `create-react-app`, `npm`).\n- Not listed in a project's `package.json`.",
+    "answer": "**Local Installation:**\n- Default behavior (npm install <package>).\n- Installs packages into the project's **node_modules** directory.\n- The package is only available to the specific project.\n- Dependencies are listed in package.json.\n\n**Global Installation:**\n- Use the -g flag (npm install -g <package>).\n- Installs packages into a single, central directory on your system.\n- Packages are usually command-line tools (CLIs) that you want to run from any directory (e.g., nodemon, create-react-app, npm).\n- Not listed in a project's package.json.",
     "context": "NPM usage",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -192,7 +192,7 @@
   {
     "id": "nodejs-20",
     "question": "What are the common security best practices for a Node.js Express application?",
-    "answer": "Security is crucial for any Node.js application. Common best practices include:\n\n1. **Input Validation:** Always sanitize and validate all user input to prevent XSS and SQL injection.\n2. **Use Helmet:** Implement the `helmet` middleware to set various HTTP headers that secure the app from common vulnerabilities (e.g., XSS, clickjacking).\n3. **Rate Limiting:** Use packages like `express-rate-limit` to prevent brute-force attacks and DoS.\n4. **CORS:** Properly configure Cross-Origin Resource Sharing.\n5. **Hide Information:** Never expose sensitive data (like stack traces or `X-Powered-By: Express` header) to production users.\n6. **Dependency Audits:** Regularly use `npm audit` to check for security vulnerabilities in dependencies.",
+    "answer": "Security is crucial for any Node.js application. Common best practices include:\n\n1. **Input Validation:** Always sanitize and validate all user input to prevent XSS and SQL injection.\n2. **Use Helmet:** Implement the helmet middleware to set various HTTP headers that secure the app from common vulnerabilities (e.g., XSS, clickjacking).\n3. **Rate Limiting:** Use packages like express-rate-limit to prevent brute-force attacks and DoS.\n4. **CORS:** Properly configure Cross-Origin Resource Sharing.\n5. **Hide Information:** Never expose sensitive data (like stack traces or X-Powered-By: Express header) to production users.\n6. **Dependency Audits:** Regularly use npm audit to check for security vulnerabilities in dependencies.",
     "context": "Security",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -202,7 +202,7 @@
   {
     "id": "nodejs-21",
     "question": "How do you enable and use the built-in debugger in Node.js?",
-    "answer": "Node.js includes a built-in debugging client (though most developers use IDE debuggers).\n\n**How to Enable:** Start the application with the `inspect` flag:\n\n```javascript\nnode --inspect app.js\n```\n\nThis starts the V8 Inspector Protocol, allowing tools like Chrome DevTools or VS Code to attach to the process.\n\n**The `debugger` keyword:** You can insert the `debugger` keyword directly into your code, and Node.js will pause execution when it reaches that line, provided a debugger is attached.\n\n**Example (Using debugger):**\n\n```javascript\nfunction calculate(a, b) {\n  let sum = a + b;\n  debugger; // Execution will pause here\n  return sum;\n}\n\ncalculate(5, 10);\n```",
+    "answer": "Node.js includes a built-in debugging client (though most developers use IDE debuggers).\n\n**How to Enable:** Start the application with the inspect flag:\n\n```javascript\nnode --inspect app.js\n```\n\nThis starts the V8 Inspector Protocol, allowing tools like Chrome DevTools or VS Code to attach to the process.\n\n**The debugger keyword:** You can insert the debugger keyword directly into your code, and Node.js will pause execution when it reaches that line, provided a debugger is attached.\n\n**Example (Using debugger):**\n\n```javascript\nfunction calculate(a, b) {\n  let sum = a + b;\n  debugger; // Execution will pause here\n  return sum;\n}\n\ncalculate(5, 10);\n```",
     "context": "Debugging",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -232,7 +232,7 @@
   {
     "id": "nodejs-24",
     "question": "How do you secure sensitive configuration data like API keys in a production Node.js application?",
-    "answer": "Sensitive data should **never** be hardcoded in the source code or checked into version control (like Git). Best practices include:\n\n1. **Environment Variables:** Use `process.env` to load secrets from the shell environment at runtime.\n2. **`.env` files:** Use a package like `dotenv` in development to load variables from a local `.env` file, which should be added to `.gitignore`.\n3. **Cloud Secret Managers:** In production, use dedicated services like AWS Secrets Manager, Azure Key Vault, or Google Secret Manager to store and retrieve secrets securely.",
+    "answer": "Sensitive data should **never** be hardcoded in the source code or checked into version control (like Git). Best practices include:\n\n1. **Environment Variables:** Use process.env to load secrets from the shell environment at runtime.\n2. **.env files:** Use a package like dotenv in development to load variables from a local .env file, which should be added to .gitignore.\n3. **Cloud Secret Managers:** In production, use dedicated services like AWS Secrets Manager, Azure Key Vault, or Google Secret Manager to store and retrieve secrets securely.",
     "context": "Security and Configuration",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -242,7 +242,7 @@
   {
     "id": "nodejs-25",
     "question": "Explain the difference between `fs.readFile` and `fs.readFileSync`.",
-    "answer": "Both functions from the built-in `fs` (File System) module are used to read files, but they differ in their execution model:\n\n**`fs.readFile`:**\n- **Asynchronous (Non-blocking):** Takes a callback function as its last argument.\n- Starts the operation and immediately returns, allowing other code to execute.\n- Preferred for server-side code to avoid blocking the event loop.\n\n**`fs.readFileSync`:**\n- **Synchronous (Blocking):** Does not take a callback.\n- Execution is halted until the entire file is read and the data is returned.\n- Suitable only for startup scripts or simple CLI tools where blocking is acceptable.\n\n**Example (Asynchronous):**\n\n```javascript\nconst fs = require('fs');\nfs.readFile('data.txt', 'utf8', (err, data) => {\n  if (err) throw err;\n  console.log(data);\n});\nconsole.log('Finished setting up read operation.'); // This runs first\n```",
+    "answer": "Both functions from the built-in fs (File System) module are used to read files, but they differ in their execution model:\n\n**fs.readFile:**\n- **Asynchronous (Non-blocking):** Takes a callback function as its last argument.\n- Starts the operation and immediately returns, allowing other code to execute.\n- Preferred for server-side code to avoid blocking the event loop.\n\n**fs.readFileSync:**\n- **Synchronous (Blocking):** Does not take a callback.\n- Execution is halted until the entire file is read and the data is returned.\n- Suitable only for startup scripts or simple CLI tools where blocking is acceptable.\n\n**Example (Asynchronous):**\n\n```javascript\nconst fs = require('fs');\nfs.readFile('data.txt', 'utf8', (err, data) => {\n  if (err) throw err;\n  console.log(data);\n});\nconsole.log('Finished setting up read operation.'); // This runs first\n```",
     "context": "I/O and File System",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -252,7 +252,7 @@
   {
     "id": "nodejs-26",
     "question": "What is the purpose of the `next()` function in Express middleware?",
-    "answer": "The **`next()`** function is a critical argument passed to every Express middleware function. Its sole purpose is to indicate that the current middleware function is complete and to **pass control to the next function** in the application's request-response cycle.\n\n- If `next()` is called with **no arguments**, the next middleware or route handler is executed.\n- If `next()` is called with **an argument (usually an Error object)**, the application skips all remaining middleware and route handlers and jumps directly to the **error-handling middleware** defined last.\n\n**Example:**\n\n```javascript\napp.use((req, res, next) => {\n  if (!req.user) {\n    return next(new Error('Authentication required')); // Jump to error handler\n  }\n  next(); // Proceed to the next middleware/route\n});\n```",
+    "answer": "The **next()** function is a critical argument passed to every Express middleware function. Its sole purpose is to indicate that the current middleware function is complete and to **pass control to the next function** in the application's request-response cycle.\n\n- If next() is called with **no arguments**, the next middleware or route handler is executed.\n- If next() is called with **an argument (usually an Error object)**, the application skips all remaining middleware and route handlers and jumps directly to the **error-handling middleware** defined last.\n\n**Example:**\n\n```javascript\napp.use((req, res, next) => {\n  if (!req.user) {\n    return next(new Error('Authentication required')); // Jump to error handler\n  }\n  next(); // Proceed to the next middleware/route\n});\n```",
     "context": "Express.js framework",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -262,7 +262,7 @@
   {
     "id": "nodejs-27",
     "question": "How do you handle unhandled exceptions (errors) in a Node.js process?",
-    "answer": "Unhandle exceptions (those not caught by `try...catch` or `.catch()` on Promises) are serious because they can crash the single-threaded Node.js process.\n\n1. **`process.on('uncaughtException')`:** Catches synchronous errors thrown outside of a domain or try/catch block. **Best practice is to log the error and gracefully shut down the application**, as the state is often corrupted.\n2. **`process.on('unhandledRejection')`:** Catches Promises that are rejected but don't have a `.catch()` handler. **Best practice is to log the error** and potentially crash (or log and exit) if the application cannot recover.\n\n**Example (Unhandled Rejection):**\n\n```javascript\nprocess.on('unhandledRejection', (reason, promise) => {\n  console.error('Unhandled Rejection at:', promise, 'reason:', reason);\n  // Optional: Terminate process gracefully\n  // process.exit(1);\n});\n```",
+    "answer": "Unhandle exceptions (those not caught by try...catch or .catch() on Promises) are serious because they can crash the single-threaded Node.js process.\n\n1. **process.on('uncaughtException'):** Catches synchronous errors thrown outside of a domain or try/catch block. **Best practice is to log the error and gracefully shut down the application**, as the state is often corrupted.\n2. **process.on('unhandledRejection'):** Catches Promises that are rejected but don't have a .catch() handler. **Best practice is to log the error** and potentially crash (or log and exit) if the application cannot recover.\n\n**Example (Unhandled Rejection):**\n\n```javascript\nprocess.on('unhandledRejection', (reason, promise) => {\n  console.error('Unhandled Rejection at:', promise, 'reason:', reason);\n  // Optional: Terminate process gracefully\n  // process.exit(1);\n});\n```",
     "context": "Error handling and process management",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -282,7 +282,7 @@
   {
     "id": "nodejs-29",
     "question": "How do you use the `EventEmitter` class in Node.js?",
-    "answer": "The built-in **`EventEmitter`** class is central to Node's event-driven architecture. It allows you to create objects that can emit named events and have listeners (functions) register to handle those events. Many built-in Node.js modules (like Streams, HTTP) inherit from it.\n\n**Key Methods:**\n- **`.on(eventName, listener)`:** Registers a listener for an event.\n- **`.emit(eventName, [...args])`:** Triggers an event, calling all registered listeners.\n\n**Example:**\n\n```javascript\nconst EventEmitter = require('events');\nconst myEmitter = new EventEmitter();\n\nmyEmitter.on('userLoggedIn', (username) => {\n  console.log(username + ' has logged in.');\n});\n\nmyEmitter.emit('userLoggedIn', 'Alice'); // Output: Alice has logged in.\n```",
+    "answer": "The built-in **EventEmitter** class is central to Node's event-driven architecture. It allows you to create objects that can emit named events and have listeners (functions) register to handle those events. Many built-in Node.js modules (like Streams, HTTP) inherit from it.\n\n**Key Methods:**\n- **.on(eventName, listener):** Registers a listener for an event.\n- **.emit(eventName, [...args]):** Triggers an event, calling all registered listeners.\n\n**Example:**\n\n```javascript\nconst EventEmitter = require('events');\nconst myEmitter = new EventEmitter();\n\nmyEmitter.on('userLoggedIn', (username) => {\n  console.log(username + ' has logged in.');\n});\n\nmyEmitter.emit('userLoggedIn', 'Alice'); // Output: Alice has logged in.\n```",
     "context": "Event-driven programming",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -292,7 +292,7 @@
   {
     "id": "nodejs-30",
     "question": "What is the 'package-lock.json' file for?",
-    "answer": "The **`package-lock.json`** file is automatically generated by NPM and records the **exact, deterministic dependency tree** that was used during an installation. Its purpose is to ensure that future installations (even across different machines) will use the exact same versions of all dependencies, including transitive dependencies.\n\nIt locks the versions, sub-dependencies, and locations (registry URL) to prevent unexpected behavior due to dependency updates (which can happen with semantic versioning).\n\n**Key Use:** Ensures consistency across development, staging, and production environments.",
+    "answer": "The **package-lock.json** file is automatically generated by NPM and records the **exact, deterministic dependency tree** that was used during an installation. Its purpose is to ensure that future installations (even across different machines) will use the exact same versions of all dependencies, including transitive dependencies.\n\nIt locks the versions, sub-dependencies, and locations (registry URL) to prevent unexpected behavior due to dependency updates (which can happen with semantic versioning).\n\n**Key Use:** Ensures consistency across development, staging, and production environments.",
     "context": "Dependency management and NPM",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -302,7 +302,7 @@
   {
     "id": "nodejs-31",
     "question": "How can you mitigate the risk of a Denial-of-Service (DoS) attack in Node.js?",
-    "answer": "Since Node.js is single-threaded, it's vulnerable to DoS if the thread is blocked by a long-running task. Mitigation strategies include:\n\n1. **Rate Limiting:** Use middleware (like `express-rate-limit`) to restrict the number of requests a single IP can make over a period.\n2. **Clustering/Worker Threads:** Distribute the load across multiple CPU cores/processes.\n3. **Payload Limits:** Configure Express body-parser to limit the size of incoming JSON/form data payloads.\n4. **Input Validation:** Reject oversized or malicious requests early.\n5. **Use a Reverse Proxy:** Employ a tool like Nginx or a cloud-based WAF (Web Application Firewall) to absorb or filter malicious traffic before it hits the Node.js process.",
+    "answer": "Since Node.js is single-threaded, it's vulnerable to DoS if the thread is blocked by a long-running task. Mitigation strategies include:\n\n1. **Rate Limiting:** Use middleware (like express-rate-limit) to restrict the number of requests a single IP can make over a period.\n2. **Clustering/Worker Threads:** Distribute the load across multiple CPU cores/processes.\n3. **Payload Limits:** Configure Express body-parser to limit the size of incoming JSON/form data payloads.\n4. **Input Validation:** Reject oversized or malicious requests early.\n5. **Use a Reverse Proxy:** Employ a tool like Nginx or a cloud-based WAF (Web Application Firewall) to absorb or filter malicious traffic before it hits the Node.js process.",
     "context": "Security and Performance",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -312,7 +312,7 @@
   {
     "id": "nodejs-32",
     "question": "Describe the main advantages of using `async/await` over raw Promises.",
-    "answer": "**Async/await** is syntactic sugar built on top of Promises, designed to make asynchronous code easier to read and maintain.\n\n**Advantages:**\n1. **Readability:** Code looks like synchronous, procedural code, eliminating `.then()` chaining and nested callbacks.\n2. **Error Handling:** Allows the use of standard `try...catch` blocks for both synchronous and asynchronous errors, simplifying error logic.\n3. **Conditional Execution:** Makes writing loops and conditional code based on the result of an async operation much cleaner.\n\n**Example:** (See nodejs-16 for the `try...catch` example showing improved error handling over `.catch()` chains.)",
+    "answer": "**Async/await** is syntactic sugar built on top of Promises, designed to make asynchronous code easier to read and maintain.\n\n**Advantages:**\n1. **Readability:** Code looks like synchronous, procedural code, eliminating .then() chaining and nested callbacks.\n2. **Error Handling:** Allows the use of standard try...catch blocks for both synchronous and asynchronous errors, simplifying error logic.\n3. **Conditional Execution:** Makes writing loops and conditional code based on the result of an async operation much cleaner.\n\n**Example:** (See nodejs-16 for the try...catch example showing improved error handling over .catch() chains.)",
     "context": "Asynchronous programming patterns",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -322,7 +322,7 @@
   {
     "id": "nodejs-33",
     "question": "How do you perform database migrations in a Node.js application?",
-    "answer": "Database migrations are version control for your database schema. They are essential for evolving the database structure over time in a controlled, reversible manner.\n\n**Common Tools:**\n- **Knex.js** (SQL query builder with migration support).\n- **Sequelize** (ORM with migration tools).\n- **Prisma** (Next-generation ORM with migration capabilities).\n\nThese tools typically use CLI commands to:\n1. **Create:** Generate a timestamped up/down file (`up` applies changes, `down` reverts them).\n2. **Run:** Execute all pending `up` migrations against the database.\n3. **Revert:** Execute the `down` migration for the last batch.\n\n**Example (Conceptual Knex Migration File):**\n\n```javascript\nexports.up = function(knex) {\n  return knex.schema.createTable('users', (table) => {\n    table.increments('id');\n    table.string('name', 255).notNullable();\n  });\n};\n\nexports.down = function(knex) {\n  return knex.schema.dropTable('users');\n};\n```",
+    "answer": "Database migrations are version control for your database schema. They are essential for evolving the database structure over time in a controlled, reversible manner.\n\n**Common Tools:**\n- **Knex.js** (SQL query builder with migration support).\n- **Sequelize** (ORM with migration tools).\n- **Prisma** (Next-generation ORM with migration capabilities).\n\nThese tools typically use CLI commands to:\n1. **Create:** Generate a timestamped up/down file (up applies changes, down reverts them).\n2. **Run:** Execute all pending up migrations against the database.\n3. **Revert:** Execute the down migration for the last batch.\n\n**Example (Conceptual Knex Migration File):**\n\n```javascript\nexports.up = function(knex) {\n  return knex.schema.createTable('users', (table) => {\n    table.increments('id');\n    table.string('name', 255).notNullable();\n  });\n};\n\nexports.down = function(knex) {\n  return knex.schema.dropTable('users');\n};\n```",
     "context": "Database and DevOps",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -332,7 +332,7 @@
   {
     "id": "nodejs-34",
     "question": "What is the purpose of the `http` core module in Node.js?",
-    "answer": "The built-in **`http`** module provides the basic functionality for creating HTTP servers and making HTTP clients. It is the fundamental component used to handle network communication on the web.\n\n- **Server:** Used to create an HTTP server that listens for requests (`http.createServer()`).\n- **Client:** Used to make requests to other servers (`http.request()` or `http.get()`).\n\nFrameworks like Express.js are built on top of this core module for easier development.\n\n**Example (Simple HTTP Server):**\n\n```javascript\nconst http = require('http');\n\nconst server = http.createServer((req, res) => {\n  res.statusCode = 200;\n  res.setHeader('Content-Type', 'text/plain');\n  res.end('Hello World\\n');\n});\n\nserver.listen(3000, '127.0.0.1', () => {\n  console.log('Server running at http://127.0.0.1:3000/');\n});\n```",
+    "answer": "The built-in **http** module provides the basic functionality for creating HTTP servers and making HTTP clients. It is the fundamental component used to handle network communication on the web.\n\n- **Server:** Used to create an HTTP server that listens for requests (http.createServer()).\n- **Client:** Used to make requests to other servers (http.request() or http.get()).\n\nFrameworks like Express.js are built on top of this core module for easier development.\n\n**Example (Simple HTTP Server):**\n\n```javascript\nconst http = require('http');\n\nconst server = http.createServer((req, res) => {\n  res.statusCode = 200;\n  res.setHeader('Content-Type', 'text/plain');\n  res.end('Hello World\\n');\n});\n\nserver.listen(3000, '127.0.0.1', () => {\n  console.log('Server running at http://127.0.0.1:3000/');\n});\n```",
     "context": "Core module and networking",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -342,7 +342,7 @@
   {
     "id": "nodejs-35",
     "question": "How do you ensure non-blocking behavior when running an external shell command?",
-    "answer": "To run an external command without blocking the Node.js event loop, you must use one of the asynchronous child process methods from the `child_process` module.\n\n- **`child_process.exec()`:** Executes a command in a shell and buffers the output in memory (best for small outputs).\n- **`child_process.spawn()`:** Launches a new process and returns streams for I/O (best for commands with large output or continuous output).\n- **`child_process.fork()`:** Special version of `spawn` for creating new Node.js processes, establishing a communication channel between parent and child.\n\n**Example (Non-blocking execution):**\n\n```javascript\nconst { exec } = require('child_process');\n\nexec('ls -lh /usr', (error, stdout, stderr) => {\n  if (error) {\n    console.error('exec error: ' + error);\n    return;\n  }\n  console.log('stdout: ' + stdout);\n});\nconsole.log('This runs before the command finishes.');\n```",
+    "answer": "To run an external command without blocking the Node.js event loop, you must use one of the asynchronous child process methods from the child_process module.\n\n- **child_process.exec():** Executes a command in a shell and buffers the output in memory (best for small outputs).\n- **child_process.spawn():** Launches a new process and returns streams for I/O (best for commands with large output or continuous output).\n- **child_process.fork():** Special version of spawn for creating new Node.js processes, establishing a communication channel between parent and child.\n\n**Example (Non-blocking execution):**\n\n```javascript\nconst { exec } = require('child_process');\n\nexec('ls -lh /usr', (error, stdout, stderr) => {\n  if (error) {\n    console.error('exec error: ' + error);\n    return;\n  }\n  console.log('stdout: ' + stdout);\n});\nconsole.log('This runs before the command finishes.');\n```",
     "context": "System integration and process management",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -352,7 +352,7 @@
   {
     "id": "nodejs-36",
     "question": "What is tree-shaking and how does it relate to ES Modules?",
-    "answer": "**Tree-shaking** (or dead code elimination) is a process used by modern JavaScript bundlers (like Webpack or Rollup) to eliminate unused code from the final bundle size. It's critical for reducing load times and application size.\n\n**Relation to ES Modules (ESM):** Tree-shaking relies on the **static structure** of ES Modules (`import`/`export`). Because imports and exports are defined statically (not dynamically at runtime like `require()`), the bundler can analyze the code graph and determine exactly which imports are *actually* used, and which parts of the module can be safely 'shaken off'.",
+    "answer": "**Tree-shaking** (or dead code elimination) is a process used by modern JavaScript bundlers (like Webpack or Rollup) to eliminate unused code from the final bundle size. It's critical for reducing load times and application size.\n\n**Relation to ES Modules (ESM):** Tree-shaking relies on the **static structure** of ES Modules (import/export). Because imports and exports are defined statically (not dynamically at runtime like require()), the bundler can analyze the code graph and determine exactly which imports are *actually* used, and which parts of the module can be safely 'shaken off'.",
     "context": "Performance and Module System",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -362,7 +362,7 @@
   {
     "id": "nodejs-37",
     "question": "How do you implement a robust logging strategy in a Node.js application?",
-    "answer": "A robust logging strategy moves beyond simple `console.log()` and involves structured, categorized, and level-based logging for easier analysis and debugging in production.\n\n1. **Use a Dedicated Logger:** Use libraries like **Winston** or **Pino** to provide structure and levels (e.g., `debug`, `info`, `warn`, `error`).\n2. **Structured Logging:** Log output as JSON for easy ingestion and querying by log management tools (Splunk, Elastic Stack).\n3. **Centralized Logging:** Pipe logs to a single location/service (stdout/stderr is the best practice for containers).\n4. **Context:** Include request IDs, user IDs, and timestamps for every log entry.\n\n**Example (Pino/Winston conceptual):**\n\n```javascript\nlogger.info({ userId: 123, route: req.url }, 'User requested data');\n\n// Output (JSON):\n// {\"level\":\"info\",\"time\":1678886400000,\"pid\":12345,\"userId\":123,\"route\":\"/data\",\"msg\":\"User requested data\"}\n```",
+    "answer": "A robust logging strategy moves beyond simple `console.log()` and involves structured, categorized, and level-based logging for easier analysis and debugging in production.\n\n1. **Use a Dedicated Logger:** Use libraries like **Winston** or **Pino** to provide structure and levels (e.g., debug, info, warn, error).\n2. **Structured Logging:** Log output as JSON for easy ingestion and querying by log management tools (Splunk, Elastic Stack).\n3. **Centralized Logging:** Pipe logs to a single location/service (stdout/stderr is the best practice for containers).\n4. **Context:** Include request IDs, user IDs, and timestamps for every log entry.\n\n**Example (Pino/Winston conceptual):**\n\n```javascript\nlogger.info({ userId: 123, route: req.url }, 'User requested data');\n\n// Output (JSON):\n// {\"level\":\"info\",\"time\":1678886400000,\"pid\":12345,\"userId\":123,\"route\":\"/data\",\"msg\":\"User requested data\"}\n```",
     "context": "Operations and Debugging",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -372,7 +372,7 @@
   {
     "id": "nodejs-38",
     "question": "What are named vs. default exports in ES Modules?",
-    "answer": "ES Modules provide two ways to export values from a module:\n\n**Named Exports:**\n- You can have multiple named exports per module.\n- Must be imported using the exact name in curly braces (`{}`).\n\n**Default Export:**\n- You can have only one default export per module.\n- Can be imported with any name (without curly braces).\n\n**Example:**\n\n```javascript\n// In utils.mjs\nexport const add = (a, b) => a + b; // Named Export\nconst subtract = (a, b) => a - b;\nexport default subtract; // Default Export\n\n// In app.mjs\nimport subtractAlias, { add } from './utils.mjs';\nconsole.log(add(2, 2)); // 4\nconsole.log(subtractAlias(5, 1)); // 4\n```",
+    "answer": "ES Modules provide two ways to export values from a module:\n\n**Named Exports:**\n- You can have multiple named exports per module.\n- Must be imported using the exact name in curly braces ({}).\n\n**Default Export:**\n- You can have only one default export per module.\n- Can be imported with any name (without curly braces).\n\n**Example:**\n\n```javascript\n// In utils.mjs\nexport const add = (a, b) => a + b; // Named Export\nconst subtract = (a, b) => a - b;\nexport default subtract; // Default Export\n\n// In app.mjs\nimport subtractAlias, { add } from './utils.mjs';\nconsole.log(add(2, 2)); // 4\nconsole.log(subtractAlias(5, 1)); // 4\n```",
     "context": "Module system and syntax",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -392,7 +392,7 @@
   {
     "id": "nodejs-40",
     "question": "How do you gracefully shut down a Node.js server?",
-    "answer": "A graceful shutdown ensures that the server stops accepting *new* connections but allows *existing* connections to finish their processing before the process is exited. This prevents errors for active users.\n\n1. **Listen for Signals:** Trap OS signals like `SIGINT` (Ctrl+C) and `SIGTERM` (Docker/Kubernetes).\n2. **Stop Listening:** Call `server.close()` to stop accepting new requests.\n3. **Drain Connections:** Wait for all active connections to close.\n4. **Cleanup:** Close database connections, clear caches, and perform other necessary cleanup.\n\n**Example (Conceptual):**\n\n```javascript\nserver.listen(3000, () => console.log('Server running'));\n\nprocess.on('SIGTERM', () => {\n  console.log('SIGTERM received. Shutting down gracefully...');\n  server.close(() => {\n    // Cleanup code (e.g., db.close())\n    console.log('HTTP server closed. Exiting process.');\n    process.exit(0);\n  });\n});\n```",
+    "answer": "A graceful shutdown ensures that the server stops accepting *new* connections but allows *existing* connections to finish their processing before the process is exited. This prevents errors for active users.\n\n1. **Listen for Signals:** Trap OS signals like SIGINT (Ctrl+C) and SIGTERM (Docker/Kubernetes).\n2. **Stop Listening:** Call server.close() to stop accepting new requests.\n3. **Drain Connections:** Wait for all active connections to close.\n4. **Cleanup:** Close database connections, clear caches, and perform other necessary cleanup.\n\n**Example (Conceptual):**\n\n```javascript\nserver.listen(3000, () => console.log('Server running'));\n\nprocess.on('SIGTERM', () => {\n  console.log('SIGTERM received. Shutting down gracefully...');\n  server.close(() => {\n    // Cleanup code (e.g., db.close())\n    console.log('HTTP server closed. Exiting process.');\n    process.exit(0);\n  });\n});\n```",
     "context": "Operations and Process Management",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -422,7 +422,7 @@
   {
     "id": "nodejs-43",
     "question": "What is the importance of the `NODE_ENV` environment variable?",
-    "answer": "The `NODE_ENV` environment variable is a convention used throughout the Node.js ecosystem (including frameworks like Express) to specify the current operational mode. It usually has two primary values:\n\n1. **`development`:** Used during local development. Enables verbose logging, debug tools, hot reloading, and skips aggressive caching.\n2. **`production`:** Used in live deployments. Enables performance optimizations, strict error reporting (no stack traces for users), and disables development tools.\n\n**Example (Express configuration):**\n\n```javascript\nconst app = express();\nif (process.env.NODE_ENV === 'production') {\n  app.use(require('helmet')());\n} else {\n  app.use(require('morgan')('dev'));\n}\n```",
+    "answer": "The NODE_ENV environment variable is a convention used throughout the Node.js ecosystem (including frameworks like Express) to specify the current operational mode. It usually has two primary values:\n\n1. **development:** Used during local development. Enables verbose logging, debug tools, hot reloading, and skips aggressive caching.\n2. **production:** Used in live deployments. Enables performance optimizations, strict error reporting (no stack traces for users), and disables development tools.\n\n**Example (Express configuration):**\n\n```javascript\nconst app = express();\nif (process.env.NODE_ENV === 'production') {\n  app.use(require('helmet')());\n} else {\n  app.use(require('morgan')('dev'));\n}\n```",
     "context": "Configuration and Deployment",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -442,7 +442,7 @@
   {
     "id": "nodejs-45",
     "question": "What is `__dirname` and `__filename` and how do they differ?",
-    "answer": "These are two global variables (not actually global, but module-scoped) provided by the CommonJS module wrapper in Node.js:\n\n**`__filename`:**\n- Provides the **absolute path** to the currently executing file.\n\n**`__dirname`:**\n- Provides the **absolute path** to the directory containing the currently executing file.\n\n**Use Case:** They are essential for constructing absolute paths for file system operations (`fs` module), ensuring that file loading works correctly regardless of the directory from which the Node.js process was launched.\n\n**Example:**\n\n```javascript\n// If the file is at /home/user/app/server.js\n\nconsole.log(__filename); // /home/user/app/server.js\nconsole.log(__dirname); // /home/user/app\n\nconst configPath = path.join(__dirname, 'config.json');\n```",
+    "answer": "These are two global variables (not actually global, but module-scoped) provided by the CommonJS module wrapper in Node.js:\n\n**__filename:**\n- Provides the **absolute path** to the currently executing file.\n\n**__dirname:**\n- Provides the **absolute path** to the directory containing the currently executing file.\n\n**Use Case:** They are essential for constructing absolute paths for file system operations (fs module), ensuring that file loading works correctly regardless of the directory from which the Node.js process was launched.\n\n**Example:**\n\n```javascript\n// If the file is at /home/user/app/server.js\n\nconsole.log(__filename); // /home/user/app/server.js\nconsole.log(__dirname); // /home/user/app\n\nconst configPath = path.join(__dirname, 'config.json');\n```",
     "context": "Module scope and file system",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -462,7 +462,7 @@
   {
     "id": "nodejs-47",
     "question": "What is the purpose of 'middleware' in the context of authentication (auth)?",
-    "answer": "Authentication middleware is an Express function executed **before** the final route handler. Its purpose is to check if an incoming request is valid and authorized to access the requested resource.\n\n**Typical flow:**\n1. Request arrives.\n2. Auth middleware checks for a token (e.g., JWT) in the request headers.\n3. Middleware validates the token (decodes it, checks expiration, verifies signature).\n4. If valid, it attaches user data to the `req` object (`req.user = decodedToken`) and calls `next()`.\n5. If invalid or missing, it returns an error response (e.g., 401 Unauthorized) and does **not** call `next()`.\n\n**Example (Conceptual Auth Middleware):**\n\napp.use('/api/private', authMiddleware, privateRouter); // Only authorized requests reach privateRouter",
+    "answer": "Authentication middleware is an Express function executed **before** the final route handler. Its purpose is to check if an incoming request is valid and authorized to access the requested resource.\n\n**Typical flow:**\n1. Request arrives.\n2. Auth middleware checks for a token (e.g., JWT) in the request headers.\n3. Middleware validates the token (decodes it, checks expiration, verifies signature).\n4. If valid, it attaches user data to the req object (req.user = decodedToken) and calls next().\n5. If invalid or missing, it returns an error response (e.g., 401 Unauthorized) and does **not** call next().\n\n**Example (Conceptual Auth Middleware):**\n\napp.use('/api/private', authMiddleware, privateRouter); // Only authorized requests reach privateRouter",
     "context": "Express.js and Security",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -472,7 +472,7 @@
   {
     "id": "nodejs-48",
     "question": "Explain the concept of 'zombie processes' and 'orphan processes' in Node.js child processes.",
-    "answer": "These concepts are critical when managing child processes using `child_process.spawn()` or `exec()`:\n\n**Orphan Process:**\n- A child process whose parent process has terminated before the child process did.\n- The OS (usually the `init` or `systemd` process) adopts the orphan process as its new parent.\n\n**Zombie Process (Defunct):**\n- A child process that has terminated, but its entry in the process table remains because its parent has **not yet called `wait()`** to read its exit status.\n- They consume no resources except a small amount of space in the process table.\n- **In Node.js:** It's crucial to call the parent process's `.on('exit')` or `.on('close')` handler to ensure the exit status is reaped and the zombie is cleared.",
+    "answer": "These concepts are critical when managing child processes using child_process.spawn() or exec():\n\n**Orphan Process:**\n- A child process whose parent process has terminated before the child process did.\n- The OS (usually the init or systemd process) adopts the orphan process as its new parent.\n\n**Zombie Process (Defunct):**\n- A child process that has terminated, but its entry in the process table remains because its parent has **not yet called wait()** to read its exit status.\n- They consume no resources except a small amount of space in the process table.\n- **In Node.js:** It's crucial to call the parent process's .on('exit') or .on('close') handler to ensure the exit status is reaped and the zombie is cleared.",
     "context": "Process management and OS integration",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
@@ -492,7 +492,7 @@
   {
     "id": "nodejs-50",
     "question": "Describe the main difference between synchronous and asynchronous iteration in JavaScript/Node.js.",
-    "answer": "**Synchronous Iteration (Standard loops, e.g., `for`, `forEach`):**\n- Iterates over an array or iterable, executing code for each item **sequentially** and **immediately**.\n- Cannot `await` inside a standard `forEach` loop without complex workarounds because the loop itself is synchronous.\n\n**Asynchronous Iteration (e.g., `for await...of` or `Promise.all`):**\n- Allows iterating over asynchronous data sources (Async Iterators/Generators) or executing asynchronous operations for each item in a controlled manner.\n- The `for await...of` loop pauses its execution until the inner asynchronous operation completes before moving to the next item.\n\n**Example (Async Iteration):**\n\n```javascript\nasync function processFiles(fileList) {\n  for (const file of fileList) {\n    await fs.promises.writeFile(file, 'content'); // Awaits before moving to the next file\n  }\n  console.log('All files written sequentially.');\n}\n```",
+    "answer": "**Synchronous Iteration (Standard loops, e.g., for, forEach):**\n- Iterates over an array or iterable, executing code for each item **sequentially** and **immediately**.\n- Cannot await inside a standard forEach loop without complex workarounds because the loop itself is synchronous.\n\n**Asynchronous Iteration (e.g., for await...of or Promise.all):**\n- Allows iterating over asynchronous data sources (Async Iterators/Generators) or executing asynchronous operations for each item in a controlled manner.\n- The for await...of loop pauses its execution until the inner asynchronous operation completes before moving to the next item.\n\n**Example (Async Iteration):**\n\n```javascript\nasync function processFiles(fileList) {\n  for (const file of fileList) {\n    await fs.promises.writeFile(file, 'content'); // Awaits before moving to the next file\n  }\n  console.log('All files written sequentially.');\n}\n```",
     "context": "Asynchronous Programming",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
