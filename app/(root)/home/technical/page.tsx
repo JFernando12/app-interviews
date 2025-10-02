@@ -750,34 +750,34 @@ export default function TechnicalPage() {
                         key={question.id}
                         className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3 sm:p-4 lg:p-6 hover:shadow-lg transition-shadow"
                       >
-                        <div className="flex items-start gap-3 mb-3">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 dark:text-white leading-tight">
-                                {question.question}
-                              </h3>
-                              {/* Difficulty Badge */}
-                              <span
-                                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                  techQuestion.difficulty === 'beginner'
-                                    ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                                    : techQuestion.difficulty === 'intermediate'
-                                    ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
-                                    : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
-                                }`}
-                              >
-                                {techQuestion.difficulty || 'intermediate'}
-                              </span>
-                            </div>
-                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3">
-                              {question.context}
-                            </p>
+                        <div className="space-y-2 mb-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 dark:text-white leading-tight flex-1">
+                              {question.question}
+                            </h3>
                           </div>
-                          <span
-                            className={`px-2 py-1 rounded-md text-xs font-medium ${currentTech?.color} bg-gray-50 dark:bg-gray-700 flex-shrink-0`}
-                          >
-                            {currentTech?.name}
-                          </span>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {/* Difficulty Badge */}
+                            <span
+                              className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap ${
+                                techQuestion.difficulty === 'beginner'
+                                  ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                                  : techQuestion.difficulty === 'intermediate'
+                                  ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
+                                  : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
+                              }`}
+                            >
+                              {techQuestion.difficulty || 'intermediate'}
+                            </span>
+                            <span
+                              className={`px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-medium ${currentTech?.color} bg-gray-50 dark:bg-gray-700 whitespace-nowrap`}
+                            >
+                              {currentTech?.name}
+                            </span>
+                          </div>
+                          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                            {question.context}
+                          </p>
                         </div>
 
                         <details className="group">
@@ -818,14 +818,12 @@ export default function TechnicalPage() {
                       key={project.id}
                       className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3 sm:p-4 lg:p-6 hover:shadow-lg transition-shadow"
                     >
-                      <div className="flex items-start gap-2 mb-3">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 dark:text-white leading-tight mb-1">
-                            {project.title}
-                          </h3>
-                        </div>
+                      <div className="space-y-2 mb-3">
+                        <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 dark:text-white leading-tight">
+                          {project.title}
+                        </h3>
                         <span
-                          className={`px-2 py-1 rounded-md text-xs font-medium flex-shrink-0 ${
+                          className={`inline-block px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-medium whitespace-nowrap ${
                             project.difficulty === 'beginner'
                               ? 'text-green-600 bg-green-50 dark:bg-green-900/20'
                               : project.difficulty === 'intermediate'
