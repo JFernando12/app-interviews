@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Question } from '@/lib/dynamodb';
 import { QuestionType } from '@/types/enums';
@@ -64,7 +64,8 @@ interface TechnologyFilter {
   borderColor: string;
 }
 
-export default function TechnicalPage() {
+// Component that uses useSearchParams - must be wrapped in Suspense
+function TechnicalPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -1035,5 +1036,27 @@ export default function TechnicalPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Main export with Suspense boundary
+export default function TechnicalPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-3">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+            <div className="text-center py-8 sm:py-12">
+              <div className="inline-block animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-600"></div>
+              <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">
+                Loading...
+              </p>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <TechnicalPageContent />
+    </Suspense>
   );
 }
