@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Question } from '@/lib/dynamodb';
 import { QuestionType } from '@/types/enums';
 import PageHeader from '@/components/PageHeader';
@@ -64,8 +65,22 @@ interface TechnologyFilter {
 }
 
 export default function TechnicalPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Available technologies with question files
+  const availableLanguages = ['python', 'react', 'nodejs'];
+
+  // Get initial technology from URL or default to 'python'
+  // Validate that the language has question files available
+  const urlLanguage = searchParams.get('programming_language');
+  const initialTechnology =
+    urlLanguage && availableLanguages.includes(urlLanguage)
+      ? urlLanguage
+      : 'python';
+
   const [selectedTechnology, setSelectedTechnology] =
-    useState<string>('python'); // Changed default to python since we have questions for it
+    useState<string>(initialTechnology);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
   const [projectExamples, setProjectExamples] = useState<ProjectExample[]>([]);
@@ -77,6 +92,15 @@ export default function TechnicalPage() {
   const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Function to update technology and URL
+  const handleTechnologyChange = (techId: string) => {
+    setSelectedTechnology(techId);
+    // Update URL with the new programming_language parameter
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('programming_language', techId);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
 
   // Detect dark mode
   useEffect(() => {
@@ -105,20 +129,13 @@ export default function TechnicalPage() {
     },
   };
 
-  // Technology filters - no "all" option as requested
+  // Technology filters - only show technologies with available question files
+  // Available question files: nodejs.json, python.json, react.json
   const technologies: TechnologyFilter[] = [
-    {
-      id: 'javascript',
-      name: 'JavaScript',
-      icon: '🟨',
-      color: 'text-yellow-600',
-      bgColor: 'bg-gradient-to-br from-yellow-50 via-yellow-100 to-orange-100',
-      borderColor: 'border-yellow-200 hover:border-yellow-300',
-    },
     {
       id: 'python',
       name: 'Python',
-      icon: '🐍',
+      icon: '�',
       color: 'text-blue-600',
       bgColor: 'bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-100',
       borderColor: 'border-blue-200 hover:border-blue-300',
@@ -139,38 +156,47 @@ export default function TechnicalPage() {
       bgColor: 'bg-gradient-to-br from-green-50 via-green-100 to-emerald-100',
       borderColor: 'border-green-200 hover:border-green-300',
     },
-    {
-      id: 'java',
-      name: 'Java',
-      icon: '☕',
-      color: 'text-orange-600',
-      bgColor: 'bg-gradient-to-br from-orange-50 via-orange-100 to-red-100',
-      borderColor: 'border-orange-200 hover:border-orange-300',
-    },
-    {
-      id: 'csharp',
-      name: 'C#',
-      icon: '🔷',
-      color: 'text-purple-600',
-      bgColor: 'bg-gradient-to-br from-purple-50 via-purple-100 to-violet-100',
-      borderColor: 'border-purple-200 hover:border-purple-300',
-    },
-    {
-      id: 'php',
-      name: 'PHP',
-      icon: '🐘',
-      color: 'text-indigo-600',
-      bgColor: 'bg-gradient-to-br from-indigo-50 via-indigo-100 to-blue-100',
-      borderColor: 'border-indigo-200 hover:border-indigo-300',
-    },
-    {
-      id: 'go',
-      name: 'Go',
-      icon: '🐹',
-      color: 'text-teal-600',
-      bgColor: 'bg-gradient-to-br from-teal-50 via-teal-100 to-cyan-100',
-      borderColor: 'border-teal-200 hover:border-teal-300',
-    },
+    // Commented out technologies without question files yet
+    // {
+    //   id: 'javascript',
+    //   name: 'JavaScript',
+    //   icon: '�',
+    //   color: 'text-yellow-600',
+    //   bgColor: 'bg-gradient-to-br from-yellow-50 via-yellow-100 to-orange-100',
+    //   borderColor: 'border-yellow-200 hover:border-yellow-300',
+    // },
+    // {
+    //   id: 'java',
+    //   name: 'Java',
+    //   icon: '☕',
+    //   color: 'text-orange-600',
+    //   bgColor: 'bg-gradient-to-br from-orange-50 via-orange-100 to-red-100',
+    //   borderColor: 'border-orange-200 hover:border-orange-300',
+    // },
+    // {
+    //   id: 'csharp',
+    //   name: 'C#',
+    //   icon: '🔷',
+    //   color: 'text-purple-600',
+    //   bgColor: 'bg-gradient-to-br from-purple-50 via-purple-100 to-violet-100',
+    //   borderColor: 'border-purple-200 hover:border-purple-300',
+    // },
+    // {
+    //   id: 'php',
+    //   name: 'PHP',
+    //   icon: '🐘',
+    //   color: 'text-indigo-600',
+    //   bgColor: 'bg-gradient-to-br from-indigo-50 via-indigo-100 to-blue-100',
+    //   borderColor: 'border-indigo-200 hover:border-indigo-300',
+    // },
+    // {
+    //   id: 'go',
+    //   name: 'Go',
+    //   icon: '🐹',
+    //   color: 'text-teal-600',
+    //   bgColor: 'bg-gradient-to-br from-teal-50 via-teal-100 to-cyan-100',
+    //   borderColor: 'border-teal-200 hover:border-teal-300',
+    // },
   ];
 
   // Mock data for projects and resources - will be replaced with API calls later
@@ -589,7 +615,7 @@ export default function TechnicalPage() {
                 {technologies.map((tech) => (
                   <button
                     key={tech.id}
-                    onClick={() => setSelectedTechnology(tech.id)}
+                    onClick={() => handleTechnologyChange(tech.id)}
                     className={`
                       flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all duration-200 
                       text-sm font-medium whitespace-nowrap flex-shrink-0 min-w-fit
