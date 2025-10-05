@@ -20,6 +20,12 @@ import {
   Filter,
   ChevronDown,
 } from 'lucide-react';
+import {
+  DiPython,
+  DiReact,
+  DiNodejs,
+} from 'react-icons/di';
+import { SiTypescript } from 'react-icons/si';
 
 // Suggested schemas for project examples and resources
 
@@ -63,6 +69,24 @@ interface TechnologyFilter {
   bgColor: string;
   borderColor: string;
 }
+
+// Helper to render technology icon
+const TechIcon = ({ iconName, className }: { iconName: string; className?: string }) => {
+  const iconProps = { className: className || 'text-xl' };
+  
+  switch (iconName) {
+    case 'DiPython':
+      return <DiPython {...iconProps} />;
+    case 'DiReact':
+      return <DiReact {...iconProps} />;
+    case 'DiNodejs':
+      return <DiNodejs {...iconProps} />;
+    case 'SiTypescript':
+      return <SiTypescript {...iconProps} />;
+    default:
+      return <span>{iconName}</span>;
+  }
+};
 
 // Component that uses useSearchParams - must be wrapped in Suspense
 function TechnicalPageContent() {
@@ -144,7 +168,7 @@ function TechnicalPageContent() {
     {
       id: 'python',
       name: 'Python',
-      icon: '�',
+      icon: 'DiPython',
       color: 'text-blue-600',
       bgColor: 'bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-100',
       borderColor: 'border-blue-200 hover:border-blue-300',
@@ -152,7 +176,7 @@ function TechnicalPageContent() {
     {
       id: 'react',
       name: 'React',
-      icon: '⚛️',
+      icon: 'DiReact',
       color: 'text-cyan-600',
       bgColor: 'bg-gradient-to-br from-cyan-50 via-cyan-100 to-blue-100',
       borderColor: 'border-cyan-200 hover:border-cyan-300',
@@ -160,11 +184,19 @@ function TechnicalPageContent() {
     {
       id: 'nodejs',
       name: 'Node.js',
-      icon: '🚀',
+      icon: 'DiNodejs',
       color: 'text-green-600',
       bgColor: 'bg-gradient-to-br from-green-50 via-green-100 to-emerald-100',
       borderColor: 'border-green-200 hover:border-green-300',
     },
+    {
+      id: 'typescript',
+      name: 'TypeScript',
+      icon: 'SiTypescript',
+      color: 'text-blue-600',
+      bgColor: 'bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-100',
+      borderColor: 'border-blue-200 hover:border-blue-300',
+    }
     // Commented out technologies without question files yet
     // {
     //   id: 'javascript',
@@ -637,7 +669,7 @@ function TechnicalPageContent() {
                       }
                     `}
                   >
-                    <span className="text-base leading-none">{tech.icon}</span>
+                    <TechIcon iconName={tech.icon} className="text-xl" />
                     <span className="text-xs sm:text-sm">{tech.name}</span>
                   </button>
                 ))}
