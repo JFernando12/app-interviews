@@ -1,0 +1,502 @@
+[
+  {
+    "id": "backend-1",
+    "question": "What are the SOLID principles in object-oriented design?",
+    "answer": "SOLID is an acronym for five design principles that help make software more maintainable and extensible:\n\n1. **S**ingle Responsibility Principle (SRP): A class should have only one reason to change.\n2. **O**pen/Closed Principle (OCP): Software entities (classes, modules) should be open for extension, but closed for modification.\n3. **L**iskov Substitution Principle (LSP): Subtypes must be substitutable for their base types without altering correctness.\n4. **I**nterface Segregation Principle (ISP): Clients should not be forced to depend on interfaces they do not use.\n5. **D**ependency Inversion Principle (DIP): High-level modules should not depend on low-level modules; both should depend on abstractions.",
+    "context": "Object-oriented / design principles",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["design", "principles", "architecture"]
+  },
+  {
+    "id": "backend-2",
+    "question": "Explain the CAP theorem. What are consistency, availability, and partition tolerance?",
+    "answer": "The **CAP theorem** states that in a distributed data system, you can only guarantee at most two out of three properties simultaneously: **Consistency**, **Availability**, and **Partition tolerance**.\n\n- **Consistency**: All nodes see the same data at the same time — a read receives the most recent write or an error.\n- **Availability**: Every request receives a (non-error) response — no guarantee that it’s the latest write.\n- **Partition tolerance**: The system continues to operate despite arbitrary network partitions (nodes becoming unreachable).\n\nIn practice, partitions (network failures) will always happen, so systems must choose between Consistency and Availability under partitions (CP vs AP).",
+    "context": "Distributed systems",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["distributed", "theory", "consistency"]
+  },
+  {
+    "id": "backend-3",
+    "question": "What is the difference between sharding and partitioning?",
+    "answer": "Both sharding and partitioning refer to dividing your data, but they’re used somewhat differently:\n\n- **Partitioning**: Dividing a large database table into smaller, more manageable pieces (partitions) usually by a key (e.g., date, region). Partitions often live in the same database server, but help with performance, manageability, or pruning.\n- **Sharding**: A type of partitioning across multiple database instances/servers. Each shard holds a subset of the data. The goal is horizontal scalability (distribute load across multiple machines). \n\nPitfalls include: cross-shard joins being expensive, rebalancing shards, choosing shard key carefully, and dealing with hotspots.",
+    "context": "Database / scaling",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["database", "scaling", "partitioning", "sharding"]
+  },
+  {
+    "id": "backend-4",
+    "question": "What are ACID properties in a database transaction?",
+    "answer": "ACID stands for **Atomicity, Consistency, Isolation, Durability**:\n\n- **Atomicity**: A transaction is all or nothing — either all its operations succeed, or none do.\n- **Consistency**: A transaction moves the database from one valid state to another, respecting all defined rules (constraints, triggers, etc.).\n- **Isolation**: Concurrent transactions do not interfere — intermediate states are not visible to others. Different isolation levels define how strict this is.\n- **Durability**: Once a transaction commits, its effects persist even if the system crashes.\n\nThese properties help maintain reliability in the presence of failures and concurrency.",
+    "context": "Database / transactions",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["database", "transactions", "reliability"]
+  },
+  {
+    "id": "backend-5",
+    "question": "What are isolation levels in databases? Explain their tradeoffs.",
+    "answer": "Common isolation levels (from weakest to strongest) and typical behaviors:\n\n1. **Read Uncommitted**: Transactions may see uncommitted changes from other transactions (dirty reads). Very low isolation.\n2. **Read Committed**: A transaction sees only committed data (no dirty reads), but nonrepeatable reads or phantom reads are possible.\n3. **Repeatable Read**: Once a transaction reads a row, subsequent reads of that row return the same data (no nonrepeatable reads). But phantom reads (new rows being inserted) are still possible in some DBs.\n4. **Serializable**: The strongest. Transactions execute in a way equivalent to running serially — prevents dirty reads, nonrepeatable reads, and phantom reads.\n\n**Tradeoffs**: Higher isolation reduces anomalies but lowers concurrency and throughput (locks more, more contention). Lower isolation gives more performance but allows anomalies.",
+    "context": "Database / concurrency",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["database", "concurrency", "isolation"]
+  },
+  {
+    "id": "backend-6",
+    "question": "What is optimistic locking and pessimistic locking? When would you use each?",
+    "answer": "These are concurrency control strategies:\n\n- **Pessimistic Locking**: You lock data (row, table) before reading or modifying it to prevent conflicts. You assume conflicts are likely, so you prevent them. Good when contention is high or data is frequently modified.\n- **Optimistic Locking**: You proceed without locking, but before commit you check whether the data changed since you last read it (e.g. via a version number or timestamp). If it changed, you abort/ retry. Good when contention is low and you want more concurrency.\n\nUse pessimistic locking when collisions are likely and correctness is critical; use optimistic locking when collisions are rare and you want scalable reads.",
+    "context": "Database / concurrency",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["locking", "concurrency"]
+  },
+  {
+    "id": "backend-7",
+    "question": "What is eventual consistency? How does it differ from strong consistency?",
+    "answer": "In **strong consistency**, once a write completes, all subsequent reads will see that write everywhere. The system behaves as though all operations are instantaneous and globally seen.\n\nIn **eventual consistency**, the system allows temporary divergence: reads might see stale data, but given enough time (assuming no new writes), all replicas will converge to the same state.\n\nEventual consistency is often used in distributed systems for better availability and partition tolerance (favors AP in CAP), but at the cost of read anomalies in short term.",
+    "context": "Distributed systems",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["consistency", "distributed"]
+  },
+  {
+    "id": "backend-8",
+    "question": "What is a race condition? How can you prevent it in backend systems?",
+    "answer": "A **race condition** occurs when two or more threads/processes access and manipulate shared data concurrently, and the final outcome depends on the timing of their operations.\n\nPrevention techniques include:\n- Use locks (mutex, synchronized blocks)\n- Use atomic operations / compare-and-swap (CAS)\n- Use transactional memory or software transactional systems\n- Use thread-safe data structures\n- Design to minimize shared mutable state (immutable objects, message-passing)\n- Use optimistic concurrency control (version checking)",
+    "context": "Concurrency / threading",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["concurrency", "synchronization"]
+  },
+  {
+    "id": "backend-9",
+    "question": "What is a deadlock? How do you detect and resolve it?",
+    "answer": "A **deadlock** happens when two or more transactions or threads are each waiting for the other to release a resource, so none can proceed.\n\n**Detection**:\n- Wait-for graph: nodes represent threads/transactions, edges represent waiting on resources; cycles mean deadlock.\n- Timeout: if a thread waits too long, assume deadlock.\n\n**Resolution / Prevention**:\n- Lock ordering: acquire locks in a globally defined order to prevent cycles.\n- Deadlock timeout / detection and rollback of one of the participants.\n- Use try-locks (non-blocking), back off and retry.\n- Reduce granularity of locks or use fewer locks (coarse locks).",
+    "context": "Concurrency / transactions",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["deadlock", "concurrency"]
+  },
+  {
+    "id": "backend-10",
+    "question": "What is the difference between monolithic architecture and microservices? What are pros & cons?",
+    "answer": "**Monolithic architecture**: A single unified application containing all functionality.\n\n**Microservices architecture**: The application is decomposed into small, loosely coupled services, each with its own responsibility.\n\n**Pros of monoliths**:\n- Simpler to develop and deploy (single unit)\n- Easier to test (one codebase)\n- Lower operational overhead initially\n\n**Cons of monoliths**:\n- Hard to scale parts independently\n- Difficult to maintain as the codebase grows\n- Deployment risks: small change requires redeploy of whole app\n\n**Pros of microservices**:\n- Independent deployment and scaling per service\n- Teams can work independently on services\n- Fault isolation (one service failure doesn’t necessarily crash everything)\n\n**Cons of microservices**:\n- Operational complexity: distributed system, network, resilience\n- Inter-service communication, RPC, versioning, consistency challenges\n- Data management across services, cross-service transactions, debugging harder",
+    "context": "Architecture / system design",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["architecture", "microservices", "monolith"]
+  },
+  {
+    "id": "backend-11",
+    "question": "In a microservices architecture, how do you handle transactions that span multiple services?",
+    "answer": "There’s no perfect solution; common approaches include:\n\n- **Two-phase commit (2PC)**: Distributed transaction protocol that locks resources across services; but it’s heavy, blocking, and less fault tolerant.\n- **Sagas**: A saga is a sequence of local transactions. If one step fails, compensating (undo) transactions run to roll back previous steps. There are two styles:\n  - Choreography: each service triggers the next through events\n  - Orchestration: a central saga orchestrator coordinates steps\n- **Eventual consistency & compensation**: Accept that the system may be temporarily inconsistent, but design compensating actions to restore consistency later\n- **Idempotent operations** and retries to handle partial failures.\n\nEach approach has tradeoffs in complexity, latency, and failure handling.",
+    "context": "Distributed architecture",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["microservices", "transactions", "saga"]
+  },
+  {
+    "id": "backend-12",
+    "question": "What is API versioning and why is it important?",
+    "answer": "API versioning is a strategy for evolving APIs without breaking existing clients. As you introduce changes (new features, modifications), older clients should continue to function.\n\nCommon versioning techniques:\n- URI versioning (e.g. `/v1/users`, `/v2/users`)\n- Request header versioning (client sends version header)\n- Media type versioning (e.g. `application/vnd.myapi.v1+json`)\n\nIt’s important because clients (mobile apps, external consumers) may still use older versions, and breaking changes can lead to failures. Good versioning enables backward compatibility and safe evolution.",
+    "context": "API design",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["api", "versioning", "backward compatibility"]
+  },
+  {
+    "id": "backend-13",
+    "question": "What is idempotency in APIs? Why is it desired?",
+    "answer": "An operation is **idempotent** if performing it multiple times has the same effect as performing it once.\n\nFor APIs, endpoints like `DELETE` or `PUT` are expected to be idempotent: calling them multiple times should not produce extra side effects. This is very useful in unreliable network conditions: clients can retry without fear of duplicating work.\n\nIdempotency helps in handling retries safely, ensuring resilience in distributed environments.",
+    "context": "API design / reliability",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["api", "reliability", "retry"]
+  },
+  {
+    "id": "backend-14",
+    "question": "What are caching strategies you can use in backends?",
+    "answer": "Several caching strategies are common:\n\n- **Read-through / Write-through**: Cache sits in front of DB. On read, if cache miss, fetch from DB and populate cache. On write, write to DB and cache synchronously.\n- **Write-back (Write-behind)**: Write to cache first, asynchronously persist to DB later.\n- **Cache aside (Lazy loading)**: Application explicitly reads from cache first; on miss, fetch from DB and populate the cache; on write, invalidate cache or update cache.\n- **Distributed caches**: e.g. Redis, Memcached, used across multiple application servers.\n- **Expiration & eviction policies**: TTL (time-to-live), LRU (least recently used), LFU (least frequently used).\n- **Cache invalidation**: Very tricky part: strategies include time-based expiration, explicit invalidation on updates, or event-driven invalidation.\n\nChoosing the right strategy depends on your read/write ratio, consistency needs, and latency requirements.",
+    "context": "Performance / caching",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["caching", "performance"]
+  },
+  {
+    "id": "backend-15",
+    "question": "What is a distributed lock and how would you implement one?",
+    "answer": "A **distributed lock** ensures exclusive access to a resource across multiple nodes in a distributed system.\n\nCommon implementations:\n- Use a **Redis lock** (e.g. SETNX with expiration, Redlock algorithm)\n- Use a **ZooKeeper** ephemeral nodes / watchers / locks\n- Use **database row locks** in a shared DB (less scalable)\n- Use **etcd** / Consul locking primitives\n\nKey concerns: lock acquisition, lock expiry, handling node failures (ensuring lock release), ensuring lock safety (only the lock owner can release), avoiding deadlock/starvation, and correctness in partitioned environments.",
+    "context": "Distributed systems / concurrency",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["distributed", "locking", "coordination"]
+  },
+  {
+    "id": "backend-16",
+    "question": "What is message queuing / event-driven architecture? What are use cases?",
+    "answer": "In **event-driven architecture** systems communicate via events or messages, decoupling producers from consumers.\n\nA **message queue** is a buffer that holds messages until consumers process them.\n\nUse cases include:\n- Asynchronous processing (e.g. sending emails, processing images)\n- Event sourcing and data replication\n- Buffering bursty traffic\n- Integration between microservices or bounded contexts\n- Reliable retry, backpressure control, and decoupling of services\n\nConcerns: message ordering, delivery guarantees (at-least-once, at-most-once, exactly-once), idempotency, dead-letter queues, consumer scaling, and retries.",
+    "context": "Architecture / messaging",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["messaging", "event-driven", "architecture"]
+  },
+  {
+    "id": "backend-17",
+    "question": "What are the different delivery semantics in messaging (at-most-once, at-least-once, exactly-once)?",
+    "answer": "These terms define how many times a message is delivered in failure or retry scenarios:\n\n- **At-most-once**: Messages are delivered zero or one time (duplicates are avoided), but some messages may be lost.\n- **At-least-once**: Messages are delivered one or more times (guaranteed delivery), but duplicates are possible.\n- **Exactly-once**: Delivered exactly one time, no duplicates, no loss — ideal but harder to implement.\n\nTo approximate exactly-once: use idempotent operations, deduplication keys, transactional writes with message acknowledgments, or distributed consensus protocols.",
+    "context": "Messaging / reliability",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["messaging", "reliability"]
+  },
+  {
+    "id": "backend-18",
+    "question": "What is backpressure in streaming systems, and why is it important?",
+    "answer": "Backpressure is a mechanism to handle the situation when consumers can’t keep up with producers in data flow. Without backpressure, queues or buffers may overflow, leading to dropped data, high memory usage, or crashes.\n\nIn streaming systems or reactive systems, backpressure ensures producers slow down (or pause) until consumers catch up. It enables flow control, avoids resource exhaustion, and maintains system stability.",
+    "context": "Streaming / reactive systems",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["streaming", "flow control"]
+  },
+  {
+    "id": "backend-19",
+    "question": "What is eventual consistency vs strong consistency vs causal consistency?",
+    "answer": "We already covered strong consistency (immediate visibility) and eventual consistency (convergence over time). **Causal consistency** lies between them: it guarantees that causally related writes are seen in the same order by all nodes, but non-causally related writes may be seen in different orders. In other words, if operation B is caused by A, then everyone must see A before B, but unrelated operations may be seen in different orders.\n\nCausal consistency is weaker than strong consistency but stronger than eventual consistency, and is useful in collaborative systems.",
+    "context": "Distributed consistency",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["distributed", "consistency"]
+  },
+  {
+    "id": "backend-20",
+    "question": "What is a Bloom filter and where would you use it?",
+    "answer": "A **Bloom filter** is a probabilistic data structure that tests whether an element is in a set, with **false positives allowed but false negatives not**. It uses multiple hash functions and a bit array.\n\nUse cases:\n- Quickly check if something *might* be in a cache or database to avoid expensive lookups (e.g. check if a key exists in DB)\n- Filter spam, web crawler URL deduplication, membership tests in distributed systems\n- Memory-efficient presence checks when exact accuracy isn’t needed\n\nTradeoffs: small error rate (false positives), you can’t remove elements (unless using a counting Bloom filter), and you can’t list contents.",
+    "context": "Data structures / probabilistic",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["data structures", "probabilistic"]
+  },
+  {
+    "id": "backend-21",
+    "question": "What is CQRS (Command Query Responsibility Segregation)? Why use it?",
+    "answer": "CQRS is an architectural pattern that separates read and write models: **commands** change state (writes) and **queries** fetch state (reads), each using different models or even data stores.\n\nBenefits:\n- Optimize read and write paths independently (different schemas, scaling, caching)\n- Use event sourcing more naturally (store events and build read projections)\n- Simplify complex domains by focusing write logic separately\n\nTradeoffs:\n- Increased complexity, especially in synchronizing read models\n- Eventual consistency between command and query side\n- More infrastructure overhead (multiple models, projections, synchronization)",
+    "context": "Architecture / patterns",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["architecture", "patterns", "read/write"]
+  },
+  {
+    "id": "backend-22",
+    "question": "What is event sourcing?",
+    "answer": "Event sourcing is a pattern where state changes are captured as a sequence of immutable events, rather than storing only the current state.\n\nAll changes (commands) produce events, which are appended to an event store. The current state is derived by replaying or projecting those events.\n\nPros:\n- Audit trail / history is automatically preserved\n- Can reconstruct past states, time travel, debugging, event replay\n- Good fit with CQRS\n\nCons:\n- Complexity in schema evolution / event versioning\n- Replaying performance cost (snapshots needed)\n- Harder to reason about aggregates state transitions",
+    "context": "Architecture / patterns",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["architecture", "events", "audit"]
+  },
+  {
+    "id": "backend-23",
+    "question": "What is the difference between synchronous and asynchronous processing?",
+    "answer": "In **synchronous processing**, a caller waits (blocks) until the callee completes its work and returns a result. The flow is linear and blocking.\n\nIn **asynchronous processing**, the caller initiates a task and continues without waiting. The operation will complete later, often via callbacks, futures/promises, events, or polling.\n\nTradeoffs:\n- Async allows higher throughput and responsiveness (non-blocking I/O)\n- More complex error handling, coordination, and ordering\n- Must handle retries, callback hell, backpressure, concurrency control",
+    "context": "Architecture / concurrency",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["concurrency", "async"]
+  },
+  {
+    "id": "backend-24",
+    "question": "What is horizontal scaling vs vertical scaling?",
+    "answer": "These are two approaches to scaling applications or databases:\n\n- **Vertical scaling (scaling up)**: Increase the capacity of a single machine (more CPU, RAM, faster disks). Easier to implement, but limited by hardware and single point of failure.\n- **Horizontal scaling (scaling out)**: Add more machines/nodes (servers) and distribute workload across them. More scalable and resilient, but introduces complexity (distribution, consistency, partitioning, coordination).",
+    "context": "Scalability / system design",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "beginner",
+    "tags": ["scaling", "architecture"]
+  },
+  {
+    "id": "backend-25",
+    "question": "What is eventual consistency’s effect on reads and writes in distributed systems?",
+    "answer": "With eventual consistency:\n- **Writes**: a write may be accepted by one node and propagated asynchronously to others. Other nodes may not see it immediately.\n- **Reads**: some reads might return stale or out-of-date data until replication completes.\n\nTherefore, applications must be designed to tolerate staleness (e.g. by versioning, conflict resolution, or compensations).",
+    "context": "Distributed systems",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["consistency", "replication"]
+  },
+  {
+    "id": "backend-26",
+    "question": "What is a reverse proxy and why would you use one?",
+    "answer": "A **reverse proxy** sits in front of backend servers and forwards client requests to appropriate internal servers.\n\nBenefits:\n- Load balancing across multiple backend servers\n- SSL termination (offload TLS)\n- Caching static content, request routing, API gateway features\n- Security (hiding backend topology, filtering, rate limiting)\n- Compression, traffic shaping, logging, monitoring",
+    "context": "Networking / architecture",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["networking", "proxies", "architecture"]
+  },
+  {
+    "id": "backend-27",
+    "question": "What is the circuit breaker pattern? Why is it useful?",
+    "answer": "The **circuit breaker** is a resilience pattern that prevents repeated calls to a failing service, protecting the system from cascading failures.\n\nHow it works:\n- When a service fails too often, the circuit “opens” and further calls fail fast without being forwarded.\n- After a timeout, it transitions to “half-open” and allows a few trial calls.\n- If they succeed, it closes; otherwise, it opens again.\n\nIt’s useful to avoid resource exhaustion, reduce latency on downstream dependencies, and allow failing services time to recover.",
+    "context": "Resilience / fault tolerance",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["resilience", "patterns"]
+  },
+  {
+    "id": "backend-28",
+    "question": "What is rate limiting? Describe strategies to implement it.",
+    "answer": "Rate limiting controls how many requests a client (or IP, or user) can make in a given time window, protecting services from abuse or spikes.\n\nCommon strategies:\n- **Fixed window**: A counter resets after each time window (e.g. per minute)\n- **Sliding window**: More fine-grained, sliding window portion calculation for smoother limits\n- **Token bucket**: Tokens are added at a rate, requests “consume” tokens; if none remain, requests are dropped or delayed\n- **Leaky bucket**: Similar to token bucket but enforces steady outflow\n- **Distributed rate limiting**: Use shared store (Redis, Memcached) to coordinate limits across servers\n\nNeed to handle clock drift, synchronization, burst allowance, and client identification (IP, user, API key).",
+    "context": "Reliability / performance",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["rate limiting", "throttling"]
+  },
+  {
+    "id": "backend-29",
+    "question": "How do you handle cache invalidation in distributed systems?",
+    "answer": "Cache invalidation is hard (“there are only two hard things …”):\n\nCommon strategies:\n- **Time-based expiration (TTL)**: Let entries expire after a certain time\n- **Explicit invalidation**: On data update, send invalidation events or API calls to clear or update cache\n- **Write-through caching**: Write to cache and DB atomically so cache stays fresh\n- **Versioning / cache version keys**: Change a version or namespace in keys so old cache entries become unreachable\n- **Event-driven cache updates**: Use pub/sub or message bus to inform cache nodes of updates\n\nChallenges: race conditions (e.g. write DB then delete cache), stale reads, consistency, multiple cache layers (local + distributed).",
+    "context": "Caching / consistency",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["cache", "invalidation"]
+  },
+  {
+    "id": "backend-30",
+    "question": "How would you design a URL shortening service (tinyURL)? High-level architecture and data model.",
+    "answer": "This is a classic system design question. A high-level approach:\n\n**Requirements & Constraints**\n- Generate short unique keys (e.g. 6–8 chars)\n- Redirect quickly (low latency)\n- Handle huge volume of requests\n- Prevent collisions, possibly custom aliases, analytics, expiration, etc.\n\n**Architecture Sketch**\n- Client → API Gateway / Load Balancer → URL Service\n- URL Service: generate short code, store mapping in DB + caching layer (e.g. Redis)\n- Redirect service: lookup short code → full URL, redirect 301/302\n- Use a distributed cache (Redis) for fast lookup\n- Use a database for persistent mapping (SQL, NoSQL)\n- Partitioning / sharding key space (e.g. hash the short key)\n- Use a queue for background tasks (analytics, cleanup)\n- Monitoring, logging, rate limiting\n\n**Data model** (simplified):\n```\nShortURL {\n  code: string (PK),\n  original_url: string,\n  created_at: timestamp,\n  expire_at: timestamp?,\n  access_count: int\n}\n```\n\nConsider edge cases & enhancements: collisions, custom alias, expiration, bulk generation, analytics, A/B redirects, security (prevent malicious URLs), caching, scaling read vs write paths, replication, failover, etc.",
+    "context": "System design",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["system design", "architecture"]
+  },
+  {
+    "id": "backend-31",
+    "question": "How would you design a rate limiter service shared across multiple microservices?",
+    "answer": "A possible design:\n\n- Use a shared centralized store (e.g. Redis) where counters or tokens are maintained per client key.\n- Define a key format (e.g. `rate:<clientId>:<time-window>`), use atomic increment operations (INCR, INCRBY) and TTL for time windows.\n- Use Lua scripts in Redis to make checking + increment atomic.\n- Deploy the rate limiter as a service or middleware used by all services.\n- For high scale, partition rate keys across multiple Redis nodes (sharding) or use Redis Cluster.\n- Use local caching or token buckets on each node (with occasional sync) to reduce load.\n- Incorporate fallback, synchronized clocks, expiry cleanup, grace periods, burst allowances.\n- Provide APIs for config, monitoring, backoff guidance.\n\nChallenges: consistency across nodes, latency overhead, handling bursts, synchronization, distributed coordination.",
+    "context": "System design / services",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["rate limiting", "architecture", "microservices"]
+  },
+  {
+    "id": "backend-32",
+    "question": "What is a load balancer? What are strategies for distributing requests?",
+    "answer": "A **load balancer** distributes incoming traffic across multiple backend servers to improve reliability, performance, and availability.\n\nCommon strategies / algorithms:\n- **Round Robin**: Distribute sequentially in turn\n- **Least Connections**: Send to server with fewest current connections\n- **IP Hash / consistent hashing**: Use client IP or hash to route to same server (sticky sessions)\n- **Weighted algorithms**: Servers have weights (more powerful ones get more traffic)\n- **Health checks**: Remove unhealthy servers from rotation\n\nTypes: Layer 4 (TCP/UDP) or Layer 7 (HTTP) load balancing. You can also do header-based routing, path-based routing, SSL termination, session affinity, global load balancing across regions, etc.",
+    "context": "Networking / architecture",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["load balancing", "networking", "architecture"]
+  },
+  {
+    "id": "backend-33",
+    "question": "What is sticky session (session affinity)? When is it needed? What are drawbacks?",
+    "answer": "A **sticky session** (session affinity) ensures that once a client is routed to a specific backend server, subsequent requests from that client go to the same server.\n\nYou might need sticky sessions when:\n- You store session state in local memory or server-specific cache\n- Your service relies on per-instance state (not ideal)\n\nDrawbacks:\n- Uneven load distribution (some nodes may become hotspots)\n- Problems under failover (if server dies, session lost)\n- Reduced scalability (ties client to one node)\n- Harder to scale statelessly — better approach is to store sessions in shared store (Redis, database) and keep services stateless",
+    "context": "Architecture / sessions",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["sessions", "affinity", "scaling"]
+  },
+  {
+    "id": "backend-34",
+    "question": "Explain the concept of middleware in web backends. Give examples.",
+    "answer": "Middleware refers to a layer or component that sits between request arrival and the actual request handler, processing or transforming requests/responses.\n\nExamples & functionalities:\n- Logging / request tracing\n- Authentication / authorization (JWT validation)\n- Input validation, sanitization\n- Rate limiting, throttling\n- CORS (Cross-Origin Resource Sharing) handling\n- Exception / error handling, formatting error responses\n- Compression, response headers, caching headers\n\nIn frameworks like Express (Node.js), Django, Spring, middleware is a first-class concept chaining these behaviors before/after request handlers.",
+    "context": "Web frameworks / architecture",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "beginner",
+    "tags": ["web", "middleware"]
+  },
+  {
+    "id": "backend-35",
+    "question": "What is connection pooling? Why use it in backends?",
+    "answer": "Connection pooling is a technique of maintaining a pool of open (pre-established) connections to a database or external service that can be reused, rather than opening/closing a new connection per request.\n\nBenefits:\n- Reduces the overhead and latency of establishing new connections repeatedly\n- Reuses expensive resources (TCP, TLS handshake, authentication)\n- Controls max concurrent connections to prevent overload of DB\n- Better resource management, stability, and throughput\n\nYou must also handle idle timeouts, stale connections, pool sizing (min, max), and connection health checking.",
+    "context": "Performance / database",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["database", "connections"]
+  },
+  {
+    "id": "backend-36",
+    "question": "How do you design a scalable notification / push system (e.g. sending millions of emails or push notifications)?",
+    "answer": "High-level sketch:\n\n**Requirements**\n- High throughput\n- Fault tolerance\n- Retry / backoff\n- Batching, deduplication, scheduling, prioritization, throttling\n\n**Architecture**\n- API / ingestion layer where requests to send notifications come in\n- Message queue / event bus to buffer and smooth traffic\n- Worker pool / microservices that process events and send via third-party services (SMTP, push services)\n- Batching and rate-limiting per provider\n- Retry logic, dead-letter queues, backoff, circuit breaker around downstream providers\n- Monitoring, metrics, alerts, dashboards\n- Possibly partitioning by region, user group, or channel (email / push / SMS)\n- Use caching / deduplication to avoid duplicate sends\n\n**Challenges & tradeoffs**\n- Ensuring delivery, handling failures, respecting provider limits (rate limits), avoiding blacklisting\n- Cost of sending, queuing delays, ordering, idempotency",
+    "context": "System design / architecture",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["design", "scalability", "messaging"]
+  },
+  {
+    "id": "backend-37",
+    "question": "Explain the difference between SQL and NoSQL databases. When to use each?",
+    "answer": "**SQL (relational)** databases:\n- Schema-based, structured (tables, columns)\n- Support complex queries, joins, ACID transactions\n- Examples: PostgreSQL, MySQL, SQL Server\n\n**NoSQL** databases vary (document, key-value, wide-column, graph):\n- Schema-less or flexible schemas\n- Designed for horizontal scalability, high throughput, eventual consistency\n- Examples: MongoDB (document), Cassandra (wide-column), Redis (key-value), Neo4j (graph)\n\nWhen to use which:\n- Use SQL when relational integrity, complex joins, transactions, strong consistency are required.\n- Use NoSQL when you need high throughput, flexible schemas, large volumes, distributed scalability, or when your data is unstructured or semi-structured.\n\nOften in modern systems, you’ll use both (polyglot persistence) depending on use case (e.g. relational data in SQL, logs or sessions in NoSQL).",
+    "context": "Database / data storage",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["database", "SQL", "NoSQL"]
+  },
+  {
+    "id": "backend-38",
+    "question": "What is a primary key and a foreign key? Why are they important?",
+    "answer": "In relational databases:\n\n- **Primary key (PK)**: A unique identifier for each record in a table. Enforces uniqueness and non-null constraint.\n- **Foreign key (FK)**: A field (or set of fields) in one table that references the primary key in another table, establishing a relationship between tables.\n\nThey are important because:\n- They enforce referential integrity (you cannot have orphan records)\n- They allow relationships (one-to-many, many-to-many) to be modeled in relational schemas\n- They support join operations and relational queries\n- They enable indexing and efficient lookups",
+    "context": "Database / relational modeling",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "beginner",
+    "tags": ["database", "schema", "relational"]
+  },
+  {
+    "id": "backend-39",
+    "question": "What are indexes in databases, and what tradeoffs do they bring?",
+    "answer": "An **index** is a data structure (e.g. B-tree, hash, inverted index) that helps speed up reads (search, retrieval) by allowing quick lookup rather than scanning full table.\n\nAdvantages:\n- Speeds up SELECT / WHERE / JOIN queries\n- Helps with ordering, grouping, uniqueness (unique indexes)\n\nTradeoffs / Costs:\n- Slows down writes (INSERT, UPDATE, DELETE) because index must be maintained\n- Uses extra storage (disk/ memory)\n- Too many indexes can degrade performance\n- Index fragmentation / maintenance overhead (rebuilds, reorganization)\n- Wrong indexes or poorly chosen indexes can hurt performance more than help",
+    "context": "Database optimization",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["database", "indexes"]
+  },
+  {
+    "id": "backend-40",
+    "question": "What is a normalized database schema? What are the normal forms (1NF, 2NF, 3NF)?",
+    "answer": "**Normalization** is the process of structuring a relational database to reduce redundancy and improve integrity.\n\n**Normal Forms** in brief:\n- **1NF (First Normal Form)**: Every column is atomic (no repeating groups or arrays)\n- **2NF (Second Normal Form)**: In 1NF, and every non-key attribute is fully functionally dependent on the primary key (no partial dependency)\n- **3NF (Third Normal Form)**: In 2NF, and no transitive dependencies (non-key attributes depend only on primary key, not other non-key attributes)\n\nHigher forms exist (BCNF, 4NF, 5NF) for stricter rules, but 3NF is often sufficient in practice. Normalization helps avoid data anomalies (insert, update, delete anomalies), but sometimes you denormalize for performance in read-heavy systems.",
+    "context": "Database modeling",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["database", "schema", "normalization"]
+  },
+  {
+    "id": "backend-41",
+    "question": "What is denormalization? When is it useful / harmful?",
+    "answer": "**Denormalization** is the intentional introduction of redundancy into a database schema (undoing some normalization) to improve read performance.\n\nWhen useful:\n- In read-heavy systems where join performance is a bottleneck\n- When frequently querying combined data across tables\n- For caching result sets inside the database\n\nWhen harmful:\n- Extra redundancy causes data consistency challenges (updates must be propagated)\n- More complex write logic (update multiple places)\n- Use more storage, risk of data anomalies\n- Harder to maintain and reason about data correctness",
+    "context": "Database modeling / performance",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["database", "denormalization"]
+  },
+  {
+    "id": "backend-42",
+    "question": "What is indexing on multiple columns (composite index)? How does ordering matter?",
+    "answer": "A **composite index** is an index on two or more columns together (e.g. `(col1, col2)`).\n\nOrdering matters because:\n- The index can be used when the leftmost column(s) are present in the query filter or join condition.\n- E.g. index on `(A, B, C)` can be used for queries filtering by `A`, `A & B`, or `A & B & C`, but generally not for just `B & C` unless the DB supports index skipping or advanced optimizations.\n\nGood composite index design requires understanding query patterns (which columns are filtered, grouped, sorted) so that the index ordering matches those patterns. Also watch out for index size and maintenance cost.",
+    "context": "Database optimization",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["indexing", "database"]
+  },
+  {
+    "id": "backend-43",
+    "question": "What is sharding key selection? What makes a good shard key?",
+    "answer": "Choosing a shard key is critical to distribution effectiveness. A good shard key:\n\n- Has high cardinality so data is spread evenly\n- Is relatively immutable (not often changed)\n- Has uniform distribution (avoids hotspots)\n- Aligns with query patterns (so queries localize to one shard if possible)\n- Avoids correlated key usage (e.g. sequential or timestamp-based keys can lead to write hotspots)\n- Is simple (easy to calculate, hashable)\n\nPoor shard key choice can cause unbalanced shards, rebalancing complexity, cross-shard queries, and degraded performance.",
+    "context": "Scaling / database",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["sharding", "scaling"]
+  },
+  {
+    "id": "backend-44",
+    "question": "What is a write-ahead log (WAL)? How is it used in databases?",
+    "answer": "A **Write-Ahead Log (WAL)** is a mechanism where changes are first recorded in a durable log before being applied to the main database. This ensures durability and crash recovery.\n\nHow it works:\n- When a transaction makes changes, the changes are appended to the log on disk (flush) before modifying data pages.\n- If a crash happens, recovery reads the WAL to replay or roll back operations to bring the database to a consistent state.\n\nWAL ensures that no committed change is lost and that even in the event of a crash the system can recover to a consistent state. Many relational databases (PostgreSQL, MySQL’s InnoDB) use WAL or similar journaling mechanisms.",
+    "context": "Database internals / durability",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["database", "durability", "internals"]
+  },
+  {
+    "id": "backend-45",
+    "question": "Explain how master-slave (primary-replica) replication works. What are tradeoffs?",
+    "answer": "In **primary-replica replication**, writes go to the primary server; that server replicates changes asynchronously (or synchronously) to one or more replica servers. Reads can be directed to replicas to scale read capacity.\n\nTradeoffs & challenges:\n- **Lag / stale reads**: replicas might lag behind primary, so reads may be stale\n- **Failover**: if primary fails, need mechanism to elect a new primary (consensus, leader election)\n- **Conflict resolution**: if writes are allowed on multiple nodes (multi-master), you need conflict resolution\n- **Load balancing**: deciding which queries go to replicas vs primary\n- **Network overhead**: replication traffic, bandwidth, consistency guarantees (sync vs async)\n- **Split brain scenarios** if multiple primaries accidentally arise\n\nReplicas help scale reads and improve availability, but writes still go through the primary in this pattern.",
+    "context": "Database / replication",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["replication", "scaling"]
+  },
+  {
+    "id": "backend-46",
+    "question": "How would you design a “search” feature for a large dataset (millions of records)?",
+    "answer": "High-level approach:\n\n**Requirements & constraints**\n- Full-text search, filters, facets, pagination, ranking, performance, relevance, near real-time updates, scaling\n\n**Architecture**\n- Use a specialized search engine (Elasticsearch, OpenSearch, Solr) rather than relational DB for advanced search capabilities\n- Index documents with fields, tokenization, analyzers, stemming, stop words, etc.\n- Use inverted indexes, shards, replicas, distributed search cluster\n- Design strategies for updates: real-time or near real-time indexing, batched indexing\n- Use caching, query optimization, pagination (scroll, search_after, cursor methods)\n- Implement query federation, fallback to DB for missing data, re-ranking, boosting, custom scoring, autocomplete, suggestions, spell correction\n- Monitor index size, freshness, replication lag, cluster health, shards and rebalancing\n\nChallenges: consistency between DB and search index, stale data, indexing performance, query complexity, multi-field ranking, synonyms, scaling clusters, shard imbalances, failover.",
+    "context": "System design / search",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "advanced",
+    "tags": ["search", "architecture"]
+  },
+  {
+    "id": "backend-47",
+    "question": "What is a content delivery network (CDN)? How does it work and why use it?",
+    "answer": "A **CDN** is a geographically distributed network of caching servers that deliver web content (static or dynamic) to users from the node closest to them.\n\nHow it works:\n- You upload or point to your assets (images, CSS, JS, videos, etc.).\n- When a user requests content, the request is routed to the nearest edge server, which serves cached content if available. If not, it fetches from origin, caches it, and returns it.\n\nBenefits:\n- Lower latency due to proximity\n- Reduced load on origin servers\n- Better global availability and fault tolerance\n- DDoS mitigation, traffic absorption, TLS termination, caching, compression\n\nConsiderations: cache invalidation, geographic content restrictions, dynamic vs static content, purge mechanisms, origin fallback, and consistency.",
+    "context": "Networking / architecture",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["cdn", "performance", "architecture"]
+  },
+  {
+    "id": "backend-48",
+    "question": "What is payload vs envelope in API requests? Why separate them?",
+    "answer": "In API design,\n\n- The **payload** is the actual data (body content) — the business data you’re sending or receiving.\n- The **envelope** is a wrapper or container around the payload that may include metadata (e.g. status, error codes, paging info, trace IDs, timestamps, pagination, links).\n\nSeparating them helps:\n- Keep the core data model clean and consistent\n- Provide metadata without mixing with domain data\n- Allow standard response structure across APIs (e.g. `data`, `errors`, `meta` fields)\n- Flexibility to evolve metadata (pagination, links, debugging info) without changing payload structure",
+    "context": "API design",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["api", "design"]
+  },
+  {
+    "id": "backend-49",
+    "question": "What is HTTP/2 multiplexing and how does it improve performance compared to HTTP/1.1?",
+    "answer": "In HTTP/1.1, each TCP connection can handle one request-response at a time (or pipelining, which has limitations). To parallelize, browsers open multiple connections.\n\n**HTTP/2 multiplexing** allows multiple streams (requests/responses) to share the same TCP connection concurrently. It interleaves frames from different streams, so you don’t need multiple connections.\n\nBenefits:\n- Reduces overhead of TCP connection setup and TLS handshakes\n- Better resource utilization\n- Eliminates head-of-line blocking at HTTP layer (though TCP still has its head-of-line issues)\n- Enables server push, header compression, priority of streams\n\nThus, HTTP/2 provides lower latency, higher throughput, and more efficient use of connections.",
+    "context": "Networking / web protocols",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["http", "performance", "protocol"]
+  },
+  {
+    "id": "backend-50",
+    "question": "Explain how you would handle large file uploads or streaming in a backend service.",
+    "answer": "Key concerns: memory usage, timeouts, resumability, chunking, streaming, storage, bandwidth.\n\nApproaches:\n- **Streaming / chunked uploads**: Accept file in chunks (streams) rather than loading entire file in memory\n- **Multipart upload**: Break file into parts, upload in parallel or sequential, then assemble (common in S3, cloud storage)\n- **Resumable uploads**: Support resume in case of network failure (e.g. via range headers, upload IDs, checksums)\n- **Presigned URLs / direct-to-storage**: Let clients upload directly to object storage (S3, GCS, Azure Blob) instead of through your backend, reducing load\n- **Backpressure, rate limiting**, concurrency limits\n- **Virus scanning, validation, quotas, streaming transformations (e.g. image resize, transcoding)**\n- **Temporary location / staging**, checksum verification, integrity, retries, cleanup of partial uploads\n- **Progress tracking, user feedback**, monitoring and logging\n\nChoosing streaming + direct-to-storage is often best for very large files to reduce load and memory usage on your backend.",
+    "context": "Backend / file handling",
+    "type": "TECHNICAL",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": ["file upload", "streaming", "architecture"]
+  }
+]

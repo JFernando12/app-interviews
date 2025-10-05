@@ -70,15 +70,15 @@ function TechnicalPageContent() {
   const router = useRouter();
 
   // Available technologies with question files
-  const availableLanguages = ['python', 'react', 'nodejs'];
+  const availableLanguages = ['python', 'react', 'nodejs', 'general'];
 
-  // Get initial technology from URL or default to 'python'
+  // Get initial technology from URL or default to 'general'
   // Validate that the language has question files available
   const urlLanguage = searchParams.get('programming_language');
   const initialTechnology =
     urlLanguage && availableLanguages.includes(urlLanguage)
       ? urlLanguage
-      : 'python';
+      : 'general';
 
   const [selectedTechnology, setSelectedTechnology] =
     useState<string>(initialTechnology);
@@ -131,8 +131,16 @@ function TechnicalPageContent() {
   };
 
   // Technology filters - only show technologies with available question files
-  // Available question files: nodejs.json, python.json, react.json
+  // Available question files: nodejs.json, python.json, react.json, general.json
   const technologies: TechnologyFilter[] = [
+    {
+      id: 'general',
+      name: 'General',
+      icon: '🎯',
+      color: 'text-gray-600',
+      bgColor: 'bg-gradient-to-br from-gray-50 via-gray-100 to-slate-100',
+      borderColor: 'border-gray-200 hover:border-gray-300',
+    },
     {
       id: 'python',
       name: 'Python',
