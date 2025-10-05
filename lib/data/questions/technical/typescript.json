@@ -1,0 +1,502 @@
+[
+  {
+    "id": "typescript-1",
+    "question": "What is TypeScript and how is it different from JavaScript?",
+    "answer": "TypeScript is a **superset of JavaScript** developed by Microsoft. It adds **static typing**, **interfaces**, and **advanced tooling** on top of JavaScript. TypeScript code compiles (transpiles) to plain JavaScript that runs anywhere JavaScript does.\n\n**Key differences:**\n- TypeScript supports **static type checking**, JavaScript does not.\n- TypeScript introduces **interfaces, enums, generics, and decorators**.\n- TypeScript requires compilation, JavaScript does not.\n\n```typescript\nlet message: string = 'Hello TypeScript';\nconsole.log(message);\n```",
+    "context": "TypeScript fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["typescript", "javascript", "static-typing", "transpilation"]
+  },
+  {
+    "id": "typescript-2",
+    "question": "What are the benefits of using TypeScript?",
+    "answer": "The main benefits of TypeScript include:\n\n1. **Type Safety:** Prevents many runtime errors through static type checking.\n2. **Improved IDE Support:** Autocompletion, refactoring, and IntelliSense.\n3. **Early Bug Detection:** Catch errors during compile time.\n4. **Modern JavaScript Features:** Supports ES6/ESNext features with backward compatibility.\n5. **Scalability:** Ideal for large codebases and enterprise projects.",
+    "context": "Advantages and tooling",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["benefits", "productivity", "types", "tooling"]
+  },
+  {
+    "id": "typescript-3",
+    "question": "What are the basic data types in TypeScript?",
+    "answer": "TypeScript supports several primitive and object data types:\n\n- **string** – textual data\n- **number** – both integers and floating points\n- **boolean** – true or false\n- **null / undefined** – absence of a value\n- **any** – disables type checking\n- **void** – for functions with no return\n- **unknown** – safer alternative to any\n- **never** – represents values that never occur (like thrown errors)\n\n```typescript\nlet username: string = 'Alice';\nlet age: number = 30;\nlet isAdmin: boolean = false;\n```",
+    "context": "TypeScript syntax and types",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["data-types", "syntax", "primitives"]
+  },
+  {
+    "id": "typescript-4",
+    "question": "What is the difference between 'any' and 'unknown' types in TypeScript?",
+    "answer": "- **any:** Disables all type checking — you can assign any value and perform any operation.\n- **unknown:** You can assign any value, but you **must perform type checking** before using it.\n\n**Best Practice:** Use `unknown` instead of `any` for safer code.\n\n```typescript\nlet data: any = 10;\ndata.toFixed(); // OK\n\nlet input: unknown = 'text';\n// input.toUpperCase(); // Error\nif (typeof input === 'string') {\n  console.log(input.toUpperCase()); // Safe\n}\n```",
+    "context": "Type safety and inference",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["types", "any", "unknown", "safety"]
+  },
+  {
+    "id": "typescript-5",
+    "question": "What are interfaces in TypeScript?",
+    "answer": "An **interface** defines a contract for the structure of an object. It ensures that an object has specific properties and types.\n\nInterfaces are used for type-checking and code consistency.\n\n```typescript\ninterface User {\n  name: string;\n  age: number;\n  isAdmin?: boolean; // optional property\n}\n\nconst user1: User = {\n  name: 'Bob',\n  age: 25\n};\n```",
+    "context": "Object-oriented programming",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["interfaces", "oop", "objects", "structure"]
+  },
+  {
+    "id": "typescript-6",
+    "question": "What are type aliases in TypeScript?",
+    "answer": "**Type aliases** allow you to create a new name for a type. They are often used for union, intersection, or complex types.\n\n```typescript\ntype ID = string | number;\ntype User = {\n  id: ID;\n  name: string;\n};\n\nconst user: User = { id: 1, name: 'Alice' };\n```",
+    "context": "Type system",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["types", "aliases", "unions"]
+  },
+  {
+    "id": "typescript-7",
+    "question": "What is the difference between an interface and a type alias?",
+    "answer": "| Feature | Interface | Type Alias |\n|:--|:--|:--|\n| **Extends** | Can extend multiple interfaces | Can extend other types (using intersections) |\n| **Merging** | Automatically merges when declared multiple times | Cannot merge |\n| **Usage** | Best for object shapes and classes | Useful for unions, primitives, and complex types |\n\n```typescript\ninterface Person { name: string }\ntype Employee = Person & { salary: number };\n```",
+    "context": "Type system and structure",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["interface", "type-alias", "comparison"]
+  },
+  {
+    "id": "typescript-8",
+    "question": "What are generics in TypeScript?",
+    "answer": "Generics allow you to write reusable, type-safe code by creating components that work with multiple types.\n\n```typescript\nfunction identity<T>(value: T): T {\n  return value;\n}\n\nlet output1 = identity<string>('Hello');\nlet output2 = identity<number>(123);\n```",
+    "context": "TypeScript generics",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["generics", "functions", "type-safety"]
+  },
+  {
+    "id": "typescript-9",
+    "question": "What is type inference in TypeScript?",
+    "answer": "TypeScript can **infer** types automatically based on the value assigned to variables. This means you don’t always need explicit type annotations.\n\n```typescript\nlet count = 10; // inferred as number\n// count = 'text'; // Error: Type 'string' is not assignable to type 'number'\n```",
+    "context": "TypeScript fundamentals",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["type-inference", "automatic", "compiler"]
+  },
+  {
+    "id": "typescript-10",
+    "question": "What are union and intersection types in TypeScript?",
+    "answer": "- **Union (|):** A variable can hold one of several types.\n- **Intersection (&):** Combines multiple types into one.\n\n```typescript\ntype Result = string | number;\nlet value: Result = 'Success';\nvalue = 42; // also valid\n\ntype Person = { name: string };\ntype Contact = { email: string };\ntype Employee = Person & Contact;\n```",
+    "context": "Type operations",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["unions", "intersections", "types"]
+  },
+  {
+    "id": "typescript-11",
+    "question": "What is type assertion in TypeScript?",
+    "answer": "Type assertion is a way to tell the compiler that you know more about the value’s type than it does.\n\n```typescript\nlet input = 'Hello' as string;\nlet len = (input as string).length;\n```\n\nIt does not change the runtime type, only the compiler’s understanding.",
+    "context": "Type casting and assertions",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["type-assertion", "casting"]
+  },
+  {
+    "id": "typescript-12",
+    "question": "What are enums in TypeScript?",
+    "answer": "**Enums** are used to define a set of named constants, improving code readability and intent.\n\n```typescript\nenum Direction {\n  Up = 1,\n  Down,\n  Left,\n  Right\n}\n\nlet move: Direction = Direction.Up;\n```",
+    "context": "Enumerations",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["enums", "constants", "types"]
+  },
+  {
+    "id": "typescript-13",
+    "question": "What is the difference between 'null' and 'undefined' in TypeScript?",
+    "answer": "- **undefined:** A variable that has been declared but not assigned a value.\n- **null:** A variable that explicitly has no value.\n\n```typescript\nlet a: undefined = undefined;\nlet b: null = null;\n```",
+    "context": "TypeScript basics",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["null", "undefined", "values"]
+  },
+  {
+    "id": "typescript-14",
+    "question": "What is the 'never' type used for?",
+    "answer": "The `never` type represents values that never occur, such as functions that always throw or never return.\n\n```typescript\nfunction fail(msg: string): never {\n  throw new Error(msg);\n}\n```",
+    "context": "Special types",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["never", "types", "functions"]
+  },
+  {
+    "id": "typescript-15",
+    "question": "What are decorators in TypeScript?",
+    "answer": "**Decorators** are special declarations that can modify classes, methods, or properties at design time.\n\nThey are prefixed with `@` and require enabling `experimentalDecorators` in `tsconfig.json`.\n\n```typescript\nfunction Logger(target: any) {\n  console.log('Logging...', target);\n}\n\n@Logger\nclass Example {}\n```",
+    "context": "Meta-programming features",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "advanced",
+    "tags": ["decorators", "meta-programming", "classes"]
+  },
+  {
+    "id": "typescript-16",
+    "question": "What are modules in TypeScript?",
+    "answer": "Modules help organize code by splitting it into files and controlling visibility using **export** and **import**.\n\n```typescript\n// user.ts\nexport const name = 'Alice';\n\n// main.ts\nimport { name } from './user';\n```",
+    "context": "Code organization",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["modules", "imports", "exports"]
+  },
+  {
+    "id": "typescript-17",
+    "question": "What is the purpose of 'readonly' in TypeScript?",
+    "answer": "The `readonly` modifier ensures that a property cannot be reassigned after initialization.\n\n```typescript\nclass Person {\n  readonly name: string;\n  constructor(name: string) {\n    this.name = name;\n  }\n}\n```",
+    "context": "Object immutability",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["readonly", "classes", "immutability"]
+  },
+  {
+    "id": "typescript-18",
+    "question": "What are access modifiers in TypeScript?",
+    "answer": "Access modifiers control the visibility of class members:\n- **public:** accessible everywhere (default)\n- **private:** accessible only within the class\n- **protected:** accessible in the class and subclasses\n\n```typescript\nclass Car {\n  public brand: string;\n  private engine: string;\n  protected year: number;\n}\n```",
+    "context": "OOP visibility control",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["access-modifiers", "oop", "classes"]
+  },
+  {
+    "id": "typescript-19",
+    "question": "What is structural typing in TypeScript?",
+    "answer": "TypeScript uses **structural typing**, meaning that compatibility is based on shape, not explicit type names.\n\n```typescript\ninterface Point { x: number; y: number }\nlet p = { x: 10, y: 20, z: 30 };\nlet point: Point = p; // OK because it matches the structure\n```",
+    "context": "Type system philosophy",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["structural-typing", "interfaces", "compatibility"]
+  },
+  {
+    "id": "typescript-20",
+    "question": "What is type narrowing?",
+    "answer": "Type narrowing is the process of refining a variable’s type within a control flow based on conditions.\n\n```typescript\nfunction printId(id: string | number) {\n  if (typeof id === 'string') {\n    console.log(id.toUpperCase());\n  } else {\n    console.log(id.toFixed());\n  }\n}\n```",
+    "context": "Type checking and refinement",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["type-narrowing", "conditions", "flow-analysis"]
+  },
+  {
+    "id": "typescript-21",
+    "question": "What is a tuple in TypeScript?",
+    "answer": "A **tuple** is a fixed-length array with known types at each index. Useful for representing a collection of elements with different types.\n\n```typescript\nlet user: [string, number];\nuser = ['Alice', 25];\n// user = [25, 'Alice']; // Error\n```",
+    "context": "Data structures",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["tuple", "array", "data-structures"]
+  },
+  {
+    "id": "typescript-22",
+    "question": "What is the difference between 'interface' and 'class' in TypeScript?",
+    "answer": "An **interface** defines a contract (structure) that classes or objects must follow. A **class** defines both the structure and implementation.\n\n```typescript\ninterface Animal { sound(): void }\nclass Dog implements Animal {\n  sound() { console.log('Woof'); }\n}\n```",
+    "context": "OOP and type contracts",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["interface", "class", "oop"]
+  },
+  {
+    "id": "typescript-23",
+    "question": "What are utility types in TypeScript?",
+    "answer": "Utility types are built-in generic helpers for common transformations:\n\n- **Partial<T>**: Makes all properties optional\n- **Required<T>**: Makes all properties required\n- **Readonly<T>**: Makes all properties readonly\n- **Pick<T, K>**: Selects specific properties\n- **Omit<T, K>**: Excludes specific properties\n\n```typescript\ninterface User { id: number; name: string; age?: number }\ntype OptionalUser = Partial<User>;\n```",
+    "context": "Built-in helpers",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["utility-types", "partial", "omit", "pick"]
+  },
+  {
+    "id": "typescript-24",
+    "question": "What is type guarding in TypeScript?",
+    "answer": "**Type guards** are expressions that narrow down the type within a conditional block using operators like `typeof`, `instanceof`, or custom functions.\n\n```typescript\nfunction isString(value: unknown): value is string {\n  return typeof value === 'string';\n}\n\nfunction print(value: string | number) {\n  if (isString(value)) console.log(value.toUpperCase());\n}\n```",
+    "context": "Type refinement",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["type-guards", "narrowing", "safety"]
+  },
+  {
+    "id": "typescript-25",
+    "question": "What are index signatures in TypeScript?",
+    "answer": "Index signatures allow you to define types for objects with dynamic property names.\n\n```typescript\ninterface StringMap {\n  [key: string]: string;\n}\nconst colors: StringMap = { red: '#f00', green: '#0f0' };\n```",
+    "context": "Object typing",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["index-signatures", "dynamic", "objects"]
+  },
+  {
+    "id": "typescript-26",
+    "question": "What is the 'keyof' operator?",
+    "answer": "The `keyof` operator returns a union of all property names of a given type.\n\n```typescript\ninterface User { id: number; name: string }\ntype UserKeys = keyof User; // 'id' | 'name'\n```",
+    "context": "Type operators",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["keyof", "types", "reflection"]
+  },
+  {
+    "id": "typescript-27",
+    "question": "What is the 'typeof' operator used for in TypeScript?",
+    "answer": "In TypeScript, `typeof` can be used both at runtime and compile-time.\n\n- **Runtime:** Standard JavaScript usage.\n- **Compile-time:** Extracts the type of a variable.\n\n```typescript\nlet person = { name: 'Alice', age: 30 };\ntype Person = typeof person;\n```",
+    "context": "Type reflection",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["typeof", "types", "reflection"]
+  },
+  {
+    "id": "typescript-28",
+    "question": "What is the 'in' operator in mapped types?",
+    "answer": "The `in` operator iterates over keys in a union type when creating mapped types.\n\n```typescript\ntype Keys = 'name' | 'age';\ntype Person = {\n  [K in Keys]: string;\n};\n```",
+    "context": "Mapped types",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "advanced",
+    "tags": ["in-operator", "mapped-types", "types"]
+  },
+  {
+    "id": "typescript-29",
+    "question": "What is a mapped type?",
+    "answer": "A **mapped type** creates new types by transforming properties of an existing type.\n\n```typescript\ninterface User { id: number; name: string }\ntype ReadonlyUser = { [K in keyof User]: Readonly<User[K]> };\n```",
+    "context": "Advanced types",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "advanced",
+    "tags": ["mapped-types", "type-transformation"]
+  },
+  {
+    "id": "typescript-30",
+    "question": "What are conditional types?",
+    "answer": "Conditional types use a ternary structure to choose a type based on a condition.\n\n```typescript\ntype IsString<T> = T extends string ? 'yes' : 'no';\ntype Test = IsString<number>; // 'no'\n```",
+    "context": "Advanced type operations",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "advanced",
+    "tags": ["conditional-types", "advanced", "generics"]
+  },
+  {
+    "id": "typescript-31",
+    "question": "What are ambient declarations?",
+    "answer": "Ambient declarations tell TypeScript about the types of existing JavaScript code or external libraries.\n\n```typescript\ndeclare var process: any;\n```",
+    "context": "Integration with JS",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["ambient", "declare", "external"]
+  },
+  {
+    "id": "typescript-32",
+    "question": "What is a namespace in TypeScript?",
+    "answer": "Namespaces group related code under a single name, useful for large applications.\n\n```typescript\nnamespace Utils {\n  export function greet(name: string) {\n    return `Hello, ${name}`;\n  }\n}\nconsole.log(Utils.greet('Alice'));\n```",
+    "context": "Code organization",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["namespaces", "organization"]
+  },
+  {
+    "id": "typescript-33",
+    "question": "What is 'this' typing in TypeScript?",
+    "answer": "You can explicitly type `this` to make methods more type-safe.\n\n```typescript\nclass Counter {\n  count = 0;\n  increment(this: Counter) {\n    this.count++;\n  }\n}\n```",
+    "context": "OOP typing",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["this", "methods", "classes"]
+  },
+  {
+    "id": "typescript-34",
+    "question": "What are intersection types useful for?",
+    "answer": "Intersection types combine multiple types into one, useful for composing complex objects.\n\n```typescript\ntype Person = { name: string };\ntype Contact = { email: string };\nconst user: Person & Contact = { name: 'Bob', email: 'bob@example.com' };\n```",
+    "context": "Type combination",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["intersection", "types", "composition"]
+  },
+  {
+    "id": "typescript-35",
+    "question": "What is a discriminated union?",
+    "answer": "A discriminated union combines multiple types with a shared literal field to distinguish between them.\n\n```typescript\ntype Shape =\n  | { kind: 'circle'; radius: number }\n  | { kind: 'square'; size: number };\n\nfunction area(s: Shape) {\n  if (s.kind === 'circle') return Math.PI * s.radius ** 2;\n}\n```",
+    "context": "Union handling",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "advanced",
+    "tags": ["discriminated-union", "pattern-matching"]
+  },
+  {
+    "id": "typescript-36",
+    "question": "What is the purpose of 'as const'?",
+    "answer": "`as const` makes object literals immutable and narrows their literal types.\n\n```typescript\nconst colors = { primary: 'blue', secondary: 'red' } as const;\n// colors.primary = 'green'; // Error\n```",
+    "context": "Const assertions",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["as-const", "immutability", "literal-types"]
+  },
+  {
+    "id": "typescript-37",
+    "question": "How do you create a generic class in TypeScript?",
+    "answer": "You can define a class that works with multiple types using generics.\n\n```typescript\nclass Box<T> {\n  value: T;\n  constructor(value: T) {\n    this.value = value;\n  }\n}\n```",
+    "context": "Generics in classes",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["classes", "generics"]
+  },
+  {
+    "id": "typescript-38",
+    "question": "What is the difference between compile-time and runtime in TypeScript?",
+    "answer": "TypeScript performs **type checking at compile-time**, but all type information is erased at runtime since JavaScript doesn’t support types.\n\nThis means type safety exists only during development, not in the final JavaScript output.",
+    "context": "Compilation behavior",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["compile-time", "runtime", "type-erasure"]
+  },
+  {
+    "id": "typescript-39",
+    "question": "How does TypeScript handle async/await?",
+    "answer": "TypeScript fully supports JavaScript's async/await syntax with strong typing.\n\n```typescript\nasync function fetchData(): Promise<string> {\n  return 'Data loaded';\n}\n```",
+    "context": "Asynchronous programming",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["async", "await", "promises"]
+  },
+  {
+    "id": "typescript-40",
+    "question": "What is the 'unknown' type used for?",
+    "answer": "`unknown` is a safer alternative to `any`, forcing type checking before use.\n\n```typescript\nlet value: unknown = 'Hello';\nif (typeof value === 'string') console.log(value.toUpperCase());\n```",
+    "context": "Type safety",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["unknown", "safety", "type-checking"]
+  },
+  {
+    "id": "typescript-41",
+    "question": "What is the difference between 'interface merging' and 'type alias'?",
+    "answer": "Interfaces can merge when declared multiple times; type aliases cannot.\n\n```typescript\ninterface User { name: string }\ninterface User { age: number }\n// merged: { name: string; age: number }\n```",
+    "context": "Advanced typing behavior",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["interface-merging", "type-alias"]
+  },
+  {
+    "id": "typescript-42",
+    "question": "How do you make optional properties in an interface?",
+    "answer": "Use `?` after a property name to make it optional.\n\n```typescript\ninterface User {\n  name: string;\n  age?: number;\n}\n```",
+    "context": "Interface syntax",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["optional", "interfaces"]
+  },
+  {
+    "id": "typescript-43",
+    "question": "How do you define a function type in TypeScript?",
+    "answer": "You can define a function signature either via type alias or interface.\n\n```typescript\ntype Add = (a: number, b: number) => number;\nconst add: Add = (x, y) => x + y;\n```",
+    "context": "Functions and signatures",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["functions", "types", "signatures"]
+  },
+  {
+    "id": "typescript-44",
+    "question": "What is the difference between 'declare' and 'import'?",
+    "answer": "`declare` is used to define ambient types (no runtime code). `import` actually loads modules.\n\n```typescript\ndeclare var process: any;\nimport { readFile } from 'fs';\n```",
+    "context": "Type declaration vs runtime import",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "advanced",
+    "tags": ["declare", "import", "ambient"]
+  },
+  {
+    "id": "typescript-45",
+    "question": "What is a literal type?",
+    "answer": "A **literal type** represents exact values instead of general types.\n\n```typescript\nlet direction: 'up' | 'down';\ndirection = 'up'; // only 'up' or 'down' allowed\n```",
+    "context": "Literal and union types",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["literal-types", "union", "safety"]
+  },
+  {
+    "id": "typescript-46",
+    "question": "What is JSX support in TypeScript?",
+    "answer": "TypeScript supports JSX syntax for React development by using `.tsx` file extension. You must enable `jsx` in `tsconfig.json`.\n\n```typescript\nconst element = <h1>Hello, world!</h1>;\n```",
+    "context": "React and TSX integration",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["jsx", "react", "tsx"]
+  },
+  {
+    "id": "typescript-47",
+    "question": "What is a type predicate?",
+    "answer": "A type predicate is a function returning `param is Type`, used for custom type guards.\n\n```typescript\nfunction isNumber(x: any): x is number {\n  return typeof x === 'number';\n}\n```",
+    "context": "Type refinement",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "advanced",
+    "tags": ["type-predicate", "type-guard"]
+  },
+  {
+    "id": "typescript-48",
+    "question": "What is 'tsconfig.json' used for?",
+    "answer": "`tsconfig.json` configures TypeScript compiler options, file inclusions, and output directories.\n\n```json\n{\n  \"compilerOptions\": {\n    \"target\": \"es6\",\n    \"strict\": true,\n    \"outDir\": \"./dist\"\n  }\n}\n```",
+    "context": "Configuration management",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "beginner",
+    "tags": ["tsconfig", "compiler", "settings"]
+  },
+  {
+    "id": "typescript-49",
+    "question": "What is the difference between 'interface extends' and 'class implements'?",
+    "answer": "`extends` is used by interfaces to inherit from other interfaces.\n`implements` is used by classes to adhere to an interface's contract.\n\n```typescript\ninterface A { x: number }\ninterface B extends A { y: number }\nclass C implements B { x = 1; y = 2; }\n```",
+    "context": "OOP relationships",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["extends", "implements", "interfaces", "classes"]
+  },
+  {
+    "id": "typescript-50",
+    "question": "How do you handle external JavaScript libraries in TypeScript?",
+    "answer": "You use **declaration files** (`.d.ts`) to describe the types of JS libraries.\nMost popular libraries provide type definitions via **@types** packages.\n\n```bash\nnpm install --save-dev @types/lodash\n```\n\nThen import as usual:\n```typescript\nimport _ from 'lodash';\n```",
+    "context": "JavaScript interoperability",
+    "type": "TECHNICAL",
+    "programming_language": "typescript",
+    "difficulty": "intermediate",
+    "tags": ["declaration-files", "types", "interoperability"]
+  }
+]
