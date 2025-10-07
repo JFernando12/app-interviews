@@ -220,10 +220,10 @@ export default function QuestionUploader({
       return;
     }
 
-    // Validate file size (500MB limit)
-    const maxSize = 500 * 1024 * 1024;
+    // Validate file size (800MB limit)
+    const maxSize = 800 * 1024 * 1024;
     if (file.size > maxSize) {
-      setVideoError('File size must be less than 500MB');
+      setVideoError('File size must be less than 800MB');
       return;
     }
 
