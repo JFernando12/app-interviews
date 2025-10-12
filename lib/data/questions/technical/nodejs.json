@@ -350,14 +350,14 @@
     "tags": ["child-process", "os", "non-blocking", "asynchronicity"]
   },
   {
-    "id": "nodejs-36",
-    "question": "What is tree-shaking and how does it relate to ES Modules?",
-    "answer": "**Tree-shaking** (or dead code elimination) is a process used by modern JavaScript bundlers (like Webpack or Rollup) to eliminate unused code from the final bundle size. It's critical for reducing load times and application size.\n\n**Relation to ES Modules (ESM):** Tree-shaking relies on the **static structure** of ES Modules (import/export). Because imports and exports are defined statically (not dynamically at runtime like require()), the bundler can analyze the code graph and determine exactly which imports are *actually* used, and which parts of the module can be safely 'shaken off'.",
-    "context": "Performance and Module System",
+    "id": "nodejs-4",
+    "question": "What is data validation in Node.js and why is it important?",
+    "answer": "Data validation in Node.js is the process of verifying that input data (such as from user requests, forms, or APIs) meets specific rules or formats before being processed or stored. It helps ensure **data integrity**, **application stability**, and **security** by preventing malformed, missing, or malicious data from causing errors or vulnerabilities.\n\n**Common approaches to data validation include:**\n1. **Manual validation:** Writing custom logic to check data types, required fields, or value ranges.\n2. **Schema-based validation:** Using libraries like **Joi**, **Yup**, or **Zod** to define reusable validation schemas.\n3. **Decorator-based validation:** In TypeScript projects (e.g., NestJS), using tools like **class-validator** with **class-transformer** for declarative validation.\n\n**Example using Joi:**\n```javascript\nimport Joi from 'joi';\n\nconst schema = Joi.object({\n  email: Joi.string().email().required(),\n  password: Joi.string().min(8).max(20).required(),\n});\n\nconst { error, value } = schema.validate({ email: 'user@test.com', password: 'secret123' });\n\nif (error) {\n  console.error('Validation failed:', error.details);\n} else {\n  console.log('Validated data:', value);\n}\n```\n\nIn this example, Joi ensures that the input data follows the defined structure before it is used, helping to prevent invalid or insecure data from entering the system.",
+    "context": "Data integrity, security, and best practices in Node.js applications",
     "type": "TECHNICAL",
     "programming_language": "nodejs",
-    "difficulty": "advanced",
-    "tags": ["esm", "bundling", "performance", "optimization"]
+    "difficulty": "intermediate",
+    "tags": ["validation", "security"]
   },
   {
     "id": "nodejs-37",
@@ -468,16 +468,6 @@
     "programming_language": "nodejs",
     "difficulty": "intermediate",
     "tags": ["express", "middleware", "security", "authentication"]
-  },
-  {
-    "id": "nodejs-48",
-    "question": "Explain the concept of 'zombie processes' and 'orphan processes' in Node.js child processes.",
-    "answer": "These concepts are critical when managing child processes using child_process.spawn() or exec():\n\n**Orphan Process:**\n- A child process whose parent process has terminated before the child process did.\n- The OS (usually the init or systemd process) adopts the orphan process as its new parent.\n\n**Zombie Process (Defunct):**\n- A child process that has terminated, but its entry in the process table remains because its parent has **not yet called wait()** to read its exit status.\n- They consume no resources except a small amount of space in the process table.\n- **In Node.js:** It's crucial to call the parent process's .on('exit') or .on('close') handler to ensure the exit status is reaped and the zombie is cleared.",
-    "context": "Process management and OS integration",
-    "type": "TECHNICAL",
-    "programming_language": "nodejs",
-    "difficulty": "advanced",
-    "tags": ["child-process", "os", "process-management", "zombie"]
   },
   {
     "id": "nodejs-49",
