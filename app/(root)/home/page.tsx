@@ -18,7 +18,6 @@ interface QuestionTypeDisplay {
   color: string;
   bgColor: string;
   borderColor: string;
-  count: number;
 }
 
 export default function HomePage() {
@@ -51,28 +50,8 @@ export default function HomePage() {
     fetchQuestions();
   }, []);
 
-  // Calculate question counts by type
-  const getQuestionCount = (type: string): number => {
-    if (type === 'all') return questions.length;
-    return questions.filter((q) => q.type === type).length;
-  };
-
   // Define question types
   const questionTypes: QuestionTypeDisplay[] = [
-    {
-      id: QuestionTypeEnum.BEHAVIORAL,
-      name:
-        QuestionTypeUtils.getDisplayName(QuestionTypeEnum.BEHAVIORAL) +
-        ' Questions',
-      description: QuestionTypeUtils.getDescription(
-        QuestionTypeEnum.BEHAVIORAL
-      ),
-      icon: <Users className="w-full h-full" />,
-      color: 'text-blue-600',
-      bgColor: 'bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-100',
-      borderColor: 'border-blue-200 group-hover:border-blue-300',
-      count: getQuestionCount(QuestionTypeEnum.BEHAVIORAL),
-    },
     {
       id: QuestionTypeEnum.TECHNICAL,
       name:
@@ -83,56 +62,6 @@ export default function HomePage() {
       color: 'text-purple-600',
       bgColor: 'bg-gradient-to-br from-purple-50 via-purple-100 to-violet-100',
       borderColor: 'border-purple-200 group-hover:border-purple-300',
-      count: getQuestionCount(QuestionTypeEnum.TECHNICAL),
-    },
-    {
-      id: QuestionTypeEnum.SYSTEM_DESIGN,
-      name: QuestionTypeUtils.getDisplayName(QuestionTypeEnum.SYSTEM_DESIGN),
-      description: QuestionTypeUtils.getDescription(
-        QuestionTypeEnum.SYSTEM_DESIGN
-      ),
-      icon: <Target className="w-full h-full" />,
-      color: 'text-green-600',
-      bgColor: 'bg-gradient-to-br from-green-50 via-green-100 to-emerald-100',
-      borderColor: 'border-green-200 group-hover:border-green-300',
-      count: getQuestionCount(QuestionTypeEnum.SYSTEM_DESIGN),
-    },
-    {
-      id: QuestionTypeEnum.LEADERSHIP,
-      name:
-        QuestionTypeUtils.getDisplayName(QuestionTypeEnum.LEADERSHIP) +
-        ' & Management',
-      description: QuestionTypeUtils.getDescription(
-        QuestionTypeEnum.LEADERSHIP
-      ),
-      icon: <Zap className="w-full h-full" />,
-      color: 'text-orange-600',
-      bgColor: 'bg-gradient-to-br from-orange-50 via-orange-100 to-amber-100',
-      borderColor: 'border-orange-200 group-hover:border-orange-300',
-      count: getQuestionCount(QuestionTypeEnum.LEADERSHIP),
-    },
-    {
-      id: QuestionTypeEnum.CODING,
-      name:
-        QuestionTypeUtils.getDisplayName(QuestionTypeEnum.CODING) +
-        ' Questions',
-      description: QuestionTypeUtils.getDescription(QuestionTypeEnum.CODING),
-      icon: <Code className="w-full h-full" />,
-      color: 'text-indigo-600',
-      bgColor: 'bg-gradient-to-br from-indigo-50 via-indigo-100 to-blue-100',
-      borderColor: 'border-indigo-200 group-hover:border-indigo-300',
-      count: getQuestionCount(QuestionTypeEnum.CODING),
-    },
-    {
-      id: 'all',
-      name: 'All Questions',
-      description:
-        'Browse your complete question collection across all categories',
-      icon: <HelpCircle className="w-full h-full" />,
-      color: 'text-gray-600',
-      bgColor: 'bg-gradient-to-br from-gray-50 via-gray-100 to-slate-100',
-      borderColor: 'border-gray-200 group-hover:border-gray-300',
-      count: getQuestionCount('all'),
     },
   ];
 
@@ -247,15 +176,6 @@ export default function HomePage() {
                 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm
               `}
             >
-              {/* Question Count Badge */}
-              <div className="absolute top-2 right-2 sm:top-3 sm:right-3 lg:top-4 lg:right-4">
-                <span
-                  className={`inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium ${type.color} bg-gray-50 dark:bg-gray-700`}
-                >
-                  {type.count}
-                </span>
-              </div>
-
               {/* Icon */}
               <div className={`${type.color} mb-2 sm:mb-3 lg:mb-4`}>
                 <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10">
@@ -276,7 +196,7 @@ export default function HomePage() {
                 <span
                   className={`text-xs sm:text-sm font-medium ${type.color}`}
                 >
-                  {type.count > 0 ? 'Browse Questions' : 'No Questions Yet'}
+                  Browse Questions
                 </span>
                 <div
                   className={`${type.color} transform transition-transform group-hover:translate-x-1`}
