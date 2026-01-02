@@ -74,30 +74,12 @@ export class StaticQuestionLoader {
   }
 }
 
-// Utility functions for question filtering and searching
 export class QuestionUtils {
-  /**
-   * Filter questions by difficulty level
-   */
   static filterByDifficulty(questions: Question[], difficulty: string): Question[] {
     if (difficulty === 'all') return questions;
     return questions.filter(q => (q as any).difficulty === difficulty);
   }
 
-  /**
-   * Filter questions by tags
-   */
-  static filterByTags(questions: Question[], tags: string[]): Question[] {
-    if (tags.length === 0) return questions;
-    return questions.filter(q => {
-      const questionTags = (q as any).tags || [];
-      return tags.some(tag => questionTags.includes(tag));
-    });
-  }
-
-  /**
-   * Search questions by text content
-   */
   static searchQuestions(questions: Question[], searchTerm: string): Question[] {
     if (!searchTerm.trim()) return questions;
     
@@ -107,34 +89,6 @@ export class QuestionUtils {
       q.answer.toLowerCase().includes(term) ||
       (q.context && q.context.toLowerCase().includes(term))
     );
-  }
-
-  /**
-   * Get random subset of questions
-   */
-  static getRandomQuestions(questions: Question[], count: number): Question[] {
-    const shuffled = [...questions].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
-  }
-
-  /**
-   * Get questions grouped by difficulty
-   */
-  static groupByDifficulty(questions: Question[]): Record<string, Question[]> {
-    const groups: Record<string, Question[]> = {
-      beginner: [],
-      intermediate: [],
-      advanced: []
-    };
-
-    questions.forEach(q => {
-      const difficulty = (q as any).difficulty || 'intermediate';
-      if (groups[difficulty]) {
-        groups[difficulty].push(q);
-      }
-    });
-
-    return groups;
   }
 }
 
