@@ -51,13 +51,13 @@
   },
   {
     "id": "backend-6",
-    "question": "What is optimistic locking and pessimistic locking? When would you use each?",
-    "answer": "These are concurrency control strategies:\n\n- **Pessimistic Locking**: You lock data (row, table) before reading or modifying it to prevent conflicts. You assume conflicts are likely, so you prevent them. Good when contention is high or data is frequently modified.\n- **Optimistic Locking**: You proceed without locking, but before commit you check whether the data changed since you last read it (e.g. via a version number or timestamp). If it changed, you abort/ retry. Good when contention is low and you want more concurrency.\n\nUse pessimistic locking when collisions are likely and correctness is critical; use optimistic locking when collisions are rare and you want scalable reads.",
-    "context": "Database / concurrency",
+    "question": "What is the N+1 query problem in databases and how can it be avoided?",
+    "answer": "The **N+1 query problem** is a common database performance issue that occurs when an application executes one query to retrieve a set of records (the '1') and then runs an additional query for each record (the 'N') to fetch related data. This leads to **N+1 total queries**, which can significantly slow down applications, especially with large datasets.\n\n**Example:**\nA typical scenario might involve fetching all users and then querying each user's posts separately:\n```sql\n-- Initial query (1)\nSELECT * FROM users;\n\n-- Then, for each user (N times)\nSELECT * FROM posts WHERE user_id = ?;\n```\nIf there are 100 users, the system performs 101 queries.\n\n**Consequences:**\n- Increased database load and network latency.\n- Poor scalability and performance degradation.\n\n**Ways to avoid the N+1 problem:**\n1. **Eager loading / JOINs:** Fetch related data in a single query using `JOIN` operations or ORM eager loading.\n2. **Batching:** Retrieve related records for multiple entities in grouped queries (e.g., using `IN` clauses).\n3. **Caching:** Cache previously retrieved data to reduce redundant queries.\n4. **Lazy loading with caution:** Use lazy loading strategically to avoid unnecessary data fetching.\n\n**In summary:** The N+1 problem happens when related data is fetched inefficiently. It can be mitigated by optimizing query strategies, using joins, batching queries, and leveraging ORM features or caching mechanisms.",
+    "context": "Database performance and query optimization",
     "type": "TECHNICAL",
     "programming_language": "general",
-    "difficulty": "intermediate",
-    "tags": ["locking", "concurrency"]
+    "difficulty": "advanced",
+    "tags": ["database", "performance", "optimization"]
   },
   {
     "id": "backend-7",
@@ -140,16 +140,6 @@
     "tags": ["caching", "performance"]
   },
   {
-    "id": "backend-15",
-    "question": "What is a distributed lock and how would you implement one?",
-    "answer": "A **distributed lock** ensures exclusive access to a resource across multiple nodes in a distributed system.\n\nCommon implementations:\n- Use a **Redis lock** (e.g. SETNX with expiration, Redlock algorithm)\n- Use a **ZooKeeper** ephemeral nodes / watchers / locks\n- Use **database row locks** in a shared DB (less scalable)\n- Use **etcd** / Consul locking primitives\n\nKey concerns: lock acquisition, lock expiry, handling node failures (ensuring lock release), ensuring lock safety (only the lock owner can release), avoiding deadlock/starvation, and correctness in partitioned environments.",
-    "context": "Distributed systems / concurrency",
-    "type": "TECHNICAL",
-    "programming_language": "general",
-    "difficulty": "advanced",
-    "tags": ["distributed", "locking", "coordination"]
-  },
-  {
     "id": "backend-16",
     "question": "What is message queuing / event-driven architecture? What are use cases?",
     "answer": "In **event-driven architecture** systems communicate via events or messages, decoupling producers from consumers.\n\nA **message queue** is a buffer that holds messages until consumers process them.\n\nUse cases include:\n- Asynchronous processing (e.g. sending emails, processing images)\n- Event sourcing and data replication\n- Buffering bursty traffic\n- Integration between microservices or bounded contexts\n- Reliable retry, backpressure control, and decoupling of services\n\nConcerns: message ordering, delivery guarantees (at-least-once, at-most-once, exactly-once), idempotency, dead-letter queues, consumer scaling, and retries.",
@@ -170,16 +160,6 @@
     "tags": ["messaging", "reliability"]
   },
   {
-    "id": "backend-18",
-    "question": "What is backpressure in streaming systems, and why is it important?",
-    "answer": "Backpressure is a mechanism to handle the situation when consumers can’t keep up with producers in data flow. Without backpressure, queues or buffers may overflow, leading to dropped data, high memory usage, or crashes.\n\nIn streaming systems or reactive systems, backpressure ensures producers slow down (or pause) until consumers catch up. It enables flow control, avoids resource exhaustion, and maintains system stability.",
-    "context": "Streaming / reactive systems",
-    "type": "TECHNICAL",
-    "programming_language": "general",
-    "difficulty": "advanced",
-    "tags": ["streaming", "flow control"]
-  },
-  {
     "id": "backend-19",
     "question": "What is eventual consistency vs strong consistency vs causal consistency?",
     "answer": "We already covered strong consistency (immediate visibility) and eventual consistency (convergence over time). **Causal consistency** lies between them: it guarantees that causally related writes are seen in the same order by all nodes, but non-causally related writes may be seen in different orders. In other words, if operation B is caused by A, then everyone must see A before B, but unrelated operations may be seen in different orders.\n\nCausal consistency is weaker than strong consistency but stronger than eventual consistency, and is useful in collaborative systems.",
@@ -190,16 +170,6 @@
     "tags": ["distributed", "consistency"]
   },
   {
-    "id": "backend-20",
-    "question": "What is a Bloom filter and where would you use it?",
-    "answer": "A **Bloom filter** is a probabilistic data structure that tests whether an element is in a set, with **false positives allowed but false negatives not**. It uses multiple hash functions and a bit array.\n\nUse cases:\n- Quickly check if something *might* be in a cache or database to avoid expensive lookups (e.g. check if a key exists in DB)\n- Filter spam, web crawler URL deduplication, membership tests in distributed systems\n- Memory-efficient presence checks when exact accuracy isn’t needed\n\nTradeoffs: small error rate (false positives), you can’t remove elements (unless using a counting Bloom filter), and you can’t list contents.",
-    "context": "Data structures / probabilistic",
-    "type": "TECHNICAL",
-    "programming_language": "general",
-    "difficulty": "advanced",
-    "tags": ["data structures", "probabilistic"]
-  },
-  {
     "id": "backend-21",
     "question": "What is CQRS (Command Query Responsibility Segregation)? Why use it?",
     "answer": "CQRS is an architectural pattern that separates read and write models: **commands** change state (writes) and **queries** fetch state (reads), each using different models or even data stores.\n\nBenefits:\n- Optimize read and write paths independently (different schemas, scaling, caching)\n- Use event sourcing more naturally (store events and build read projections)\n- Simplify complex domains by focusing write logic separately\n\nTradeoffs:\n- Increased complexity, especially in synchronizing read models\n- Eventual consistency between command and query side\n- More infrastructure overhead (multiple models, projections, synchronization)",
@@ -208,16 +178,6 @@
     "programming_language": "general",
     "difficulty": "advanced",
     "tags": ["architecture", "patterns", "read/write"]
-  },
-  {
-    "id": "backend-22",
-    "question": "What is event sourcing?",
-    "answer": "Event sourcing is a pattern where state changes are captured as a sequence of immutable events, rather than storing only the current state.\n\nAll changes (commands) produce events, which are appended to an event store. The current state is derived by replaying or projecting those events.\n\nPros:\n- Audit trail / history is automatically preserved\n- Can reconstruct past states, time travel, debugging, event replay\n- Good fit with CQRS\n\nCons:\n- Complexity in schema evolution / event versioning\n- Replaying performance cost (snapshots needed)\n- Harder to reason about aggregates state transitions",
-    "context": "Architecture / patterns",
-    "type": "TECHNICAL",
-    "programming_language": "general",
-    "difficulty": "advanced",
-    "tags": ["architecture", "events", "audit"]
   },
   {
     "id": "backend-23",
@@ -278,16 +238,6 @@
     "programming_language": "general",
     "difficulty": "intermediate",
     "tags": ["rate limiting", "throttling"]
-  },
-  {
-    "id": "backend-29",
-    "question": "How do you handle cache invalidation in distributed systems?",
-    "answer": "Cache invalidation is hard (“there are only two hard things …”):\n\nCommon strategies:\n- **Time-based expiration (TTL)**: Let entries expire after a certain time\n- **Explicit invalidation**: On data update, send invalidation events or API calls to clear or update cache\n- **Write-through caching**: Write to cache and DB atomically so cache stays fresh\n- **Versioning / cache version keys**: Change a version or namespace in keys so old cache entries become unreachable\n- **Event-driven cache updates**: Use pub/sub or message bus to inform cache nodes of updates\n\nChallenges: race conditions (e.g. write DB then delete cache), stale reads, consistency, multiple cache layers (local + distributed).",
-    "context": "Caching / consistency",
-    "type": "TECHNICAL",
-    "programming_language": "general",
-    "difficulty": "advanced",
-    "tags": ["cache", "invalidation"]
   },
   {
     "id": "backend-30",
@@ -430,16 +380,6 @@
     "tags": ["sharding", "scaling"]
   },
   {
-    "id": "backend-44",
-    "question": "What is a write-ahead log (WAL)? How is it used in databases?",
-    "answer": "A **Write-Ahead Log (WAL)** is a mechanism where changes are first recorded in a durable log before being applied to the main database. This ensures durability and crash recovery.\n\nHow it works:\n- When a transaction makes changes, the changes are appended to the log on disk (flush) before modifying data pages.\n- If a crash happens, recovery reads the WAL to replay or roll back operations to bring the database to a consistent state.\n\nWAL ensures that no committed change is lost and that even in the event of a crash the system can recover to a consistent state. Many relational databases (PostgreSQL, MySQL’s InnoDB) use WAL or similar journaling mechanisms.",
-    "context": "Database internals / durability",
-    "type": "TECHNICAL",
-    "programming_language": "general",
-    "difficulty": "advanced",
-    "tags": ["database", "durability", "internals"]
-  },
-  {
     "id": "backend-45",
     "question": "Explain how master-slave (primary-replica) replication works. What are tradeoffs?",
     "answer": "In **primary-replica replication**, writes go to the primary server; that server replicates changes asynchronously (or synchronously) to one or more replica servers. Reads can be directed to replicas to scale read capacity.\n\nTradeoffs & challenges:\n- **Lag / stale reads**: replicas might lag behind primary, so reads may be stale\n- **Failover**: if primary fails, need mechanism to elect a new primary (consensus, leader election)\n- **Conflict resolution**: if writes are allowed on multiple nodes (multi-master), you need conflict resolution\n- **Load balancing**: deciding which queries go to replicas vs primary\n- **Network overhead**: replication traffic, bandwidth, consistency guarantees (sync vs async)\n- **Split brain scenarios** if multiple primaries accidentally arise\n\nReplicas help scale reads and improve availability, but writes still go through the primary in this pattern.",
@@ -478,16 +418,6 @@
     "programming_language": "general",
     "difficulty": "intermediate",
     "tags": ["api", "design"]
-  },
-  {
-    "id": "backend-49",
-    "question": "What is HTTP/2 multiplexing and how does it improve performance compared to HTTP/1.1?",
-    "answer": "In HTTP/1.1, each TCP connection can handle one request-response at a time (or pipelining, which has limitations). To parallelize, browsers open multiple connections.\n\n**HTTP/2 multiplexing** allows multiple streams (requests/responses) to share the same TCP connection concurrently. It interleaves frames from different streams, so you don’t need multiple connections.\n\nBenefits:\n- Reduces overhead of TCP connection setup and TLS handshakes\n- Better resource utilization\n- Eliminates head-of-line blocking at HTTP layer (though TCP still has its head-of-line issues)\n- Enables server push, header compression, priority of streams\n\nThus, HTTP/2 provides lower latency, higher throughput, and more efficient use of connections.",
-    "context": "Networking / web protocols",
-    "type": "TECHNICAL",
-    "programming_language": "general",
-    "difficulty": "intermediate",
-    "tags": ["http", "performance", "protocol"]
   },
   {
     "id": "backend-50",
