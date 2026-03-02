@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Question } from '@/lib/dynamodb';
+import { Question } from '@/lib/types';
 import { QuestionType } from '@/types/enums';
 import PageHeader from '@/components/PageHeader';
 import { FormattedAnswer } from '@/components/FormattedAnswer';

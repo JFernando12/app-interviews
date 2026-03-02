@@ -350,7 +350,7 @@
     "tags": ["child-process", "os", "non-blocking", "asynchronicity"]
   },
   {
-    "id": "nodejs-4",
+    "id": "nodejs-51",
     "question": "What is data validation in Node.js and why is it important?",
     "answer": "Data validation in Node.js is the process of verifying that input data (such as from user requests, forms, or APIs) meets specific rules or formats before being processed or stored. It helps ensure **data integrity**, **application stability**, and **security** by preventing malformed, missing, or malicious data from causing errors or vulnerabilities.\n\n**Common approaches to data validation include:**\n1. **Manual validation:** Writing custom logic to check data types, required fields, or value ranges.\n2. **Schema-based validation:** Using libraries like **Joi**, **Yup**, or **Zod** to define reusable validation schemas.\n3. **Decorator-based validation:** In TypeScript projects (e.g., NestJS), using tools like **class-validator** with **class-transformer** for declarative validation.\n\n**Example using Joi:**\n```javascript\nimport Joi from 'joi';\n\nconst schema = Joi.object({\n  email: Joi.string().email().required(),\n  password: Joi.string().min(8).max(20).required(),\n});\n\nconst { error, value } = schema.validate({ email: 'user@test.com', password: 'secret123' });\n\nif (error) {\n  console.error('Validation failed:', error.details);\n} else {\n  console.log('Validated data:', value);\n}\n```\n\nIn this example, Joi ensures that the input data follows the defined structure before it is used, helping to prevent invalid or insecure data from entering the system.",
     "context": "Data integrity, security, and best practices in Node.js applications",

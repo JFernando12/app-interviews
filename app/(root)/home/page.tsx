@@ -1,208 +1,96 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Question } from '@/lib/dynamodb';
-import {
-  QuestionType as QuestionTypeEnum,
-  QuestionTypeUtils,
-} from '@/types/enums';
+import { QuestionType, QuestionTypeUtils } from '@/types/enums';
 import { HelpCircle, Code, Users, Target, Zap, ArrowRight } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 
-interface QuestionTypeDisplay {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ReactNode;
-  color: string;
-  bgColor: string;
-  borderColor: string;
-}
+const questionTypes = [
+  {
+    id: QuestionType.TECHNICAL,
+    name:
+      QuestionTypeUtils.getDisplayName(QuestionType.TECHNICAL) + ' Questions',
+    description: QuestionTypeUtils.getDescription(QuestionType.TECHNICAL),
+    icon: <Code className="w-full h-full" />,
+    color: 'text-purple-600 dark:text-purple-400',
+    href: '/home/technical',
+  },
+  {
+    id: QuestionType.BEHAVIORAL,
+    name:
+      QuestionTypeUtils.getDisplayName(QuestionType.BEHAVIORAL) + ' Questions',
+    description: QuestionTypeUtils.getDescription(QuestionType.BEHAVIORAL),
+    icon: <Users className="w-full h-full" />,
+    color: 'text-blue-600 dark:text-blue-400',
+    href: '/home/behavioral',
+  },
+  {
+    id: QuestionType.HUMAN_RESOURCES,
+    name:
+      QuestionTypeUtils.getDisplayName(QuestionType.HUMAN_RESOURCES) +
+      ' Questions',
+    description: QuestionTypeUtils.getDescription(QuestionType.HUMAN_RESOURCES),
+    icon: <HelpCircle className="w-full h-full" />,
+    color: 'text-green-600 dark:text-green-400',
+    href: '/home/human-resources',
+  },
+  {
+    id: QuestionType.SYSTEM_DESIGN,
+    name:
+      QuestionTypeUtils.getDisplayName(QuestionType.SYSTEM_DESIGN) +
+      ' Questions',
+    description: QuestionTypeUtils.getDescription(QuestionType.SYSTEM_DESIGN),
+    icon: <Target className="w-full h-full" />,
+    color: 'text-orange-600 dark:text-orange-400',
+    href: '/questions',
+  },
+  {
+    id: QuestionType.LEADERSHIP,
+    name:
+      QuestionTypeUtils.getDisplayName(QuestionType.LEADERSHIP) + ' Questions',
+    description: QuestionTypeUtils.getDescription(QuestionType.LEADERSHIP),
+    icon: <Zap className="w-full h-full" />,
+    color: 'text-red-600 dark:text-red-400',
+    href: '/questions',
+  },
+];
 
 export default function HomePage() {
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
-  // Fetch all global questions to calculate type counts
-  const fetchQuestions = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetch('/api/questions?global=true');
-      if (!response.ok) {
-        throw new Error('Failed to fetch questions');
-      }
-      const data = await response.json();
-      setQuestions(data);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'An error occurred';
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
-
-  // Define question types
-  const questionTypes: QuestionTypeDisplay[] = [
-    {
-      id: QuestionTypeEnum.TECHNICAL,
-      name:
-        QuestionTypeUtils.getDisplayName(QuestionTypeEnum.TECHNICAL) +
-        ' Questions',
-      description: QuestionTypeUtils.getDescription(QuestionTypeEnum.TECHNICAL),
-      icon: <Code className="w-full h-full" />,
-      color: 'text-purple-600',
-      bgColor: 'bg-gradient-to-br from-purple-50 via-purple-100 to-violet-100',
-      borderColor: 'border-purple-200 group-hover:border-purple-300',
-    },
-  ];
-
-  const handleTypeSelect = (typeId: string) => {
-    router.push(`/home/${typeId}`);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-3">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          {/* Header Skeleton */}
-          <div className="mb-3 sm:mb-4">
-            <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 p-3 sm:p-4 animate-pulse">
-              <div className="text-center sm:text-left">
-                <div className="w-32 sm:w-48 h-5 sm:h-6 bg-gray-200 dark:bg-gray-600 rounded mb-2 mx-auto sm:mx-0"></div>
-                <div className="w-48 sm:w-96 h-3 sm:h-4 bg-gray-200 dark:bg-gray-600 rounded mx-auto sm:mx-0"></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Question Types Grid Skeleton */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 lg:p-6 border border-gray-200 dark:border-gray-700 animate-pulse"
-              >
-                {/* Question Count Badge */}
-                <div className="flex justify-end mb-3 sm:mb-4">
-                  <div className="w-6 sm:w-8 h-4 sm:h-6 bg-gray-200 dark:bg-gray-600 rounded-md"></div>
-                </div>
-
-                {/* Icon */}
-                <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-gray-200 dark:bg-gray-600 rounded mb-2 sm:mb-3 lg:mb-4"></div>
-
-                {/* Content */}
-                <div className="space-y-2 sm:space-y-3">
-                  <div className="w-28 sm:w-40 h-4 sm:h-6 bg-gray-200 dark:bg-gray-600 rounded"></div>
-                  <div className="space-y-1 sm:space-y-2">
-                    <div className="w-full h-3 sm:h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
-                    <div className="w-3/4 h-3 sm:h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
-                  </div>
-                </div>
-
-                {/* Call to Action */}
-                <div className="flex items-center justify-between mt-3 sm:mt-4">
-                  <div className="w-20 sm:w-24 h-3 sm:h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
-                  <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-3">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <PageHeader
-            title="Error Loading Questions"
-            description="We encountered an issue while loading your questions."
-          />
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
-            <div className="flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-red-600 dark:text-red-400 mb-3 sm:mb-4">
-                  <HelpCircle className="w-12 h-12 sm:w-16 sm:h-16 mx-auto" />
-                </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Error Loading Questions
-                </h3>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">
-                  {error}
-                </p>
-                <button
-                  onClick={fetchQuestions}
-                  className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm sm:text-base"
-                >
-                  Try Again
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-3">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-        {/* Header */}
         <PageHeader
           title="Question Categories"
-          description="Choose a category to practice interview questions or browse your complete collection."
+          description="Choose a category to practice interview questions or browse the complete collection."
         />
 
-        {/* Question Types Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {questionTypes.map((type) => (
             <div
               key={type.id}
-              onClick={() => handleTypeSelect(type.id)}
-              className={`
-                relative p-3 sm:p-4 lg:p-6 rounded-xl border transition-all duration-200 cursor-pointer
-                hover:shadow-lg active:scale-[0.98] sm:hover:scale-[1.02] group
-                bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700
-                hover:border-gray-300 dark:hover:border-gray-600 shadow-sm
-              `}
+              onClick={() => router.push(type.href)}
+              className="relative p-4 sm:p-5 lg:p-6 rounded-xl border transition-all duration-200 cursor-pointer hover:shadow-lg active:scale-[0.98] sm:hover:scale-[1.02] group bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm"
             >
-              {/* Icon */}
-              <div className={`${type.color} mb-2 sm:mb-3 lg:mb-4`}>
-                <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10">
-                  {type.icon}
-                </div>
+              <div className={`${type.color} mb-3`}>
+                <div className="w-8 h-8 sm:w-10 sm:h-10">{type.icon}</div>
               </div>
-
-              {/* Content */}
-              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-gray-800 dark:group-hover:text-gray-200 leading-tight">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1 group-hover:text-gray-800 dark:group-hover:text-gray-200">
                 {type.name}
               </h3>
-              <p className="text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 text-xs sm:text-sm leading-relaxed">
+              <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-4 leading-relaxed">
                 {type.description}
               </p>
-
-              {/* Call to Action */}
               <div className="flex items-center justify-between">
                 <span
                   className={`text-xs sm:text-sm font-medium ${type.color}`}
                 >
                   Browse Questions
                 </span>
-                <div
-                  className={`${type.color} transform transition-transform group-hover:translate-x-1`}
-                >
-                  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                </div>
+                <ArrowRight
+                  className={`w-4 h-4 ${type.color} transform transition-transform group-hover:translate-x-1`}
+                />
               </div>
             </div>
           ))}
