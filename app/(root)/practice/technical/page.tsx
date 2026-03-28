@@ -231,7 +231,7 @@ function TechnicalPageContent() {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         <PageHeader
           breadcrumbs={[
-            { label: 'Home', href: '/home' },
+            { label: 'Practice', href: '/practice' },
             { label: 'Technical Questions' },
           ]}
         />

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import TopBar from '@/components/TopBar';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -14,11 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Interview Questions Manager',
+  title: 'HiredMind',
   description:
-    'Organize and manage your interview questions with an elegant, modern interface',
-  keywords: 'interview, questions, management, hiring, recruitment',
-  authors: [{ name: 'Interview App' }],
+    'Practice interview questions by category and technology. Ace your next interview.',
+  keywords: 'interview, questions, practice, technical, behavioral, hiring',
+  authors: [{ name: 'HiredMind' }],
   icons: {
     icon: '/favicon.ico',
     apple: '/favicon.ico',
@@ -53,7 +52,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TopBar />
         <main>{children}</main>
       </body>
     </html>

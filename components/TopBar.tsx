@@ -10,7 +10,11 @@ const TopBar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { href: '/home', label: 'Home', icon: <Home className="w-5 h-5" /> },
+    {
+      href: '/practice',
+      label: 'Practice',
+      icon: <Home className="w-5 h-5" />,
+    },
   ];
 
   const isActive = (href: string) =>
@@ -59,8 +63,8 @@ const TopBar = () => {
               <HelpCircle className="w-3 h-3 sm:w-5 sm:h-5 text-white" />
             </div>
             <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-white dark:to-gray-300">
-              <span className="hidden sm:inline">Interview Manager</span>
-              <span className="sm:hidden">Interview</span>
+              <span className="hidden sm:inline">HiredMind</span>
+              <span className="sm:hidden">HiredMind</span>
             </h1>
           </Link>
 
