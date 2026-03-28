@@ -7,8 +7,10 @@ export default function BehavioralPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-4">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         <PageHeader
-          title="Behavioral Prep"
-          description="Practice with behavioral interview questions and scenarios."
+          breadcrumbs={[
+            { label: 'Home', href: '/home' },
+            { label: 'Behavioral Questions' },
+          ]}
         />
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sm:p-8 lg:p-12 text-center">

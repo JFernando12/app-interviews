@@ -61,10 +61,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-3">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-        <PageHeader
-          title="Question Categories"
-          description="Choose a category to practice interview questions or browse the complete collection."
-        />
+        <PageHeader breadcrumbs={[{ label: 'Home' }]} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {questionTypes.map((type) => (

@@ -7,8 +7,10 @@ export default function HumanResourcesPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-4">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         <PageHeader
-          title="HR Prep"
-          description="Practice with human resources and general interview questions."
+          breadcrumbs={[
+            { label: 'Home', href: '/home' },
+            { label: 'HR Questions' },
+          ]}
         />
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sm:p-8 lg:p-12 text-center">

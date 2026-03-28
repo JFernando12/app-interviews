@@ -1,22 +1,42 @@
+import Link from 'next/link';
+
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
 interface PageHeaderProps {
-  title: string;
-  description: string;
+  breadcrumbs: BreadcrumbItem[];
   className?: string;
 }
 
-export default function PageHeader({ title, description, className = "" }: PageHeaderProps) {
+export default function PageHeader({
+  breadcrumbs,
+  className = '',
+}: PageHeaderProps) {
   return (
-    <div className={`mb-3 sm:mb-4 ${className}`}>
-      <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 p-3 sm:p-4">
-        <div className="text-center sm:text-left">
-          <h1 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">
-            {title}
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-            {description}
-          </p>
-        </div>
-      </div>
-    </div>
+    <nav
+      className={`mb-3 flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 ${className}`}
+    >
+      {breadcrumbs.map((crumb, index) => (
+        <span key={index} className="flex items-center gap-1">
+          {index > 0 && (
+            <span className="text-gray-400 dark:text-gray-600">›</span>
+          )}
+          {crumb.href ? (
+            <Link
+              href={crumb.href}
+              className="hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+            >
+              {crumb.label}
+            </Link>
+          ) : (
+            <span className="text-gray-800 dark:text-gray-200 font-medium">
+              {crumb.label}
+            </span>
+          )}
+        </span>
+      ))}
+    </nav>
   );
 }
