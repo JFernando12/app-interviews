@@ -8,6 +8,7 @@ export enum QuestionType {
   SYSTEM_DESIGN = 'systemdesign',
   LEADERSHIP = 'leadership',
   CODING = 'coding',
+  AI_ENGINEER = 'aiengineer',
   OTHER = 'other',
 }
 
@@ -56,6 +57,7 @@ export const QUESTION_TYPE_DISPLAY: Record<QuestionType, string> = {
   [QuestionType.SYSTEM_DESIGN]: 'System Design',
   [QuestionType.LEADERSHIP]: 'Leadership',
   [QuestionType.CODING]: 'Coding',
+  [QuestionType.AI_ENGINEER]: 'AI Engineer',
   [QuestionType.OTHER]: 'Other',
 };
 
@@ -110,6 +112,8 @@ export const QUESTION_TYPE_DESCRIPTIONS: Record<QuestionType, string> = {
   [QuestionType.LEADERSHIP]:
     'Explore management philosophy, team building, and strategic decision-making',
   [QuestionType.CODING]: 'Test programming skills and algorithm implementation',
+  [QuestionType.AI_ENGINEER]:
+    'Master LLMs, RAG, embeddings, prompt engineering, fine-tuning, and AI agent design',
   [QuestionType.OTHER]: "Questions that don't fit into the standard categories",
 };
 
@@ -159,6 +163,10 @@ export class QuestionTypeUtils {
       code: QuestionType.CODING,
       programming: QuestionType.CODING,
       algorithm: QuestionType.CODING,
+      aiengineer: QuestionType.AI_ENGINEER,
+      'ai-engineer': QuestionType.AI_ENGINEER,
+      ai: QuestionType.AI_ENGINEER,
+      llm: QuestionType.AI_ENGINEER,
       other: QuestionType.OTHER,
     };
 
