@@ -17,7 +17,7 @@
   {
     "id": "ai-2",
     "question": "What are embeddings and how are they used in AI systems?",
-    "answer": "**Embeddings** are dense vector representations of data (text, images, audio) that capture semantic meaning in a high-dimensional space. Similar concepts are geometrically close.\n\n**How they are generated:**\n- A model (e.g., text-embedding-3-small, all-MiniLM-L6-v2) encodes input text into a fixed-size float vector (e.g., 1536 dimensions).\n\n**Key uses:**\n- **Semantic search** — Find documents by meaning, not just keywords.\n- **RAG** — Embed queries and chunks to retrieve relevant context.\n- **Classification** — Use embedding distance as a signal.\n- **Clustering** — Group similar documents.\n- **Recommendation** — Match items by semantic similarity.\n\n**Important properties:**\n- Cosine similarity is the most common distance metric for text embeddings.\n- Embedding quality depends heavily on the model and domain.\n- Embeddings are static per model — changing the model requires re-embedding all data.",
+    "answer": "**Embeddings** are dense vector representations of data (text, images, audio) that capture semantic meaning in a high-dimensional space. Similar concepts are geometrically close.\n\n**How they are generated:**\n- A model (e.g., text-embedding-3-small, all-MiniLM-L6-v2) encodes input text into a fixed-size float vector (e.g., 1536 dimensions).\n\n**Key uses:**\n- **Semantic search** — Find documents by meaning, not just keywords.\n- **RAG** — Embed queries and chunks to retrieve relevant context.\n- **Classification** — Use embedding distance as a signal.\n- **Clustering** — Group similar documents.\n- **Recommendation** — Match items by semantic similarity.\n\n**Important properties:**\n- Cosine similarity is the most common distance metric for text embeddings.\n- Embedding quality depends heavily on the model and domain.\n- Embeddings are static per model — changing the model requires re-embedding all data.\n\n**Example — generating and comparing embeddings:**\n```python\nfrom openai import OpenAI\nimport numpy as np\n\nclient = OpenAI()\n\ndef embed(text):\n    return client.embeddings.create(\n        model='text-embedding-3-small',\n        input=text,\n    ).data[0].embedding\n\ndef cosine_sim(a, b):\n    va, vb = embed(a), embed(b)\n    return np.dot(va, vb) / (np.linalg.norm(va) * np.linalg.norm(vb))\n\nprint(cosine_sim('dog', 'puppy'))  # ~0.88 — similar\nprint(cosine_sim('dog', 'car'))    # ~0.30 — different\n\n# Batch embeddings (more efficient for bulk ingestion)\ntexts = ['The cat sat', 'A feline rested', 'The car drove']\nresponse = client.embeddings.create(model='text-embedding-3-small', input=texts)\nvectors = [item.embedding for item in response.data]\n```\n\n**Example — generating and comparing embeddings:**\n```python\nfrom openai import OpenAI\nimport numpy as np\n\nclient = OpenAI()\n\ndef embed(text):\n    return client.embeddings.create(\n        model='text-embedding-3-small',\n        input=text,\n    ).data[0].embedding\n\ndef cosine_sim(a, b):\n    va, vb = embed(a), embed(b)\n    return np.dot(va, vb) / (np.linalg.norm(va) * np.linalg.norm(vb))\n\nprint(cosine_sim('dog', 'puppy'))  # ~0.88 — similar\nprint(cosine_sim('dog', 'car'))    # ~0.30 — different\n\n# Batch embeddings (more efficient for bulk ingestion)\ntexts = ['The cat sat', 'A feline rested', 'The car drove']\nresponse = client.embeddings.create(model='text-embedding-3-small', input=texts)\nvectors = [item.embedding for item in response.data]\n```",
     "context": "Embeddings / Vector search",
     "type": "AI_ENGINEER",
     "programming_language": "general",
@@ -93,7 +93,7 @@
   {
     "id": "ai-7",
     "question": "What is an AI Agent and how does it differ from a simple LLM call?",
-    "answer": "An **AI Agent** is a system where an LLM autonomously decides which actions (tool calls) to take in a loop until a goal is achieved, rather than just generating a single response.\n\n**Simple LLM call:**\n```\nUser Input → LLM → Response\n```\n\n**Agent loop:**\n```\nUser Goal → [Reason → Choose Tool → Execute Tool → Observe Result] × N → Final Answer\n```\n\n**Core components:**\n- **LLM** — the reasoning engine.\n- **Tools** — functions the LLM can call (web search, code execution, DB queries, APIs).\n- **Memory** — short-term (conversation history) and long-term (vector store).\n- **Planner** — how the agent decomposes tasks (ReAct, Plan-and-Execute, etc.).\n\n**Common agent patterns:**\n- **ReAct** — Thought → Action → Observation loop.\n- **Plan-and-Execute** — Plan all steps first, then execute.\n- **Multi-agent** — Orchestrator delegates subtasks to specialized sub-agents.\n\n**Popular frameworks:** LangChain, LlamaIndex, AutoGen, CrewAI, LangGraph.\n\n**Challenges:** reliability (agents can loop or hallucinate tool calls), latency, cost, and safety (preventing unintended actions).",
+    "answer": "An **AI Agent** is a system where an LLM autonomously decides which actions (tool calls) to take in a loop until a goal is achieved, rather than just generating a single response.\n\n**Simple LLM call:**\n```\nUser Input → LLM → Response\n```\n\n**Agent loop:**\n```\nUser Goal → [Reason → Choose Tool → Execute Tool → Observe Result] × N → Final Answer\n```\n\n**Core components:**\n- **LLM** — the reasoning engine.\n- **Tools** — functions the LLM can call (web search, code execution, DB queries, APIs).\n- **Memory** — short-term (conversation history) and long-term (vector store).\n- **Planner** — how the agent decomposes tasks (ReAct, Plan-and-Execute, etc.).\n\n**Common agent patterns:**\n- **ReAct** — Thought → Action → Observation loop.\n- **Plan-and-Execute** — Plan all steps first, then execute.\n- **Multi-agent** — Orchestrator delegates subtasks to specialized sub-agents.\n\n**Popular frameworks:** LangChain, LlamaIndex, AutoGen, CrewAI, LangGraph, **OpenAI Agents SDK**.\n\n**Challenges:** reliability (agents can loop or hallucinate tool calls), latency, cost, and safety (preventing unintended actions).\n\n**Example — minimal agent with OpenAI Agents SDK:**\n```python\nfrom agents import Agent, Runner, function_tool\n\n@function_tool\ndef get_weather(city: str) -> str:\n    '''Return current weather for the city.'''\n    return call_weather_api(city)  # your real implementation\n\nweather_agent = Agent(\n    name='WeatherBot',\n    instructions='Answer weather questions using the get_weather tool.',\n    tools=[get_weather],\n)\n\nresult = Runner.run_sync(weather_agent, 'What is the weather in Madrid?')\nprint(result.final_output)\n\n# Multi-agent with handoffs\norchestrator = Agent(\n    name='Orchestrator',\n    instructions='Delegate: Researcher for docs questions, Coder for coding tasks.',\n    handoffs=[research_agent, coding_agent],\n)\nresult = Runner.run_sync(orchestrator, 'Search our docs then write a usage example.')\n```\n\n**Example — minimal agent with OpenAI Agents SDK:**\n```python\nfrom agents import Agent, Runner, function_tool\n\n@function_tool\ndef get_weather(city: str) -> str:\n    '''Return current weather for the city.'''\n    return call_weather_api(city)  # your real implementation\n\nweather_agent = Agent(\n    name='WeatherBot',\n    instructions='Answer weather questions using the get_weather tool.',\n    tools=[get_weather],\n)\n\nresult = Runner.run_sync(weather_agent, 'What is the weather in Madrid?')\nprint(result.final_output)\n\n# Multi-agent with handoffs\norchestrator = Agent(\n    name='Orchestrator',\n    instructions='Delegate: Researcher for docs questions, Coder for coding tasks.',\n    handoffs=[research_agent, coding_agent],\n)\nresult = Runner.run_sync(orchestrator, 'Search our docs then write a usage example.')\n```",
     "context": "AI Agents / agentic systems",
     "type": "AI_ENGINEER",
     "programming_language": "general",
@@ -362,6 +362,74 @@
     ]
   },
   {
+    "id": "ai-25",
+    "question": "How do you build robust Python integrations with LLM APIs? Describe async patterns, retry logic, and error handling.",
+    "answer": "Building production-grade Python integrations with LLM APIs requires handling transient failures, rate limits, and async workloads properly.\n\n**Async with the official SDK:**\n```python\nimport asyncio\nfrom openai import AsyncOpenAI\n\nclient = AsyncOpenAI(api_key=os.environ[\"OPENAI_API_KEY\"])\n\nasync def call_llm(prompt: str) -> str:\n    response = await client.chat.completions.create(\n        model=\"gpt-4o-mini\",\n        messages=[{\"role\": \"user\", \"content\": prompt}],\n        timeout=30.0,\n    )\n    return response.choices[0].message.content\n```\n\n**Retry with exponential backoff (tenacity):**\n```python\nfrom tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type\nfrom openai import RateLimitError, APIConnectionError\n\n@retry(\n    retry=retry_if_exception_type((RateLimitError, APIConnectionError)),\n    wait=wait_exponential(multiplier=1, min=2, max=60),\n    stop=stop_after_attempt(5),\n)\nasync def resilient_llm_call(prompt: str) -> str:\n    return await call_llm(prompt)\n```\n\n**Error handling hierarchy:**\n- RateLimitError (429) → retry with backoff\n- APIConnectionError → retry with backoff\n- APITimeoutError → retry once, then fail\n- AuthenticationError (401) → fail immediately, alert on-call\n- BadRequestError (400) → fail, log the prompt for debugging\n\n**Concurrency control:**\n```python\nimport asyncio\n\n# Process 100 items with max 10 concurrent calls\nsemaphore = asyncio.Semaphore(10)\n\nasync def bounded_call(prompt: str) -> str:\n    async with semaphore:\n        return await resilient_llm_call(prompt)\n\nresults = await asyncio.gather(*[bounded_call(p) for p in prompts])\n```\n\n**Key practices:**\n- Always set explicit `timeout` values — never let calls hang indefinitely.\n- Use httpx.AsyncClient with connection pooling for custom HTTP integrations.\n- Separate the LLM client into a singleton (avoid creating new clients per request).\n- Log request_id from the response header for debugging with the provider.",
+    "context": "Python integration / async / resilience",
+    "type": "AI_ENGINEER",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": [
+      "python",
+      "async",
+      "retry",
+      "error-handling",
+      "integration",
+      "openai"
+    ]
+  },
+  {
+    "id": "ai-26",
+    "question": "How do you enforce structured/consistent output formats from LLMs and validate them in Python?",
+    "answer": "LLMs can return malformed or inconsistent JSON. Production systems must enforce and validate output format.\n\n**Strategy 1 — Native structured outputs (OpenAI):**\n```python\nfrom pydantic import BaseModel\nfrom openai import OpenAI\n\nclient = OpenAI()\n\nclass ExtractedData(BaseModel):\n    name: str\n    sentiment: Literal[\"positive\", \"negative\", \"neutral\"]\n    confidence: float\n    key_topics: list[str]\n\nresponse = client.beta.chat.completions.parse(\n    model=\"gpt-4o-mini\",\n    messages=[{\"role\": \"user\", \"content\": text}],\n    response_format=ExtractedData,\n)\nresult: ExtractedData = response.choices[0].message.parsed\n```\nThe API guarantees the output matches the schema — no parsing errors.\n\n**Strategy 2 — instructor library (model-agnostic):**\n```python\nimport instructor\nfrom anthropic import Anthropic\n\nclient = instructor.from_anthropic(Anthropic())\n\nresult = client.chat.completions.create(\n    model=\"claude-3-5-haiku-latest\",\n    response_model=ExtractedData,\n    messages=[{\"role\": \"user\", \"content\": text}],\n    max_retries=3,  # auto-retries on validation failure\n)\n```\ninstructor patches any LLM client and retries automatically when Pydantic validation fails.\n\n**Strategy 3 — Manual JSON mode + Pydantic:**\n```python\nimport json\nfrom pydantic import ValidationError\n\nraw = response.choices[0].message.content\ntry:\n    data = ExtractedData.model_validate(json.loads(raw))\nexcept (json.JSONDecodeError, ValidationError) as e:\n    # fallback: retry with error feedback in the prompt\n    raise OutputValidationError(f\"LLM output failed validation: {e}\")\n```\n\n**Reducing format failures upstream:**\n- Use few-shot examples of the exact JSON format in the system prompt.\n- Add \"Respond ONLY with valid JSON matching this schema: {...}\" to the system prompt.\n- Use `temperature=0` for structured extraction tasks.\n- Prefer response_format={\"type\": \"json_schema\", \"json_schema\": ...} over json_object — it enforces the exact fields.\n\n**Enum fields for consistency:**\nPydantic Literal or enum types constrain the model's choices and eliminate free-form variation in categorical fields.",
+    "context": "Structured output / output validation / Pydantic",
+    "type": "AI_ENGINEER",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": [
+      "structured-output",
+      "pydantic",
+      "output-validation",
+      "instructor",
+      "json-schema",
+      "hallucination"
+    ]
+  },
+  {
+    "id": "ai-27",
+    "question": "How do you protect sensitive data (PII) before sending it to external LLM APIs?",
+    "answer": "Sending raw user data to external APIs like OpenAI or Anthropic creates privacy, compliance (GDPR, HIPAA), and security risks. A **data sanitization layer** must run before any LLM call.\n\n**The core pattern — sanitize → call API → restore:**\n```python\nfrom presidio_analyzer import AnalyzerEngine\nfrom presidio_anonymizer import AnonymizerEngine\n\nanalyzer = AnalyzerEngine()\nanonymizer = AnonymizerEngine()\n\ndef sanitize_for_llm(text: str) -> tuple[str, dict]:\n    \"\"\"Replace PII with placeholders. Returns sanitized text + mapping.\"\"\"\n    results = analyzer.analyze(text=text, language=\"en\")\n    anonymized = anonymizer.anonymize(text=text, analyzer_results=results)\n    return anonymized.text, build_reverse_map(results, text)\n\n# Usage\nsanitized_prompt, mapping = sanitize_for_llm(user_input)\nllm_response = call_llm(sanitized_prompt)\nfinal_response = restore_entities(llm_response, mapping)  # optional\n```\n\n**Microsoft Presidio — key entity types detected:**\n- PERSON, EMAIL_ADDRESS, PHONE_NUMBER, CREDIT_CARD\n- US_SSN, IBAN_CODE, IP_ADDRESS, LOCATION\n- Supports custom recognizers with regex or spaCy models.\n\n**Alternatives / complementary tools:**\n- **Regex-based** — fast, deterministic, for well-known formats (SSN, credit cards).\n- **LLM-based PII detection** — use a fast/cheap model to flag sensitive fields before the main call.\n- **AWS Comprehend / GCP DLP** — managed services for PII detection at scale.\n\n**Additional security measures:**\n- **Never log raw prompts** that may contain PII — scrub before writing to logs.\n- **Tokenize sensitive IDs** — replace internal database IDs with opaque tokens that the LLM uses; resolve back after the call.\n- **Scope what data reaches the LLM** — apply least-privilege: only pass fields the LLM actually needs.\n- **Data residency** — use providers/regions compliant with customer's data residency requirements.\n- **Contractual protections** — verify the provider's data processing agreement (DPA) covers your use case (OpenAI does not train on API data by default).\n\n**For RAG pipelines specifically:**\n- Scan documents for PII at ingestion time, before embedding and storing in the vector DB.\n- Apply access control on retrieval — users should only retrieve documents they're authorized to see.",
+    "context": "Security / PII / data privacy / sensitive data",
+    "type": "AI_ENGINEER",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": [
+      "security",
+      "pii",
+      "data-privacy",
+      "presidio",
+      "sensitive-data",
+      "compliance"
+    ]
+  },
+  {
+    "id": "ai-28",
+    "question": "How do you choose between LLM models for a production use case? What is the cost-capability trade-off?",
+    "answer": "Model selection is one of the highest-leverage cost and quality decisions in AI engineering. The goal is to use the *cheapest model that meets quality requirements*.\n\n**The model tier framework:**\n\n**Tier 1 — Frontier (highest quality, highest cost)**\n- GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro\n- Use for: complex reasoning, multi-step agents, code generation, ambiguous tasks\n- Cost: ~$5–15 / million input tokens\n\n**Tier 2 — Efficient (good quality, low cost)**\n- GPT-4o-mini, Claude 3.5 Haiku, Gemini 1.5 Flash, Llama 3.3 70B\n- Use for: structured extraction, classification, RAG responses, summarization\n- Cost: ~$0.10–0.40 / million input tokens — **10–50x cheaper than Tier 1**\n\n**Tier 3 — Micro (fast, cheap, narrow tasks)**\n- GPT-3.5-turbo (legacy), Claude 3 Haiku, Llama 3.2 3B\n- Use for: guardrail checks, PII detection, routing, simple classification\n- Cost: ~$0.01–0.05 / million input tokens\n\n**Decision framework:**\n1. **Benchmark first** — run your eval set on Tier 2 models. Only escalate to Tier 1 if quality is insufficient.\n2. **Route by complexity** — use an LLM router (e.g., LiteLLM, RouteLLM) to classify query complexity and send to the appropriate tier.\n3. **Cascade pattern** — try Tier 2 first; if confidence is low, retry with Tier 1.\n4. **Batch vs. real-time** — offline batch jobs (nightly enrichment) can use lower-tier async APIs at reduced cost.\n\n**Cost levers beyond model selection:**\n- **Prompt caching** — cache the system prompt / static context (saves 60–90% on repeated prefixes).\n- **Semantic caching** — cache responses for semantically similar queries (saves ~30–40% on repetitive user patterns).\n- **Shorter prompts** — every unnecessary token costs money; compress few-shot examples.\n- **Output length control** — use max_tokens to cap verbose responses.\n\n**Practical rule:** GPT-4o-mini handles ~80% of production tasks at 1/30th the cost of GPT-4o. Always start there.",
+    "context": "Model selection / cost optimization",
+    "type": "AI_ENGINEER",
+    "programming_language": "general",
+    "difficulty": "intermediate",
+    "tags": [
+      "model-selection",
+      "cost-optimization",
+      "gpt-4o-mini",
+      "production",
+      "llm",
+      "efficiency"
+    ]
+  },
+  {
     "id": "ai-24",
     "question": "Design a production RAG system for a company with 10 million documents. What are your architecture decisions?",
     "answer": "This is a classic AI system design question. Walk through each layer:\n\n**1. Ingestion pipeline (offline)**\n- **Parsing:** extract text from PDFs, Word, HTML (use unstructured, docling, or pypdf).\n- **Chunking:** recursive splitter, ~512 tokens, 50-token overlap. Parent-child chunking for precision + context.\n- **Embedding:** text-embedding-3-large (OpenAI) or bge-large-en (open-source). Batch embed asynchronously.\n- **Storage:** vector DB (Qdrant or pgvector for cost; Pinecone for managed). Store original text + metadata (source, date, department).\n- **Re-index trigger:** webhook or CDC on document updates.\n\n**2. Query pipeline (online, p99 < 500ms)**\n- **Query expansion:** generate 3 paraphrases for recall.\n- **Hybrid search:** BM25 (Elasticsearch) + vector (ANN), merge with RRF.\n- **Pre-filter by metadata:** user permissions, date range, department — before ANN search.\n- **Re-rank:** Cohere Rerank or cross-encoder on top-20 → return top-5.\n- **Prompt assembly:** system prompt + retrieved chunks + user question. Stay under 8k tokens.\n- **LLM call:** GPT-4o-mini for cost, fallback to GPT-4o for complex queries.\n\n**3. Caching layer**\n- **Semantic cache:** embed each query; if cosine similarity with a cached query > 0.95, return cached answer. (Saves ~40% of LLM calls).\n- **Prompt caching:** keep the system prompt + static context at the top for provider-side KV cache savings.\n\n**4. Observability**\n- Log every trace: query → retrieved chunks → prompt → response + latency + cost (Langfuse).\n- Auto-eval: RAGAS faithfulness score nightly on a sample.\n- Alert on faithfulness drop or p99 latency spike.\n\n**5. Guardrails**\n- Input: check for prompt injection (Llama Guard).\n- Output: validate answer does not contradict retrieved sources.\n- Access control: only retrieve documents the user is authorized to see.",
@@ -375,6 +443,90 @@
       "production",
       "architecture",
       "scalability"
+    ]
+  },
+  {
+    "id": "ai-29",
+    "question": "What is the Model Context Protocol (MCP) and how does it benefit AI engineering?",
+    "answer": "**Model Context Protocol (MCP)** is an open standard (created by Anthropic, adopted by OpenAI, Microsoft, VS Code, Cursor, and others) that provides a standardized way to connect LLM-based applications to external data sources, tools, and workflows.\n\n**The core problem MCP solves:**\nWithout MCP, every AI app needs custom one-off integrations per tool (a GitHub connector, a Postgres connector, a Slack connector...). MCP defines a universal protocol so any MCP-compatible tool works with any MCP-compatible LLM application — build once, integrate everywhere.\n\n**Architecture:**\n- **MCP Host** — the LLM application (Claude Desktop, VS Code Copilot, your custom app).\n- **MCP Client** — part of the host that speaks the MCP protocol.\n- **MCP Server** — a lightweight process exposing tools/resources (e.g., a GitHub MCP server exposes list_repos, create_pr).\n\n**What MCP servers can expose:**\n- **Tools** — functions the LLM can call (e.g., query_database(sql))\n- **Resources** — data the LLM can read (e.g., file contents, DB rows)\n- **Prompts** — reusable prompt templates\n\n**Using MCP with the OpenAI Agents SDK:**\n```python\nfrom agents import Agent, Runner\nfrom agents.mcp import MCPServerStdio\n\nasync def run():\n    async with MCPServerStdio(\n        params={'command': 'uvx', 'args': ['mcp-server-git']}\n    ) as mcp_server:\n        agent = Agent(\n            name='GitAgent',\n            instructions='Help with Git operations.',\n            mcp_servers=[mcp_server],\n        )\n        result = await Runner.run(agent, 'List the last 5 commits in this repo.')\n        print(result.final_output)\n```\n\n**Why it matters for AI engineers:**\n- Build an MCP server once and it works across Claude, ChatGPT, GitHub Copilot, Cursor, etc.\n- Standardizes security boundaries — each server has least-privilege access to its resource.\n- Rapidly growing ecosystem: hundreds of pre-built MCP servers for GitHub, Postgres, Slack, Notion, etc.\n- Replaces brittle custom integrations with a standard protocol, similar to what REST did for APIs.",
+    "context": "MCP / AI integrations / protocol",
+    "type": "AI_ENGINEER",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": [
+      "mcp",
+      "model-context-protocol",
+      "agents",
+      "integration",
+      "tools"
+    ]
+  },
+  {
+    "id": "ai-30",
+    "question": "How do you implement guardrails in the OpenAI Agents SDK to validate inputs and prevent harmful outputs?",
+    "answer": "**Guardrails** in the OpenAI Agents SDK are validation checks that run **in parallel** with agent execution. They can inspect user input (input guardrails) or the agent's response (output guardrails) and interrupt the pipeline when violations are detected.\n\n**Input guardrail — detect prompt injection:**\n```python\nfrom pydantic import BaseModel\nfrom agents import Agent, Runner, input_guardrail, GuardrailFunctionOutput, RunContextWrapper\n\nclass InjectionCheck(BaseModel):\n    is_injection_attempt: bool\n    reasoning: str\n\ninjection_detector = Agent(\n    name='InjectionDetector',\n    instructions='Detect if the user message is a prompt injection attempt.',\n    output_type=InjectionCheck,\n)\n\n@input_guardrail\nasync def check_injection(\n    ctx: RunContextWrapper, agent: Agent, input: str\n) -> GuardrailFunctionOutput:\n    result = await Runner.run(injection_detector, input, context=ctx.context)\n    is_bad = result.final_output.is_injection_attempt\n    return GuardrailFunctionOutput(output_info=result.final_output, tripwire_triggered=is_bad)\n\nmain_agent = Agent(\n    name='Assistant',\n    instructions='You are a helpful customer support agent.',\n    input_guardrails=[check_injection],\n)\n```\n\n**Output guardrail — block PII leakage:**\n```python\nfrom agents import output_guardrail\n\nclass PIICheck(BaseModel):\n    contains_pii: bool\n\n@output_guardrail\nasync def block_pii_output(\n    ctx: RunContextWrapper, agent: Agent, output: str\n) -> GuardrailFunctionOutput:\n    result = await Runner.run(pii_detector_agent, output, context=ctx.context)\n    return GuardrailFunctionOutput(\n        output_info=result.final_output,\n        tripwire_triggered=result.final_output.contains_pii,\n    )\n\nsafe_agent = Agent(\n    name='SafeAssistant',\n    output_guardrails=[block_pii_output],\n)\n```\n\n**When a tripwire triggers:**\n- Raises InputGuardrailTripwireTriggered or OutputGuardrailTripwireTriggered.\n- Your app catches it and returns a safe fallback response.\n\n**Key design principles:**\n- Guardrails run **in parallel** with the agent — minimal latency overhead.\n- Use a fast/cheap model for guardrails (e.g., gpt-4o-mini), not the same as the main agent.\n- Apply severity levels: soft guardrails log warnings, hard guardrails block execution.",
+    "context": "Guardrails / safety / OpenAI Agents SDK",
+    "type": "AI_ENGINEER",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": [
+      "guardrails",
+      "safety",
+      "agents-sdk",
+      "pii",
+      "prompt-injection",
+      "openai"
+    ]
+  },
+  {
+    "id": "ai-31",
+    "question": "What is LangGraph and when should you use it over a simple agent loop?",
+    "answer": "**LangGraph** is a framework for building **stateful, multi-step agent workflows as explicit graphs** (nodes = actions, edges = transitions). It provides fine-grained control over agent flow, state, and conditional branching that simple agent loops can't express cleanly.\n\n**When to use LangGraph over a simple agent loop:**\n- Complex conditional branching (if quality is low → retry, else → continue).\n- Human-in-the-loop approval gates at specific workflow steps.\n- Multiple agents collaborating in a structured sequence.\n- Workflows that need to pause, serialize state, and resume across requests.\n- When you need full determinism over tool execution order.\n\n**Core concepts:**\n- **StateGraph** — defines the state shape (TypedDict) flowing through the graph.\n- **Nodes** — Python functions that transform state.\n- **Edges** — connections between nodes (unconditional or conditional).\n- **Checkpointers** — persist state (SQLite, Redis, Postgres) for resumable workflows.\n\n**Example — research + critique loop:**\n```python\nfrom langgraph.graph import StateGraph, END\nfrom typing import TypedDict, Annotated\nimport operator\n\nclass State(TypedDict):\n    question: str\n    draft: str\n    critique: str\n    iterations: Annotated[int, operator.add]\n\ndef research_node(state: State) -> State:\n    draft = research_llm.invoke(state['question'])\n    return {'draft': draft, 'iterations': 1}\n\ndef critic_node(state: State) -> State:\n    prompt = 'Critique this draft: ' + state['draft']\n    critique = critic_llm.invoke(prompt)\n    return {'critique': critique}\n\ndef should_revise(state: State) -> str:\n    if state['iterations'] < 3 and 'needs improvement' in state['critique']:\n        return 'research'  # loop back\n    return END\n\ngraph = StateGraph(State)\ngraph.add_node('research', research_node)\ngraph.add_node('critic', critic_node)\ngraph.add_edge('research', 'critic')\ngraph.add_conditional_edges('critic', should_revise)\ngraph.set_entry_point('research')\n\napp = graph.compile()\nresult = app.invoke({'question': 'Explain RAG', 'draft': '', 'critique': '', 'iterations': 0})\nprint(result['draft'])\n```\n\n**LangGraph vs OpenAI Agents SDK:**\n- OpenAI Agents SDK: simpler, less code, best for straightforward agent patterns.\n- LangGraph: more control, model-agnostic, superior for complex branching and human-in-the-loop.",
+    "context": "LangGraph / agentic workflows / stateful agents",
+    "type": "AI_ENGINEER",
+    "programming_language": "python",
+    "difficulty": "advanced",
+    "tags": [
+      "langgraph",
+      "agents",
+      "state-machine",
+      "langchain",
+      "workflow",
+      "human-in-the-loop"
+    ]
+  },
+  {
+    "id": "ai-32",
+    "question": "How do you stream LLM responses in Python and why does it matter for production UX?",
+    "answer": "**Streaming** sends LLM output tokens to the client as they are generated, rather than waiting for the complete response. This dramatically improves perceived latency — users see text within ~100ms instead of waiting 5-30 seconds for a full response.\n\n**Why it matters:**\n- Users abandon interactions when waiting >3 seconds for a response to start.\n- Enables early termination if the response goes off-track.\n- Required for voice and real-time applications.\n\n**Basic streaming with the OpenAI SDK:**\n```python\nfrom openai import OpenAI\n\nclient = OpenAI()\n\ndef stream_response(prompt: str):\n    stream = client.chat.completions.create(\n        model='gpt-4o-mini',\n        messages=[{'role': 'user', 'content': prompt}],\n        stream=True,\n    )\n    for chunk in stream:\n        delta = chunk.choices[0].delta.content\n        if delta:\n            print(delta, end='', flush=True)\n```\n\n**Async streaming for FastAPI (SSE):**\n```python\nfrom fastapi import FastAPI\nfrom fastapi.responses import StreamingResponse\nfrom openai import AsyncOpenAI\n\napp = FastAPI()\nclient = AsyncOpenAI()\n\n@app.get('/stream')\nasync def stream_endpoint(question: str):\n    async def token_generator():\n        stream = await client.chat.completions.create(\n            model='gpt-4o-mini',\n            messages=[{'role': 'user', 'content': question}],\n            stream=True,\n        )\n        async for chunk in stream:\n            delta = chunk.choices[0].delta.content\n            if delta:\n                yield f'data: {delta}\n\n'  # SSE format\n        yield 'data: [DONE]\n\n'\n    return StreamingResponse(token_generator(), media_type='text/event-stream')\n```\n\n**Production considerations:**\n- Set appropriate stream timeouts (different from regular request timeouts).\n- Handle `stream.close()` on client disconnection to avoid leaking LLM calls.\n- Buffer tokens server-side when you need post-processing (e.g., citation parsing) before sending.\n- Time-to-first-token (TTFT) is the key latency metric for streaming — monitor it separately.\n- For OpenAI Agents SDK, use `Runner.run_streamed()` for streaming agent responses.",
+    "context": "Streaming / real-time / production UX",
+    "type": "AI_ENGINEER",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": [
+      "streaming",
+      "fastapi",
+      "sse",
+      "async",
+      "production",
+      "ux"
+    ]
+  },
+  {
+    "id": "ai-33",
+    "question": "What are multimodal LLMs and how do you integrate vision capabilities in Python?",
+    "answer": "**Multimodal LLMs** process multiple input modalities — text, images, audio, video, documents — and produce text output. As of 2025-2026, all major commercial LLMs are multimodal.\n\n**Primary multimodal models:**\n- **GPT-4o** — text + image + audio; best overall vision quality.\n- **Claude 3.5 Sonnet/Haiku** — text + image + document; excellent for document analysis.\n- **Gemini 1.5 Pro / 2.0 Flash** — text + image + video + audio; largest context (1M tokens).\n- **Llama 3.2 Vision** — open-source option (11B, 90B parameter versions).\n\n**Sending images to GPT-4o:**\n```python\nfrom openai import OpenAI\nimport base64\n\nclient = OpenAI()\n\n# Option 1: URL reference (fastest, no upload)\nresponse = client.chat.completions.create(\n    model='gpt-4o',\n    messages=[{\n        'role': 'user',\n        'content': [\n            {'type': 'text', 'text': 'What is in this image?'},\n            {'type': 'image_url', 'image_url': {'url': 'https://example.com/chart.png'}},\n        ],\n    }],\n)\n\n# Option 2: Base64 encoded local image\nwith open('chart.png', 'rb') as f:\n    b64 = base64.b64encode(f.read()).decode()\n\nresponse = client.chat.completions.create(\n    model='gpt-4o',\n    messages=[{\n        'role': 'user',\n        'content': [\n            {'type': 'text', 'text': 'Extract all data from this chart as JSON.'},\n            {'type': 'image_url', 'image_url': {\n                'url': f'data:image/png;base64,{b64}',\n                'detail': 'high',   # 'low' for faster/cheaper, 'high' for fine detail\n            }},\n        ],\n    }],\n)\nprint(response.choices[0].message.content)\n```\n\n**Key use cases:**\n- **Document understanding** — extract tables, forms, invoices from scanned PDFs.\n- **Data visualization analysis** — describe charts, graphs, dashboards in natural language.\n- **Screenshot QA** — automated UI testing and visual bug detection.\n- **Medical imaging** — analyze X-rays, pathology slides (specialized fine-tuned models recommended).\n\n**Cost considerations:**\n- Images cost extra tokens. A 1024x1024 image ≈ 765 tokens in GPT-4o at detail: high.\n- Use detail: 'low' for rough visual context (reduces to ~85 tokens, 10x cheaper).\n- Resize large images before sending (max 20MB per image, max 2048px on any side for high detail).\n- For document-heavy workloads, consider Claude's native PDF support instead of base64 images.",
+    "context": "Multimodal LLMs / vision / image processing",
+    "type": "AI_ENGINEER",
+    "programming_language": "python",
+    "difficulty": "intermediate",
+    "tags": [
+      "multimodal",
+      "vision",
+      "gpt-4o",
+      "images",
+      "document-understanding",
+      "llm"
     ]
   }
 ]
