@@ -7,7 +7,12 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "intermediate",
-    "tags": ["rag", "llm", "retrieval", "architecture"]
+    "tags": [
+      "rag",
+      "llm",
+      "retrieval",
+      "architecture"
+    ]
   },
   {
     "id": "ai-2",
@@ -17,7 +22,12 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "beginner",
-    "tags": ["embeddings", "vectors", "semantic-search", "rag"]
+    "tags": [
+      "embeddings",
+      "vectors",
+      "semantic-search",
+      "rag"
+    ]
   },
   {
     "id": "ai-3",
@@ -27,27 +37,43 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "beginner",
-    "tags": ["parameters", "temperature", "top-p", "inference", "llm"]
+    "tags": [
+      "parameters",
+      "temperature",
+      "top-p",
+      "inference",
+      "llm"
+    ]
   },
   {
     "id": "ai-4",
     "question": "What is the difference between fine-tuning and RAG? When would you choose each?",
-    "answer": "Both techniques adapt an LLM to a specific domain, but in different ways:\n\n| | **Fine-tuning** | **RAG** |\n|---|---|---|\n| **Mechanism** | Update model weights on domain data | Inject context at inference time |\n| **Knowledge freshness** | Static (needs retraining) | Dynamic (update the vector store) |\n| **Cost** | High upfront (training compute) | Lower upfront, higher per-query |\n| **Hallucination risk** | Can still hallucinate | Reduced — grounded in retrieved docs |\n| **Latency** | Fast at inference | Adds retrieval latency |\n| **Best for** | Style, tone, format, task specialization | Factual Q&A over large doc corpora |\n\n**Choose fine-tuning when:** you need the model to behave consistently in a specific way (format, persona, domain jargon) or when the task pattern is fixed.\n\n**Choose RAG when:** knowledge changes frequently, you need citations, or the knowledge base is too large to fit in a context window.\n\n**Hybrid approach:** fine-tune the model on task patterns + use RAG for factual knowledge.",
+    "answer": "Both techniques adapt an LLM to a specific domain, but in different ways:\n\n**Fine-tuning**\n- Mechanism: Update model weights on domain data\n- Knowledge freshness: Static (needs retraining to update)\n- Cost: High upfront (training compute)\n- Hallucination risk: Can still hallucinate\n- Latency: Fast at inference\n- Best for: Style, tone, format, task specialization\n\n**RAG**\n- Mechanism: Inject context at inference time\n- Knowledge freshness: Dynamic (update the vector store)\n- Cost: Lower upfront, higher per-query\n- Hallucination risk: Reduced — grounded in retrieved docs\n- Latency: Adds retrieval latency\n- Best for: Factual Q&A over large doc corpora\n\n**Choose fine-tuning when:** you need the model to behave consistently in a specific way (format, persona, domain jargon) or when the task pattern is fixed.\n\n**Choose RAG when:** knowledge changes frequently, you need citations, or the knowledge base is too large to fit in a context window.\n\n**Hybrid approach:** fine-tune the model on task patterns + use RAG for factual knowledge.",
     "context": "Fine-tuning vs RAG",
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "intermediate",
-    "tags": ["fine-tuning", "rag", "architecture", "llm"]
+    "tags": [
+      "fine-tuning",
+      "rag",
+      "architecture",
+      "llm"
+    ]
   },
   {
     "id": "ai-5",
     "question": "What is a vector database and how does it differ from a traditional database?",
-    "answer": "A **vector database** is a data store optimized for storing and querying high-dimensional float vectors using approximate nearest-neighbor (ANN) search.\n\n**How it differs from traditional databases:**\n\n| | **Traditional DB** | **Vector DB** |\n|---|---|---|\n| **Query type** | Exact match / range | Semantic similarity (ANN) |\n| **Index type** | B-tree, hash | HNSW, IVF, FAISS |\n| **Use case** | Structured CRUD | Embedding search |\n| **Distance metrics** | N/A | Cosine, dot product, Euclidean |\n\n**Popular vector databases:**\n- **Pinecone** — fully managed, serverless\n- **Weaviate** — open-source, multi-modal\n- **Qdrant** — open-source, Rust-based, fast\n- **pgvector** — Postgres extension, good for existing Postgres users\n- **Chroma** — lightweight, great for prototyping\n- **Milvus** — scalable, enterprise-grade\n\n**Key concepts:**\n- **HNSW** (Hierarchical Navigable Small World) — most common index for high recall + speed.\n- **Metadata filtering** — filter by attributes before/after vector search.\n- **Hybrid search** — combine keyword (BM25) + vector search for better results.",
+    "answer": "A **vector database** is a data store optimized for storing and querying high-dimensional float vectors using approximate nearest-neighbor (ANN) search.\n\n**How it differs from traditional databases:**\n\n**Traditional DB**\n- Query type: Exact match / range\n- Index type: B-tree, hash\n- Use case: Structured CRUD\n- Distance metrics: N/A\n\n**Vector DB**\n- Query type: Semantic similarity (ANN)\n- Index type: HNSW, IVF, FAISS\n- Use case: Embedding search\n- Distance metrics: Cosine, dot product, Euclidean\n\n**Popular vector databases:**\n- **Pinecone** — fully managed, serverless\n- **Weaviate** — open-source, multi-modal\n- **Qdrant** — open-source, Rust-based, fast\n- **pgvector** — Postgres extension, good for existing Postgres users\n- **Chroma** — lightweight, great for prototyping\n- **Milvus** — scalable, enterprise-grade\n\n**Key concepts:**\n- **HNSW** (Hierarchical Navigable Small World) — most common index for high recall + speed.\n- **Metadata filtering** — filter by attributes before/after vector search.\n- **Hybrid search** — combine keyword (BM25) + vector search for better results.",
     "context": "Vector databases / infrastructure",
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "intermediate",
-    "tags": ["vector-database", "embeddings", "rag", "infrastructure"]
+    "tags": [
+      "vector-database",
+      "embeddings",
+      "rag",
+      "infrastructure"
+    ]
   },
   {
     "id": "ai-6",
@@ -57,7 +83,12 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "beginner",
-    "tags": ["prompt-engineering", "few-shot", "chain-of-thought", "llm"]
+    "tags": [
+      "prompt-engineering",
+      "few-shot",
+      "chain-of-thought",
+      "llm"
+    ]
   },
   {
     "id": "ai-7",
@@ -67,7 +98,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "intermediate",
-    "tags": ["agents", "react", "tools", "llm", "langchain"]
+    "tags": [
+      "agents",
+      "react",
+      "tools",
+      "llm",
+      "langchain"
+    ]
   },
   {
     "id": "ai-8",
@@ -77,7 +114,12 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "beginner",
-    "tags": ["context-window", "tokens", "llm", "architecture"]
+    "tags": [
+      "context-window",
+      "tokens",
+      "llm",
+      "architecture"
+    ]
   },
   {
     "id": "ai-9",
@@ -87,7 +129,12 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "intermediate",
-    "tags": ["rag", "chunking", "retrieval", "embeddings"]
+    "tags": [
+      "rag",
+      "chunking",
+      "retrieval",
+      "embeddings"
+    ]
   },
   {
     "id": "ai-10",
@@ -97,7 +144,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "intermediate",
-    "tags": ["hallucination", "rag", "reliability", "llm", "evaluation"]
+    "tags": [
+      "hallucination",
+      "rag",
+      "reliability",
+      "llm",
+      "evaluation"
+    ]
   },
   {
     "id": "ai-11",
@@ -107,7 +160,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "advanced",
-    "tags": ["fine-tuning", "lora", "peft", "qlora", "llm"]
+    "tags": [
+      "fine-tuning",
+      "lora",
+      "peft",
+      "qlora",
+      "llm"
+    ]
   },
   {
     "id": "ai-12",
@@ -117,7 +176,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "advanced",
-    "tags": ["evaluation", "rag", "ragas", "metrics", "llm"]
+    "tags": [
+      "evaluation",
+      "rag",
+      "ragas",
+      "metrics",
+      "llm"
+    ]
   },
   {
     "id": "ai-13",
@@ -127,7 +192,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "advanced",
-    "tags": ["transformer", "self-attention", "architecture", "llm", "fundamentals"]
+    "tags": [
+      "transformer",
+      "self-attention",
+      "architecture",
+      "llm",
+      "fundamentals"
+    ]
   },
   {
     "id": "ai-14",
@@ -137,7 +208,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "intermediate",
-    "tags": ["semantic-search", "bm25", "hybrid-search", "rag", "embeddings"]
+    "tags": [
+      "semantic-search",
+      "bm25",
+      "hybrid-search",
+      "rag",
+      "embeddings"
+    ]
   },
   {
     "id": "ai-15",
@@ -147,7 +224,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "advanced",
-    "tags": ["observability", "monitoring", "production", "llm", "langsmith"]
+    "tags": [
+      "observability",
+      "monitoring",
+      "production",
+      "llm",
+      "langsmith"
+    ]
   },
   {
     "id": "ai-16",
@@ -157,7 +240,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "advanced",
-    "tags": ["rlhf", "dpo", "fine-tuning", "alignment", "llm"]
+    "tags": [
+      "rlhf",
+      "dpo",
+      "fine-tuning",
+      "alignment",
+      "llm"
+    ]
   },
   {
     "id": "ai-17",
@@ -167,7 +256,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "beginner",
-    "tags": ["tokenization", "bpe", "tokens", "llm", "fundamentals"]
+    "tags": [
+      "tokenization",
+      "bpe",
+      "tokens",
+      "llm",
+      "fundamentals"
+    ]
   },
   {
     "id": "ai-18",
@@ -177,7 +272,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "intermediate",
-    "tags": ["prompt-injection", "security", "guardrails", "llm", "safety"]
+    "tags": [
+      "prompt-injection",
+      "security",
+      "guardrails",
+      "llm",
+      "safety"
+    ]
   },
   {
     "id": "ai-19",
@@ -187,7 +288,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "advanced",
-    "tags": ["kv-cache", "inference", "optimization", "latency", "cost"]
+    "tags": [
+      "kv-cache",
+      "inference",
+      "optimization",
+      "latency",
+      "cost"
+    ]
   },
   {
     "id": "ai-20",
@@ -197,17 +304,30 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "intermediate",
-    "tags": ["function-calling", "tool-use", "structured-output", "llm", "api"]
+    "tags": [
+      "function-calling",
+      "tool-use",
+      "structured-output",
+      "llm",
+      "api"
+    ]
   },
   {
     "id": "ai-21",
     "question": "What is quantization in LLMs and what are the main formats used for local inference?",
-    "answer": "**Quantization** is the process of reducing the numerical precision of a model's weights (and sometimes activations) to decrease memory usage and speed up inference, at the cost of some accuracy.\n\n**Why it matters:**\n- A 70B parameter model in float32 = ~280 GB VRAM — impossible on consumer hardware.\n- The same model in 4-bit = ~35–40 GB — fits on 2× RTX 4090s or Mac Studio M3 Ultra.\n\n**Precision levels:**\n| Format | Bits | Size (7B model) | Quality loss |\n|---|---|---|---|\n| float32 (FP32) | 32 | ~28 GB | Baseline |\n| bfloat16 (BF16) | 16 | ~14 GB | Minimal |\n| int8 (Q8) | 8 | ~7 GB | Very low |\n| int4 (Q4) | 4 | ~3.5–4 GB | Low–moderate |\n\n**Common quantization formats:**\n\n**GGUF (llama.cpp)**\n- CPU-friendly, runs on any hardware (including Mac M-series).\n- Used by Ollama, LM Studio.\n- Different quantization levels: Q4_K_M, Q5_K_M, Q8_0 — higher = better quality + more RAM.\n\n**GPTQ**\n- GPU-optimized post-training quantization.\n- Good quality at 4-bit.\n- Used on HuggingFace with auto-gptq.\n\n**AWQ (Activation-aware Weight Quantization)**\n- Smarter than GPTQ; preserves salient weights.\n- Better quality at the same bit-width.\n- Increasingly the default for 4-bit HuggingFace models.\n\n**Practical rule:** For prototyping/local use: Q4_K_M GGUF. For production GPU serving: AWQ or BF16 with vLLM.",
+    "answer": "**Quantization** is the process of reducing the numerical precision of a model's weights (and sometimes activations) to decrease memory usage and speed up inference, at the cost of some accuracy.\n\n**Why it matters:**\n- A 70B parameter model in float32 = ~280 GB VRAM — impossible on consumer hardware.\n- The same model in 4-bit = ~35–40 GB — fits on 2× RTX 4090s or Mac Studio M3 Ultra.\n\n**Precision levels:**\n- float32 (FP32) — 32 bits, ~28 GB for a 7B model, baseline quality\n- bfloat16 (BF16) — 16 bits, ~14 GB, minimal quality loss\n- int8 (Q8) — 8 bits, ~7 GB, very low quality loss\n- int4 (Q4) — 4 bits, ~3.5–4 GB, low–moderate quality loss\n\n**Common quantization formats:**\n\n**GGUF (llama.cpp)**\n- CPU-friendly, runs on any hardware (including Mac M-series).\n- Used by Ollama, LM Studio.\n- Different quantization levels: Q4_K_M, Q5_K_M, Q8_0 — higher = better quality + more RAM.\n\n**GPTQ**\n- GPU-optimized post-training quantization.\n- Good quality at 4-bit.\n- Used on HuggingFace with auto-gptq.\n\n**AWQ (Activation-aware Weight Quantization)**\n- Smarter than GPTQ; preserves salient weights.\n- Better quality at the same bit-width.\n- Increasingly the default for 4-bit HuggingFace models.\n\n**Practical rule:** For prototyping/local use: Q4_K_M GGUF. For production GPU serving: AWQ or BF16 with vLLM.",
     "context": "Quantization / local inference",
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "intermediate",
-    "tags": ["quantization", "gguf", "gptq", "awq", "local-inference", "llm"]
+    "tags": [
+      "quantization",
+      "gguf",
+      "gptq",
+      "awq",
+      "local-inference",
+      "llm"
+    ]
   },
   {
     "id": "ai-22",
@@ -217,7 +337,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "advanced",
-    "tags": ["rag", "hyde", "reranking", "query-expansion", "advanced-rag"]
+    "tags": [
+      "rag",
+      "hyde",
+      "reranking",
+      "query-expansion",
+      "advanced-rag"
+    ]
   },
   {
     "id": "ai-23",
@@ -227,7 +353,13 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "intermediate",
-    "tags": ["memory", "conversation", "context-management", "langchain", "rag"]
+    "tags": [
+      "memory",
+      "conversation",
+      "context-management",
+      "langchain",
+      "rag"
+    ]
   },
   {
     "id": "ai-24",
@@ -237,6 +369,12 @@
     "type": "AI_ENGINEER",
     "programming_language": "general",
     "difficulty": "advanced",
-    "tags": ["system-design", "rag", "production", "architecture", "scalability"]
+    "tags": [
+      "system-design",
+      "rag",
+      "production",
+      "architecture",
+      "scalability"
+    ]
   }
 ]

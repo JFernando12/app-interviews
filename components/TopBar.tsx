@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Users, HelpCircle, Globe, X, Menu } from 'lucide-react';
+import { Home, HelpCircle, X, Menu } from 'lucide-react';
 
 const TopBar = () => {
   const pathname = usePathname();

@@ -50,8 +50,8 @@ const questionTypes = [
     icon: <Target className="w-full h-full" />,
     color: 'text-orange-500 dark:text-orange-400',
     iconBg: 'bg-orange-500/10',
-    href: '#',
-    available: false,
+    href: '/practice/system-design',
+    available: true,
   },
   {
     id: QuestionType.LEADERSHIP,

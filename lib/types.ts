@@ -1,4 +1,4 @@
-import { QuestionType, InterviewState } from '@/types/enums';
+import { QuestionType } from '@/types/enums';
 
 export interface Question {
   id: string;
@@ -7,23 +7,4 @@ export interface Question {
   answer: string;
   type: QuestionType;
   programming_language: string;
-  interview_id?: string;
-  user_id?: string;
-  global: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Interview {
-  id: string;
-  company: string;
-  type?: QuestionType;
-  programming_language?: string;
-  state: InterviewState;
-  user_id: string;
-  video_path?: string;
-  public?: boolean;
-  anonymous?: boolean;
-  created_at: string;
-  updated_at: string;
 }

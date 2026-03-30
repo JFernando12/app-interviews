@@ -1,0 +1,97 @@
+[
+  {
+    "id": "sd-1",
+    "question": "How would you choose between SQL and NoSQL for a new system?",
+    "answer": "**Ask four questions to guide the decision:**\n\n1. **Is the data relational?** Clear foreign keys, many-to-many relationships, or complex JOINs → SQL.\n2. **Do you need ACID?** Financial transactions, inventory, anything where partial failure is unacceptable → SQL.\n3. **Is the schema flexible or evolving fast?** Data structure varies per record or changes constantly → NoSQL (MongoDB, DynamoDB).\n4. **Is it high-volume key-value access?** Sessions, user profiles, shopping carts at scale → NoSQL (Redis, DynamoDB).\n\n**Core tradeoffs:**\n\n**SQL (PostgreSQL)**\n- Consistency: Strong (ACID)\n- Schema: Enforced\n- Queries: Complex JOINs and aggregations\n- Scaling: Vertical first, then read replicas\n- Operational cost: Lower complexity\n\n**NoSQL (MongoDB / DynamoDB)**\n- Consistency: Eventual (configurable)\n- Schema: Flexible\n- Queries: Simple key lookups\n- Scaling: Horizontal natively\n- Operational cost: Higher (DLQs, sharding logic)\n\n**Rule of thumb:** Default to **PostgreSQL** — it handles 90% of workloads well and is easier to reason about. Reach for NoSQL only when you have a specific, documented reason: unstructured data, extreme write throughput, or a well-known key-value pattern.",
+    "context": "Database design / architecture decisions",
+    "type": "SYSTEM_DESIGN",
+    "programming_language": "system-design",
+    "difficulty": "intermediate",
+    "tags": [
+      "sql",
+      "nosql",
+      "database",
+      "architecture",
+      "tradeoffs"
+    ]
+  },
+  {
+    "id": "sd-2",
+    "question": "Walk me through how you would scale a web application from a single server to millions of users.",
+    "answer": "**The mindset:** identify and fix the actual bottleneck at each stage — don't over-engineer early.\n\n**Scaling stages in order:**\n\n1. **Vertical scale first** — upgrade CPU/RAM. Cheap and buys time.\n2. **Add a cache (Redis)** — 80% of traffic hits 20% of data. Cache hot DB reads. This alone handles 10x load.\n3. **CDN for static assets** — images, JS bundles, CSS. Eliminates bandwidth from your servers and cuts global latency.\n4. **Horizontal app scaling** — multiple app server replicas behind a load balancer. **Key requirement: app must be stateless** (store sessions in Redis, not in-memory).\n5. **DB read replicas** — separate read and write traffic. Most apps are 90% reads, so replicas handle the bulk.\n6. **Async processing** — offload slow work (emails, image resizing, reports) to a message queue (SQS, RabbitMQ). Keeps API responses fast.\n7. **DB partitioning / sharding** — last resort. Splits data across multiple DB instances. Adds significant operational complexity.\n\n**What the interviewer is checking:**\n- Do you know that **the DB is usually the first bottleneck**, not the app server?\n- Do you respect the order? (cache before sharding)\n- Can you justify each step instead of just listing buzzwords?\n\n**Rule of thumb:** Cache + read replicas gets you to 10–100M users. Only reach for sharding when you've exhausted everything else.",
+    "context": "Scalability / infrastructure design",
+    "type": "SYSTEM_DESIGN",
+    "programming_language": "system-design",
+    "difficulty": "intermediate",
+    "tags": [
+      "scaling",
+      "cache",
+      "load-balancer",
+      "database",
+      "cdn",
+      "architecture"
+    ]
+  },
+  {
+    "id": "sd-3",
+    "question": "When would you use a message queue instead of a direct synchronous API call?",
+    "answer": "**The core question to ask yourself:** does the caller need the result right now?\n\n**Use a message queue when:**\n- The work is **slow** (sending emails, processing images, generating PDFs) — don't block the HTTP response for this.\n- The result is **not needed immediately** — fire-and-forget is acceptable.\n- You need **automatic retry logic** — queues handle failures with dead-letter queues (DLQ) and backoff.\n- You're **decoupling services** — the producer doesn't need to know who consumes or how many consumers there are.\n- You need to **absorb traffic spikes** — messages queue up instead of overwhelming a downstream service.\n\n**Use a direct API call when:**\n- You need the result **immediately** (auth check, price lookup, inventory confirmation).\n- The operation is **fast** (< 100ms) and rarely fails.\n- **Simplicity is the priority** — queues add ops overhead: DLQs, consumer scaling, monitoring, poison pills.\n\n**Common patterns:**\n- Order placed → queue → send confirmation email + update inventory (fan-out)\n- Video uploaded → queue → transcoding worker\n- User signup → direct API (you need to respond with the auth token)\n\n**Rule of thumb:** If the user doesn't need to see the result and the operation could be slow or fail, put it in a queue. If they're waiting for it to complete the flow, keep it synchronous.",
+    "context": "Messaging / async architecture",
+    "type": "SYSTEM_DESIGN",
+    "programming_language": "system-design",
+    "difficulty": "intermediate",
+    "tags": [
+      "message-queue",
+      "async",
+      "rabbitmq",
+      "sqs",
+      "architecture",
+      "decoupling"
+    ]
+  },
+  {
+    "id": "sd-4",
+    "question": "How would you design a URL shortener like bit.ly?",
+    "context": "A classic system design question that tests your understanding of hashing, databases, caching, and scalability.",
+    "answer": "Start by clarifying requirements:\n- Read/write ratio? (typically very read-heavy, ~100:1)\n- Expected scale? (millions of URLs, billions of redirects/day)\n- Custom aliases? Expiration? Analytics?\n\n**Core components:**\n- API service: POST /shorten → returns short URL; GET /{code} → 301/302 redirect\n- Hash generation: Take full URL → generate 6-7 char Base62 code (62^6 = ~56B combinations)\n- Storage: Map short code → long URL (key-value, e.g. DynamoDB or Redis-backed)\n- Cache layer: Redis in front of DB — most redirects hit a small set of popular URLs\n\n**Key design decisions:**\n\n**Hash collision strategy:**\n- Option A: MD5/SHA256 the URL, take first 6 chars — fast but needs collision check\n- Option B: Auto-increment ID → encode in Base62 — guaranteed unique, predictable\n- Rule of thumb: Use counter-based IDs with a distributed ID generator (e.g. Snowflake) for simplicity at scale\n\n**Redirect type:**\n- 301 (permanent) → browser caches, reduces server load but breaks analytics\n- 302 (temporary) → every redirect hits your server, enables click tracking\n- Rule of thumb: Use 302 if you need analytics\n\n**Scaling for read-heavy traffic:**\n- Cache hot URLs in Redis (LRU eviction, TTL matching URL expiry)\n- Read replicas for the DB\n- CDN or edge caching for the redirect response itself\n\n**Data partitioning:**\n- Partition by short code hash if storing in distributed DB\n- Avoid hotspots by not partitioning by creation time",
+    "type": "system-design",
+    "programming_language": null,
+    "difficulty": "medium",
+    "tags": [
+      "caching",
+      "hashing",
+      "scalability",
+      "key-value store"
+    ]
+  },
+  {
+    "id": "sd-5",
+    "question": "How would you design a distributed rate limiter?",
+    "context": "Rate limiting is a critical component for protecting APIs from abuse. This question tests distributed systems knowledge and trade-offs between accuracy and performance.",
+    "answer": "Start by clarifying requirements:\n- Scope: per user, per IP, per API key?\n- Granularity: requests per second, per minute, per day?\n- Behavior on limit: reject immediately, queue, or throttle?\n- Consistency: is it OK to occasionally allow slightly over the limit?\n\n**Common algorithms:**\n\n**Token bucket**\n- Bucket holds N tokens; refills at fixed rate\n- Each request consumes 1 token; rejected if empty\n- Allows short bursts up to bucket size\n- Good for bursty traffic\n\n**Fixed window counter**\n- Count requests per time window (e.g., 100 req/min)\n- Simple but has boundary spike problem: 100 req at 0:59 + 100 req at 1:01 = 200 req in 2 seconds\n\n**Sliding window log**\n- Store timestamp of each request; count those within the last N seconds\n- Accurate but memory-intensive at high scale\n\n**Sliding window counter (hybrid)**\n- Weight current + previous window counts proportionally\n- Good accuracy with low memory — recommended for most cases\n\n**Distributed implementation with Redis:**\n- Use INCR + EXPIRE in a Lua script for atomicity\n- Key per user+window: `rate:user123:1706745600`\n- Lua ensures the increment and expiry are set atomically, avoiding race conditions\n- Run Redis in cluster mode for horizontal scale\n\n**Rule of thumb:** Use sliding window counter with Redis for most production APIs — it balances accuracy, memory, and simplicity. Reserve token bucket for cases where controlled bursting is required.",
+    "type": "system-design",
+    "programming_language": null,
+    "difficulty": "hard",
+    "tags": [
+      "rate limiting",
+      "redis",
+      "distributed systems",
+      "algorithms"
+    ]
+  },
+  {
+    "id": "sd-6",
+    "question": "How would you design a notification system that supports email, SMS, and push notifications?",
+    "context": "Notification systems are ubiquitous and involve async processing, reliability, and multi-channel delivery. This question tests your understanding of event-driven architecture.",
+    "answer": "Start by clarifying requirements:\n- Who triggers notifications? (user actions, scheduled jobs, system events)\n- Volume? (millions/day vs hundreds/day)\n- Delivery guarantees? (at-least-once vs exactly-once)\n- User preferences? (opt-out per channel, quiet hours)\n\n**High-level architecture:**\n\n1. Event producers: Services emit notification events (order placed, password reset, new follower)\n2. Notification service: Receives events, validates user preferences, routes to the right channel\n3. Message queue: Decouple producers from delivery workers (Kafka or SQS per channel)\n4. Channel workers: Separate workers per channel — each reads from its queue and calls the provider\n5. Third-party providers: Twilio (SMS), FCM/APNs (push), SendGrid (email)\n6. Delivery log: Store every attempt with status for debugging and retries\n\n**Key design decisions:**\n\n**Idempotency:**\n- Assign each notification a unique ID\n- Workers check delivery log before sending to avoid duplicates on retry\n\n**Retry strategy:**\n- Exponential backoff with a dead-letter queue (DLQ) for failed messages\n- Alert on DLQ spikes — usually indicates a provider outage\n\n**User preference service:**\n- Cache user preferences (channel opt-ins, quiet hours) in Redis\n- Check before enqueuing — do not send to channels the user has disabled\n\n**Prioritization:**\n- Use separate queues for critical (password reset, 2FA) vs marketing notifications\n- Critical queue has higher worker count and no rate limiting\n\n**Rule of thumb:** Treat each channel as an independent async pipeline. The notification service is just a router — keep it stateless and fast. All heavy lifting (retries, deduplication, provider calls) belongs in the channel workers.",
+    "type": "system-design",
+    "programming_language": null,
+    "difficulty": "medium",
+    "tags": [
+      "async",
+      "message queue",
+      "event-driven",
+      "microservices"
+    ]
+  }
+]
