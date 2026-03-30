@@ -52,7 +52,13 @@ function TechnicalPageContent() {
   const router = useRouter();
 
   // Available technologies with question files
-  const availableLanguages = ['python', 'react', 'nodejs', 'general'];
+  const availableLanguages = [
+    'python',
+    'react',
+    'nodejs',
+    'general',
+    'ai-engineer',
+  ];
 
   // Get initial technology from URL or default to 'general'
   // Validate that the language has question files available
@@ -148,6 +154,14 @@ function TechnicalPageContent() {
       color: 'text-blue-600',
       bgColor: 'bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-100',
       borderColor: 'border-blue-200 hover:border-blue-300',
+    },
+    {
+      id: 'ai-engineer',
+      name: 'AI Engineer',
+      icon: '🤖',
+      color: 'text-violet-600',
+      bgColor: 'bg-gradient-to-br from-violet-50 via-violet-100 to-purple-100',
+      borderColor: 'border-violet-200 hover:border-violet-300',
     },
     // Commented out technologies without question files yet
     // {

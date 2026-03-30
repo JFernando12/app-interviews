@@ -10,7 +10,6 @@ import {
   Zap,
   ArrowRight,
   Lock,
-  Brain,
 } from 'lucide-react';
 
 const questionTypes = [
@@ -22,16 +21,6 @@ const questionTypes = [
     color: 'text-purple-500 dark:text-purple-400',
     iconBg: 'bg-purple-500/10',
     href: '/practice/technical',
-    available: true,
-  },
-  {
-    id: QuestionType.AI_ENGINEER,
-    name: QuestionTypeUtils.getDisplayName(QuestionType.AI_ENGINEER),
-    description: QuestionTypeUtils.getDescription(QuestionType.AI_ENGINEER),
-    icon: <Brain className="w-full h-full" />,
-    color: 'text-violet-500 dark:text-violet-400',
-    iconBg: 'bg-violet-500/10',
-    href: '/practice/ai-engineer',
     available: true,
   },
   {
