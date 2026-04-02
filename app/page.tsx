@@ -14,11 +14,6 @@ export default function Home() {
     <div className="min-h-screen bg-gray-950 flex flex-col">
       {/* Hero */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center">
-        {/* Badge */}
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-8 tracking-wide uppercase">
-          Free · No sign-up required
-        </span>
-
         {/* Headline */}
         <h1 className="text-4xl sm:text-5xl font-bold text-white leading-tight max-w-sm sm:max-w-xl mb-4">
           Prepare for your next{' '}

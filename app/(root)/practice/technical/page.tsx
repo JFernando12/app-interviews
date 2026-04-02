@@ -119,7 +119,7 @@ function TechnicalPageContent() {
       id: 'general',
       name: 'General',
       icon: '🎯',
-      color: 'text-gray-600',
+      color: 'text-gray-300',
       bgColor: 'bg-gradient-to-br from-gray-50 via-gray-100 to-slate-100',
       borderColor: 'border-gray-200 hover:border-gray-300',
     },
@@ -127,7 +127,7 @@ function TechnicalPageContent() {
       id: 'ai-engineer',
       name: 'AI Engineer',
       icon: '🤖',
-      color: 'text-violet-600',
+      color: 'text-violet-400',
       bgColor: 'bg-gradient-to-br from-violet-50 via-violet-100 to-purple-100',
       borderColor: 'border-violet-200 hover:border-violet-300',
     },
@@ -135,7 +135,7 @@ function TechnicalPageContent() {
       id: 'python',
       name: 'Python',
       icon: 'DiPython',
-      color: 'text-blue-600',
+      color: 'text-blue-300',
       bgColor: 'bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-100',
       borderColor: 'border-blue-200 hover:border-blue-300',
     },
@@ -159,51 +159,10 @@ function TechnicalPageContent() {
       id: 'typescript',
       name: 'TypeScript',
       icon: 'SiTypescript',
-      color: 'text-blue-600',
+      color: 'text-blue-400',
       bgColor: 'bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-100',
       borderColor: 'border-blue-200 hover:border-blue-300',
     },
-    // Commented out technologies without question files yet
-    // {
-    //   id: 'javascript',
-    //   name: 'JavaScript',
-    //   icon: '�',
-    //   color: 'text-yellow-600',
-    //   bgColor: 'bg-gradient-to-br from-yellow-50 via-yellow-100 to-orange-100',
-    //   borderColor: 'border-yellow-200 hover:border-yellow-300',
-    // },
-    // {
-    //   id: 'java',
-    //   name: 'Java',
-    //   icon: '☕',
-    //   color: 'text-orange-600',
-    //   bgColor: 'bg-gradient-to-br from-orange-50 via-orange-100 to-red-100',
-    //   borderColor: 'border-orange-200 hover:border-orange-300',
-    // },
-    // {
-    //   id: 'csharp',
-    //   name: 'C#',
-    //   icon: '🔷',
-    //   color: 'text-purple-600',
-    //   bgColor: 'bg-gradient-to-br from-purple-50 via-purple-100 to-violet-100',
-    //   borderColor: 'border-purple-200 hover:border-purple-300',
-    // },
-    // {
-    //   id: 'php',
-    //   name: 'PHP',
-    //   icon: '🐘',
-    //   color: 'text-indigo-600',
-    //   bgColor: 'bg-gradient-to-br from-indigo-50 via-indigo-100 to-blue-100',
-    //   borderColor: 'border-indigo-200 hover:border-indigo-300',
-    // },
-    // {
-    //   id: 'go',
-    //   name: 'Go',
-    //   icon: '🐹',
-    //   color: 'text-teal-600',
-    //   bgColor: 'bg-gradient-to-br from-teal-50 via-teal-100 to-cyan-100',
-    //   borderColor: 'border-teal-200 hover:border-teal-300',
-    // },
   ];
 
   // Load data based on selected technology
@@ -360,7 +319,7 @@ function TechnicalPageContent() {
                 </p>
               </div>
             ) : (
-              filteredQuestions.map((question) => {
+              filteredQuestions.map((question, index) => {
                 const techQuestion = question as TechnicalQuestion;
                 return (
                   <div
@@ -370,6 +329,9 @@ function TechnicalPageContent() {
                     <div className="space-y-2 mb-3">
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 dark:text-white leading-tight flex-1">
+                          <span className="text-gray-400 dark:text-gray-500 font-normal mr-1 sm:text-sm">
+                            {index + 1}.
+                          </span>
                           {question.question}
                         </h3>
                       </div>
